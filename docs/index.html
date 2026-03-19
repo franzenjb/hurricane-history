@@ -745,7 +745,7 @@
         renderer: {
           type: "unique-value",
           field: "category_num",
-          defaultSymbol: { type: "simple-marker", style: "diamond", color: [150,150,150,180], size: 5, outline: { color: [255,255,255,200], width: 1 } },
+          defaultSymbol: { type: "simple-marker", style: "diamond", color: [150,150,150,200], size: 10, outline: { color: [255,255,255,240], width: 2 } },
           uniqueValueInfos: Object.keys(CAT_COLORS_RGB).filter(function(k) { return parseInt(k) >= 1; }).map(function(cat) {
             return {
               value: parseInt(cat),
@@ -753,9 +753,9 @@
               symbol: {
                 type: "simple-marker",
                 style: "diamond",
-                color: [...CAT_COLORS_RGB[cat], 220],
-                size: 5 + parseInt(cat) * 2.5,
-                outline: { color: [255,255,255,220], width: 1.25 }
+                color: [...CAT_COLORS_RGB[cat], 240],
+                size: 10 + parseInt(cat) * 3,
+                outline: { color: [255,255,255,240], width: 2 }
               }
             };
           })
