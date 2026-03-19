@@ -998,15 +998,6 @@
       // Load narrative, retired status, landfall cards, and storm stats
       function loadStormExtras(stormId, stormName, stormYear) {
         console.log("Loading extras for:", stormId);
-        // Ensure summaryTable is loaded before querying
-        summaryTable.load().then(function() {
-          _doLoadExtras(stormId, stormName, stormYear);
-        }).catch(function(err) {
-          console.error("summaryTable load failed:", err);
-        });
-      }
-
-      function _doLoadExtras(stormId, stormName, stormYear) {
         // 1. Query summary table for narrative + retired + stats
         var sq = summaryTable.createQuery();
         sq.where = "storm_id = '" + stormId.replace(/'/g, "''") + "'";
@@ -1055,7 +1046,9 @@
               '</div>';
           }
         }).catch(function(err) {
-          console.error("Error loading storm summary:", err, err.message, err.details);
+          console.error("Error loading storm summary:", err);
+          var narDiv = document.getElementById("narrativeContainer");
+          if (narDiv) narDiv.innerHTML = '<div style="padding:10px 20px;font-size:11px;color:#ef5350;">Summary query error: ' + (err.message || err) + '</div>';
         });
 
         // 2. Query track points for landfall details
