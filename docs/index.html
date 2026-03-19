@@ -143,6 +143,20 @@
     }
     #stopBtn:hover { background: rgba(239,83,80,0.15); }
 
+    /* Playback transport controls */
+    #transportControls {
+      display: none; justify-content: center; gap: 6px; margin-top: 6px;
+    }
+    #transportControls.visible { display: flex; }
+    .transport-btn {
+      width: 40px; height: 34px; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px;
+      background: rgba(255,255,255,0.06); color: #ccc; font-size: 16px;
+      cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+    }
+    .transport-btn:hover { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.3); }
+    .transport-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .transport-btn:disabled:hover { background: rgba(255,255,255,0.06); color: #ccc; border-color: rgba(255,255,255,0.2); }
+
     /* Playback banner */
     #playbackBanner {
       position: absolute; top: 16px; left: 50%; transform: translateX(-50%); z-index: 15;
@@ -187,6 +201,11 @@
       <input type="text" id="stormSearch" placeholder="Search storm name (e.g. Katrina)..." />
       <div id="searchResults"></div>
       <button id="playBtn" disabled>Play Storm</button>
+      <div id="transportControls">
+        <button class="transport-btn" id="stepBackBtn" title="Step Back">&#9198;</button>
+        <button class="transport-btn" id="pauseBtn" title="Pause/Resume">&#9208;</button>
+        <button class="transport-btn" id="stepFwdBtn" title="Step Forward">&#9197;</button>
+      </div>
       <button id="stopBtn">Stop Playback</button>
     </div>
 
@@ -281,6 +300,8 @@
       let animationSpeed = 2; // slider value
       let selectedStorm = null;
       let playbackActive = false;
+      let playbackPaused = false;
+      let playbackIdx = 0;
       let playbackTimeout = null;
 
       // Simple line symbol for each category
@@ -603,6 +624,79 @@
         stopPlayback();
       });
 
+      // Transport controls
+      var transportControls = document.getElementById("transportControls");
+      var pauseBtn = document.getElementById("pauseBtn");
+      var stepBackBtn = document.getElementById("stepBackBtn");
+      var stepFwdBtn = document.getElementById("stepFwdBtn");
+
+      pauseBtn.addEventListener("click", function() {
+        if (!playbackActive) return;
+        if (!playbackPaused) {
+          // Pause
+          playbackPaused = true;
+          if (playbackTimeout) { clearTimeout(playbackTimeout); playbackTimeout = null; }
+          pauseBtn.innerHTML = "&#9654;"; // play symbol
+          pauseBtn.title = "Resume";
+          stepBackBtn.disabled = false;
+          stepFwdBtn.disabled = false;
+          updateBannerForIdx(playbackIdx);
+        } else {
+          // Resume
+          playbackPaused = false;
+          pauseBtn.innerHTML = "&#9208;"; // pause symbol
+          pauseBtn.title = "Pause";
+          stepBackBtn.disabled = true;
+          stepFwdBtn.disabled = true;
+          drawLoop(playbackIdx + 1);
+        }
+      });
+
+      stepFwdBtn.addEventListener("click", function() {
+        if (!playbackActive || !playbackPaused || !playbackFeatures) return;
+        var nextIdx = playbackIdx + 1;
+        if (nextIdx >= playbackFeatures.length) return; // at end
+
+        playbackIdx = nextIdx;
+        var f = playbackFeatures[nextIdx];
+        var catNum = f.attributes.category_num != null ? String(f.attributes.category_num) : "-1";
+        var color = CAT_COLORS_RGB[catNum] || CAT_COLORS_RGB["-1"];
+        var width = CAT_WIDTHS[catNum] || 0.75;
+
+        // Glow
+        animationLayer.add(new Graphic({
+          geometry: f.geometry,
+          symbol: { type: "simple-line", color: [...color, 50], width: width + 5, cap: "round", join: "round" }
+        }));
+        // Main line
+        animationLayer.add(new Graphic({
+          geometry: f.geometry,
+          symbol: { type: "simple-line", color: [...color, 240], width: width + 0.5, cap: "round", join: "round" },
+          attributes: f.attributes
+        }));
+
+        showInfoPanel(f.attributes);
+        updateBannerForIdx(nextIdx);
+      });
+
+      stepBackBtn.addEventListener("click", function() {
+        if (!playbackActive || !playbackPaused || !playbackFeatures) return;
+        if (playbackIdx <= 0) return; // at start
+
+        // Remove last 2 graphics (glow + main line)
+        var graphics = animationLayer.graphics;
+        if (graphics.length >= 2) {
+          animationLayer.remove(graphics.getItemAt(graphics.length - 1));
+          animationLayer.remove(graphics.getItemAt(graphics.length - 1));
+        }
+
+        playbackIdx--;
+        if (playbackFeatures[playbackIdx]) {
+          showInfoPanel(playbackFeatures[playbackIdx].attributes);
+        }
+        updateBannerForIdx(playbackIdx);
+      });
+
       // Feature info panel helpers
       var infoPanel = document.getElementById("infoPanel");
       var infoPanelContent = document.getElementById("infoPanelContent");
@@ -695,8 +789,15 @@
 
       function playStorm(storm) {
         playbackActive = true;
+        playbackPaused = false;
+        playbackIdx = 0;
         playBtn.disabled = true;
         stopBtn.style.display = "block";
+        transportControls.classList.add("visible");
+        pauseBtn.innerHTML = "&#9208;";
+        pauseBtn.title = "Pause";
+        stepBackBtn.disabled = true;
+        stepFwdBtn.disabled = true;
 
         bannerName.textContent = storm.name;
         bannerDetail.textContent = storm.year + " Atlantic Season — Peak: " + storm.peak_category;
@@ -747,14 +848,18 @@
 
       function drawLoop(idx) {
         if (!playbackActive || !playbackFeatures) return;
+        if (playbackPaused) return;
 
         // Loop: reset when reaching end
         if (idx >= playbackFeatures.length) {
           animationLayer.removeAll();
+          playbackIdx = 0;
           bannerProgress.textContent = "Looping...";
           playbackTimeout = setTimeout(function() { drawLoop(0); }, 800);
           return;
         }
+
+        playbackIdx = idx;
 
         var f = playbackFeatures[idx];
         var catNum = f.attributes.category_num != null ? String(f.attributes.category_num) : "-1";
@@ -784,8 +889,19 @@
         playbackTimeout = setTimeout(function() { drawLoop(idx + 1); }, delay);
       }
 
+      function updateBannerForIdx(idx) {
+        if (!playbackFeatures || idx < 0 || idx >= playbackFeatures.length) return;
+        var f = playbackFeatures[idx];
+        var catNum = f.attributes.category_num != null ? String(f.attributes.category_num) : "-1";
+        var catLabel = CAT_LABELS[catNum] || "Unknown";
+        var windInfo = f.attributes.wind_kt ? f.attributes.wind_kt + " kt" : "";
+        bannerProgress.textContent = "Segment " + (idx + 1) + " of " + playbackFeatures.length + " — " + catLabel + (windInfo ? " (" + windInfo + ")" : "") + "  PAUSED";
+      }
+
       function stopPlayback() {
         playbackActive = false;
+        playbackPaused = false;
+        playbackIdx = 0;
         playbackFeatures = null;
         if (playbackTimeout) {
           clearTimeout(playbackTimeout);
@@ -794,6 +910,7 @@
         animationLayer.removeAll();
         playbackBanner.style.display = "none";
         stopBtn.style.display = "none";
+        transportControls.classList.remove("visible");
         playBtn.disabled = !selectedStorm;
         if (selectedStorm) {
           playBtn.textContent = "Play " + selectedStorm.name + " (" + selectedStorm.year + ")";
