@@ -619,8 +619,7 @@
 
       var map = new Map({
         basemap: "dark-gray-vector",
-        layers: [segmentsLayer, landfallLayer, animationLayer],
-        tables: [summaryTable]
+        layers: [segmentsLayer, landfallLayer, animationLayer]
       });
 
       var view = new MapView({
@@ -1038,7 +1037,7 @@
               '</div>';
           }
         }).catch(function(err) {
-          console.error("Error loading storm summary:", err);
+          console.error("Error loading storm summary:", err, err.message, err.details);
         });
 
         // 2. Query track points for landfall details
@@ -1298,15 +1297,30 @@
         });
       });
 
+      // view.when may not resolve if a layer has issues — use whenLayerView as fallback
       view.when(function() {
+        console.log("View ready");
         updateStats();
-        // Ensure summaryTable is loaded before querying
-        summaryTable.load().then(function() {
-          console.log("Summary table loaded, fields:", summaryTable.fields.map(function(f) { return f.name; }));
-          updateMonthlyChart();
-        }).catch(function(err) {
-          console.error("Summary table load error:", err);
-        });
+        updateMonthlyChart();
+      }).catch(function(err) {
+        console.warn("View when error (non-fatal):", err);
+        // Fallback: load monthly chart independently
+        updateMonthlyChart();
+      });
+
+      // Also trigger chart + stats once segments layer is visible
+      view.whenLayerView(segmentsLayer).then(function(layerView) {
+        reactiveUtils.when(
+          function() { return !layerView.updating; },
+          function() {
+            updateStats();
+            if (document.getElementById("monthBars").innerHTML === "") {
+              updateMonthlyChart();
+            }
+          }
+        );
+      }).catch(function(err) {
+        console.warn("Segments layer view error:", err);
       });
     });
   </script>
