@@ -437,6 +437,7 @@
         <div class="modal-tab" data-mtool="landfalls">Landfalls</div>
         <div class="modal-tab" data-mtool="monthly">Monthly</div>
         <div class="modal-tab" data-mtool="decades">Decades</div>
+        <div class="modal-tab" data-mtool="finder">Finder</div>
       </div>
       <div class="modal-body" id="modalContent"></div>
     </div>
@@ -1572,6 +1573,7 @@
         else if (name === "landfalls") loadLandfallStats();
         else if (name === "monthly") loadMonthlyChart();
         else if (name === "decades") loadDecadeTrends();
+        else if (name === "finder") loadFinder();
       }
 
       function loadRecords() {
@@ -1840,6 +1842,145 @@
           html += '</div>';
           toolContent.innerHTML = html;
         });
+      }
+
+      function loadFinder() {
+        var states = ["Florida","Texas","Louisiana","North Carolina","South Carolina","Mississippi","Alabama","New York","New Jersey","Georgia","Virginia","Connecticut","Massachusetts","Maine","Maryland","Cuba","Mexico","Bahamas","Puerto Rico","Honduras","Nicaragua","Belize","Jamaica","Dominican Rep.","Haiti","Bermuda","Canada"];
+
+        var html = '';
+        html += '<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">Storm Finder</div>';
+        html += '<div style="font-size:13px;color:#888;margin-bottom:16px;">Find storms by category, landfall location, and year range</div>';
+
+        html += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">';
+
+        // Category
+        html += '<div style="flex:1;min-width:140px;"><label style="display:block;font-size:12px;color:#888;text-transform:uppercase;font-weight:600;margin-bottom:5px;">Min Category</label>' +
+          '<select id="finderCat" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:8px 10px;font-size:14px;outline:none;">' +
+          '<option value="-1">All Storms</option><option value="0">Tropical Storm+</option>' +
+          '<option value="1">Category 1+</option><option value="2">Category 2+</option>' +
+          '<option value="3" selected>Category 3+</option><option value="4">Category 4+</option><option value="5">Category 5</option></select></div>';
+
+        // State
+        html += '<div style="flex:1;min-width:160px;"><label style="display:block;font-size:12px;color:#888;text-transform:uppercase;font-weight:600;margin-bottom:5px;">Landfall Location</label>' +
+          '<select id="finderState" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:8px 10px;font-size:14px;outline:none;">' +
+          '<option value="">Any Location</option>';
+        states.forEach(function(s) { html += '<option value="' + s + '">' + s + '</option>'; });
+        html += '</select></div>';
+
+        // Year range
+        html += '<div style="flex:1;min-width:100px;"><label style="display:block;font-size:12px;color:#888;text-transform:uppercase;font-weight:600;margin-bottom:5px;">From Year</label>' +
+          '<input type="number" id="finderYearFrom" value="1851" min="1851" max="2025" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:8px 10px;font-size:14px;outline:none;" /></div>';
+        html += '<div style="flex:1;min-width:100px;"><label style="display:block;font-size:12px;color:#888;text-transform:uppercase;font-weight:600;margin-bottom:5px;">To Year</label>' +
+          '<input type="number" id="finderYearTo" value="2025" min="1851" max="2025" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:8px 10px;font-size:14px;outline:none;" /></div>';
+
+        // Search button
+        html += '<div style="display:flex;align-items:end;"><button id="finderSearchBtn" style="background:#4fc3f7;color:#1a1a2e;border:none;border-radius:6px;padding:9px 24px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap;">SEARCH</button></div>';
+
+        html += '</div>';
+        html += '<div id="finderResults" style="font-size:14px;color:#888;">Select filters and click Search</div>';
+
+        toolContent.innerHTML = html;
+
+        document.getElementById("finderSearchBtn").addEventListener("click", runFinder);
+
+        function runFinder() {
+          var minCat = parseInt(document.getElementById("finderCat").value);
+          var state = document.getElementById("finderState").value;
+          var yearFrom = parseInt(document.getElementById("finderYearFrom").value);
+          var yearTo = parseInt(document.getElementById("finderYearTo").value);
+          var resultsDiv = document.getElementById("finderResults");
+          resultsDiv.innerHTML = '<div style="color:#888;">Searching...</div>';
+
+          if (state) {
+            // Need to query track points for landfall_state, then get unique storm_ids
+            var lfUrl = POINTS_URL + '/query?' + new URLSearchParams({
+              f: 'json',
+              where: "is_landfall = 1 AND landfall_state = '" + state.replace(/'/g, "''") + "' AND category_num >= " + minCat + " AND year >= " + yearFrom + " AND year <= " + yearTo,
+              outFields: 'storm_id', returnGeometry: 'false', returnDistinctValues: 'true',
+              resultRecordCount: '500'
+            });
+            fetch(lfUrl).then(function(r) { return r.json(); }).then(function(lfResult) {
+              var stormIds = [];
+              (lfResult.features || []).forEach(function(f) {
+                if (stormIds.indexOf(f.attributes.storm_id) === -1) stormIds.push(f.attributes.storm_id);
+              });
+              if (stormIds.length === 0) {
+                resultsDiv.innerHTML = '<div style="color:#888;font-size:14px;">No storms found matching those criteria.</div>';
+                return;
+              }
+              // Now get storm details
+              var idList = stormIds.map(function(id) { return "'" + id + "'"; }).join(",");
+              var sUrl = SUMMARY_URL + '/query?' + new URLSearchParams({
+                f: 'json', where: 'storm_id IN (' + idList + ')',
+                outFields: 'storm_id,name,year,category,category_num,max_wind_kt,max_wind_mph,min_pressure_mb,landfalls,is_retired',
+                returnGeometry: 'false', orderByFields: 'year DESC'
+              });
+              return fetch(sUrl).then(function(r2) { return r2.json(); }).then(function(sResult) {
+                renderFinderResults(sResult.features || [], state, resultsDiv);
+              });
+            });
+          } else {
+            // No state filter — just query summary table
+            var sUrl = SUMMARY_URL + '/query?' + new URLSearchParams({
+              f: 'json',
+              where: 'category_num >= ' + minCat + ' AND year >= ' + yearFrom + ' AND year <= ' + yearTo,
+              outFields: 'storm_id,name,year,category,category_num,max_wind_kt,max_wind_mph,min_pressure_mb,landfalls,is_retired',
+              returnGeometry: 'false', orderByFields: 'year DESC',
+              resultRecordCount: '200'
+            });
+            fetch(sUrl).then(function(r) { return r.json(); }).then(function(result) {
+              renderFinderResults(result.features || [], null, resultsDiv);
+            });
+          }
+        }
+
+        function renderFinderResults(features, state, container) {
+          var storms = features.map(function(f) { return f.attributes; });
+          if (storms.length === 0) {
+            container.innerHTML = '<div style="color:#888;font-size:14px;">No storms found.</div>';
+            return;
+          }
+
+          var h = '<div style="font-size:14px;font-weight:700;color:#4fc3f7;margin-bottom:12px;">' + storms.length + ' storms found' + (state ? ' hitting ' + state : '') + '</div>';
+
+          h += '<table style="width:100%;border-collapse:collapse;">';
+          h += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);">' +
+            '<th style="text-align:left;padding:8px 12px;font-size:12px;color:#888;">STORM</th>' +
+            '<th style="text-align:center;padding:8px 12px;font-size:12px;color:#888;">YEAR</th>' +
+            '<th style="text-align:center;padding:8px 12px;font-size:12px;color:#888;">CAT</th>' +
+            '<th style="text-align:right;padding:8px 12px;font-size:12px;color:#888;">WIND</th>' +
+            '<th style="text-align:right;padding:8px 12px;font-size:12px;color:#888;">PRESS</th>' +
+            '</tr>';
+
+          storms.forEach(function(s) {
+            var catColor = CAT_COLORS_HEX[s.category_num] || "#78909c";
+            var retired = s.is_retired === 1 ? ' <span style="font-size:10px;color:#ef5350;">RET</span>' : '';
+            h += '<tr style="border-bottom:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:background 0.15s;" data-sid="' + s.storm_id + '" onmouseover="this.style.background=\'rgba(255,255,255,0.04)\'" onmouseout="this.style.background=\'none\'">' +
+              '<td style="padding:8px 12px;font-size:14px;font-weight:600;color:#e0e0e0;">' + s.name + retired + '</td>' +
+              '<td style="padding:8px 12px;font-size:14px;color:#ccc;text-align:center;">' + s.year + '</td>' +
+              '<td style="padding:8px 12px;text-align:center;"><span style="padding:3px 10px;border-radius:8px;background:' + catColor + ';color:#fff;font-size:12px;font-weight:700;">' + s.category + '</span></td>' +
+              '<td style="padding:8px 12px;font-size:14px;color:#ccc;text-align:right;">' + (s.max_wind_mph || '—') + ' mph</td>' +
+              '<td style="padding:8px 12px;font-size:14px;color:#ccc;text-align:right;">' + (s.min_pressure_mb || '—') + ' mb</td>' +
+            '</tr>';
+          });
+          h += '</table>';
+          container.innerHTML = h;
+
+          // Click to play
+          container.querySelectorAll('[data-sid]').forEach(function(row) {
+            row.addEventListener('click', function() {
+              var sid = row.getAttribute('data-sid');
+              var s = storms.find(function(st) { return st.storm_id === sid; });
+              if (s) {
+                selectedStorm = { storm_id: s.storm_id, name: s.name, year: s.year, peak_category: s.category, peak_category_num: s.category_num };
+                playBtn.disabled = false;
+                playBtn.textContent = "Play " + s.name + " (" + s.year + ")";
+                searchInput.value = s.name;
+                document.getElementById("intelOverlay").classList.remove("open");
+              }
+            });
+          });
+        }
       }
 
       // Pre-populate featured storms
