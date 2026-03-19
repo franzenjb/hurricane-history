@@ -438,6 +438,7 @@
         <div class="modal-tab" data-mtool="monthly">Monthly</div>
         <div class="modal-tab" data-mtool="decades">Decades</div>
         <div class="modal-tab" data-mtool="finder">Finder</div>
+        <div class="modal-tab" data-mtool="compare">Compare</div>
       </div>
       <div class="modal-body" id="modalContent"></div>
     </div>
@@ -1574,6 +1575,7 @@
         else if (name === "monthly") loadMonthlyChart();
         else if (name === "decades") loadDecadeTrends();
         else if (name === "finder") loadFinder();
+        else if (name === "compare") loadCompare();
       }
 
       function loadRecords() {
@@ -1842,6 +1844,193 @@
           html += '</div>';
           toolContent.innerHTML = html;
         });
+      }
+
+      function loadCompare() {
+        var compareStorms = [];
+
+        var html = '';
+        html += '<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">Storm Compare</div>';
+        html += '<div style="font-size:13px;color:#888;margin-bottom:16px;">Add up to 4 storms to compare side-by-side and overlay on the map</div>';
+
+        html += '<div style="display:flex;gap:10px;margin-bottom:16px;">';
+        html += '<input type="text" id="compareSearch" placeholder="Search storm name..." style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:8px 12px;font-size:14px;outline:none;" />';
+        html += '</div>';
+        html += '<div id="compareSearchResults" style="max-height:160px;overflow-y:auto;margin-bottom:16px;"></div>';
+        html += '<div id="compareSelected" style="margin-bottom:16px;"></div>';
+        html += '<div id="compareTable"></div>';
+        html += '<div style="margin-top:16px;"><button id="compareShowMap" style="background:#4fc3f7;color:#1a1a2e;border:none;border-radius:6px;padding:10px 28px;font-weight:700;font-size:14px;cursor:pointer;display:none;">SHOW ON MAP</button></div>';
+
+        toolContent.innerHTML = html;
+
+        var compareSearchInput = document.getElementById("compareSearch");
+        var compareSearchResults = document.getElementById("compareSearchResults");
+        var compareSelectedDiv = document.getElementById("compareSelected");
+        var compareTableDiv = document.getElementById("compareTable");
+        var compareShowMapBtn = document.getElementById("compareShowMap");
+        var compareColors = ["#4fc3f7", "#FFD700", "#ef5350", "#66bb6a"];
+
+        var debounce = null;
+        compareSearchInput.addEventListener("input", function() {
+          var val = compareSearchInput.value.trim();
+          if (debounce) clearTimeout(debounce);
+          if (val.length < 2) { compareSearchResults.innerHTML = ""; return; }
+          debounce = setTimeout(function() {
+            var url = SUMMARY_URL + '/query?' + new URLSearchParams({
+              f: 'json', where: "UPPER(name) LIKE '%" + val.toUpperCase().replace(/'/g, "''") + "%'",
+              outFields: 'storm_id,name,year,category,category_num,max_wind_kt,max_wind_mph,min_pressure_mb,duration_hours,landfalls,is_retired',
+              returnGeometry: 'false', orderByFields: 'year DESC', resultRecordCount: '20'
+            });
+            fetch(url).then(function(r) { return r.json(); }).then(function(result) {
+              var h = '';
+              (result.features || []).forEach(function(f) {
+                var a = f.attributes;
+                var catColor = CAT_COLORS_HEX[a.category_num] || "#78909c";
+                var already = compareStorms.find(function(s) { return s.storm_id === a.storm_id; });
+                h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;cursor:pointer;border-radius:4px;transition:background 0.15s;' + (already ? 'opacity:0.4;' : '') + '" onmouseover="this.style.background=\'rgba(255,255,255,0.06)\'" onmouseout="this.style.background=\'none\'" data-csid="' + a.storm_id + '">' +
+                  '<span style="font-size:14px;color:#e0e0e0;">' + a.name + ' (' + a.year + ')</span>' +
+                  '<span style="padding:3px 10px;border-radius:8px;background:' + catColor + ';color:#fff;font-size:12px;font-weight:700;">' + a.category + '</span></div>';
+              });
+              compareSearchResults.innerHTML = h;
+
+              compareSearchResults.querySelectorAll('[data-csid]').forEach(function(el) {
+                el.addEventListener('click', function() {
+                  if (compareStorms.length >= 4) return;
+                  var sid = el.getAttribute('data-csid');
+                  if (compareStorms.find(function(s) { return s.storm_id === sid; })) return;
+                  var f = (result.features || []).find(function(f2) { return f2.attributes.storm_id === sid; });
+                  if (f) {
+                    compareStorms.push(f.attributes);
+                    compareSearchInput.value = "";
+                    compareSearchResults.innerHTML = "";
+                    renderCompare();
+                  }
+                });
+              });
+            });
+          }, 300);
+        });
+
+        function renderCompare() {
+          // Selected tags
+          var tags = '';
+          compareStorms.forEach(function(s, i) {
+            var col = compareColors[i % compareColors.length];
+            tags += '<span style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,255,255,0.05);border:1px solid ' + col + ';border-radius:6px;margin-right:8px;margin-bottom:6px;">' +
+              '<span style="width:10px;height:10px;border-radius:50%;background:' + col + ';"></span>' +
+              '<span style="font-size:14px;font-weight:600;color:#e0e0e0;">' + s.name + ' (' + s.year + ')</span>' +
+              '<span style="cursor:pointer;color:#888;font-size:16px;margin-left:4px;" data-remove="' + i + '">&times;</span></span>';
+          });
+          compareSelectedDiv.innerHTML = tags;
+
+          // Remove handlers
+          compareSelectedDiv.querySelectorAll('[data-remove]').forEach(function(el) {
+            el.addEventListener('click', function() {
+              compareStorms.splice(parseInt(el.getAttribute('data-remove')), 1);
+              renderCompare();
+            });
+          });
+
+          // Comparison table
+          if (compareStorms.length < 2) {
+            compareTableDiv.innerHTML = '<div style="color:#666;font-size:14px;">Add at least 2 storms to compare</div>';
+            compareShowMapBtn.style.display = 'none';
+            return;
+          }
+
+          compareShowMapBtn.style.display = 'inline-block';
+
+          var rows = [
+            { label: 'Category', key: 'category', format: function(s) { return '<span style="padding:3px 10px;border-radius:8px;background:' + (CAT_COLORS_HEX[s.category_num]||"#78909c") + ';color:#fff;font-size:12px;font-weight:700;">' + s.category + '</span>'; } },
+            { label: 'Max Wind', key: 'max_wind_mph', format: function(s) { return '<strong>' + (s.max_wind_mph||'—') + '</strong> mph / ' + (s.max_wind_kt||'—') + ' kt'; } },
+            { label: 'Min Pressure', key: 'min_pressure_mb', format: function(s) { return '<strong>' + (s.min_pressure_mb||'—') + '</strong> mb'; } },
+            { label: 'Duration', key: 'duration_hours', format: function(s) { return '<strong>' + (s.duration_hours ? (s.duration_hours/24).toFixed(1) : '—') + '</strong> days'; } },
+            { label: 'Landfalls', key: 'landfalls', format: function(s) { return '<strong>' + (s.landfalls||0) + '</strong>'; } },
+            { label: 'Retired', key: 'is_retired', format: function(s) { return s.is_retired === 1 ? '<span style="color:#ef5350;font-weight:700;">Yes</span>' : 'No'; } }
+          ];
+
+          var t = '<table style="width:100%;border-collapse:collapse;">';
+          // Header row
+          t += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><th style="padding:10px 12px;"></th>';
+          compareStorms.forEach(function(s, i) {
+            var col = compareColors[i % compareColors.length];
+            t += '<th style="padding:10px 12px;text-align:center;font-size:15px;font-weight:700;color:' + col + ';">' + s.name + '<br/><span style="font-size:12px;font-weight:400;color:#888;">' + s.year + '</span></th>';
+          });
+          t += '</tr>';
+
+          rows.forEach(function(row) {
+            t += '<tr style="border-bottom:1px solid rgba(255,255,255,0.04);">';
+            t += '<td style="padding:10px 12px;font-size:13px;color:#888;font-weight:600;text-transform:uppercase;">' + row.label + '</td>';
+            // Find best value for highlighting
+            var vals = compareStorms.map(function(s) { return s[row.key]; });
+            compareStorms.forEach(function(s, i) {
+              var isBest = false;
+              if (row.key === 'min_pressure_mb' && s[row.key] && s[row.key] === Math.min.apply(null, vals.filter(function(v) { return v && v > 0; }))) isBest = true;
+              else if (row.key !== 'min_pressure_mb' && row.key !== 'is_retired' && s[row.key] === Math.max.apply(null, vals)) isBest = true;
+              t += '<td style="padding:10px 12px;text-align:center;font-size:14px;color:#e0e0e0;' + (isBest ? 'background:rgba(79,195,247,0.08);' : '') + '">' + row.format(s) + '</td>';
+            });
+            t += '</tr>';
+          });
+          t += '</table>';
+          compareTableDiv.innerHTML = t;
+        }
+
+        // Show on map button
+        compareShowMapBtn.addEventListener('click', function() {
+          document.getElementById("intelOverlay").classList.remove("open");
+
+          // Stop any active playback
+          if (playbackActive) stopPlayback();
+          animationLayer.removeAll();
+          segmentsLayer.visible = false;
+          landfallLayer.visible = false;
+
+          // Query and draw each storm's track in its compare color
+          var allExtents = null;
+          var loaded = 0;
+
+          compareStorms.forEach(function(s, i) {
+            var col = compareColors[i % compareColors.length];
+            var rgb = hexToRgb(col);
+            var query = segmentsLayer.createQuery();
+            query.where = "storm_id = '" + s.storm_id.replace(/'/g, "''") + "'";
+            query.outFields = ["*"];
+            query.orderByFields = ["segment_num ASC"];
+            query.returnGeometry = true;
+
+            segmentsLayer.queryFeatures(query).then(function(result) {
+              result.features.forEach(function(f) {
+                // Glow
+                animationLayer.add(new Graphic({
+                  geometry: f.geometry,
+                  symbol: { type: "simple-line", color: [...rgb, 40], width: 8, cap: "round", join: "round" }
+                }));
+                // Main line
+                animationLayer.add(new Graphic({
+                  geometry: f.geometry,
+                  symbol: { type: "simple-line", color: [...rgb, 220], width: 3, cap: "round", join: "round" },
+                  attributes: f.attributes
+                }));
+                if (f.geometry && f.geometry.extent) {
+                  allExtents = allExtents ? allExtents.union(f.geometry.extent) : f.geometry.extent.clone();
+                }
+              });
+
+              loaded++;
+              if (loaded === compareStorms.length && allExtents) {
+                view.goTo({ target: allExtents }, { duration: 1200 }).catch(function() {});
+              }
+            });
+          });
+        });
+
+        // Hex to RGB helper
+        function hexToRgb(hex) {
+          hex = hex.replace('#', '');
+          return [parseInt(hex.substr(0,2),16), parseInt(hex.substr(2,2),16), parseInt(hex.substr(4,2),16)];
+        }
+
+        renderCompare();
       }
 
       function loadFinder() {
