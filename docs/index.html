@@ -271,6 +271,7 @@
   <div id="infoPanel">
     <button id="infoPanelClose">&times;</button>
     <div id="infoPanelContent"></div>
+    <div id="stormExtras"></div>
   </div>
 
   <div id="playbackBanner">
@@ -901,7 +902,7 @@
       function closeInfoPanel() {
         infoPanel.classList.remove("open");
         document.getElementById("viewDiv").classList.remove("with-panel");
-        try { view.container.style.width = ""; } catch(e) {}
+        document.getElementById("stormExtras").innerHTML = "";
       }
 
       // Track which storm_id extras are loaded to avoid redundant queries
@@ -976,10 +977,6 @@
               '<div style="font-size:11px;color:#888;">Segment ' + (a.segment_num || '') + '</div>' +
             '</div>' +
           '</div>' +
-          // Placeholder containers for async-loaded content
-          '<div id="stormStatsContainer"></div>' +
-          '<div id="narrativeContainer"></div>' +
-          '<div id="landfallContainer"></div>' +
           '<div style="padding:8px 20px 12px 20px;border-top:1px solid rgba(255,255,255,0.06);">' +
             '<div style="font-size:10px;color:#666;">NOAA NHC HURDAT2 · ' + (a.storm_id || '') + '</div>' +
           '</div>';
@@ -1010,6 +1007,9 @@
           if (features.length === 0) return;
           var sa = features[0].attributes;
 
+          // Build extras HTML
+          var extrasHtml = '';
+
           // Retired badge
           if (sa.is_retired === 1) {
             var badge = document.getElementById("retiredBadge");
@@ -1021,32 +1021,32 @@
           }
 
           // Storm stats
-          var statsDiv = document.getElementById("stormStatsContainer");
-          if (statsDiv) {
-            var durationDays = sa.duration_hours ? (sa.duration_hours / 24).toFixed(1) : "—";
-            var startF = formatDate(sa.start_date);
-            var endF = formatDate(sa.end_date);
-            statsDiv.innerHTML =
-              '<div class="storm-stats-section">' +
-                '<div class="section-label">Storm Statistics</div>' +
-                '<div class="storm-stat-row"><span class="storm-stat-label">Active Period</span><span class="storm-stat-val">' + startF + ' — ' + endF + '</span></div>' +
-                '<div class="storm-stat-row"><span class="storm-stat-label">Duration</span><span class="storm-stat-val">' + durationDays + ' days</span></div>' +
-                '<div class="storm-stat-row"><span class="storm-stat-label">Peak Wind</span><span class="storm-stat-val">' + (sa.max_wind_kt || "—") + ' kt / ' + (sa.max_wind_mph || "—") + ' mph</span></div>' +
-                '<div class="storm-stat-row"><span class="storm-stat-label">Min Pressure</span><span class="storm-stat-val">' + (sa.min_pressure_mb || "N/A") + ' mb</span></div>' +
-                '<div class="storm-stat-row"><span class="storm-stat-label">Observations</span><span class="storm-stat-val">' + (sa.observations || "—") + '</span></div>' +
-                '<div class="storm-stat-row"><span class="storm-stat-label">Landfalls</span><span class="storm-stat-val">' + (sa.landfalls || 0) + '</span></div>' +
-              '</div>';
-          }
+          var durationDays = sa.duration_hours ? (sa.duration_hours / 24).toFixed(1) : "—";
+          var startF = formatDate(sa.start_date);
+          var endF = formatDate(sa.end_date);
+          extrasHtml +=
+            '<div class="storm-stats-section">' +
+              '<div class="section-label">Storm Statistics</div>' +
+              '<div class="storm-stat-row"><span class="storm-stat-label">Active Period</span><span class="storm-stat-val">' + startF + ' — ' + endF + '</span></div>' +
+              '<div class="storm-stat-row"><span class="storm-stat-label">Duration</span><span class="storm-stat-val">' + durationDays + ' days</span></div>' +
+              '<div class="storm-stat-row"><span class="storm-stat-label">Peak Wind</span><span class="storm-stat-val">' + (sa.max_wind_kt || "—") + ' kt / ' + (sa.max_wind_mph || "—") + ' mph</span></div>' +
+              '<div class="storm-stat-row"><span class="storm-stat-label">Min Pressure</span><span class="storm-stat-val">' + (sa.min_pressure_mb || "N/A") + ' mb</span></div>' +
+              '<div class="storm-stat-row"><span class="storm-stat-label">Observations</span><span class="storm-stat-val">' + (sa.observations || "—") + '</span></div>' +
+              '<div class="storm-stat-row"><span class="storm-stat-label">Landfalls</span><span class="storm-stat-val">' + (sa.landfalls || 0) + '</span></div>' +
+            '</div>';
 
           // Narrative
-          var narDiv = document.getElementById("narrativeContainer");
-          if (narDiv && sa.narrative) {
-            narDiv.innerHTML =
+          if (sa.narrative) {
+            extrasHtml +=
               '<div class="narrative-section">' +
                 '<div class="section-label">Storm Narrative</div>' +
                 '<div class="narrative-text">' + sa.narrative + '</div>' +
               '</div>';
           }
+
+          // Set summary portion of extras
+          var extrasDiv = document.getElementById("stormExtras");
+          if (extrasDiv) extrasDiv.innerHTML = extrasHtml;
         }).catch(function(err) {
           console.error("Error loading storm summary:", err);
         });
@@ -1059,9 +1059,9 @@
           orderByFields: 'datetime ASC'
         });
         fetch(POINTS_URL + '/query?' + lfParams).then(function(r) { return r.json(); }).then(function(result) {
-          var lfDiv = document.getElementById("landfallContainer");
+          var extrasDiv = document.getElementById("stormExtras");
           var features = result.features || [];
-          if (!lfDiv || features.length === 0) return;
+          if (!extrasDiv || features.length === 0) return;
 
           var html = '<div class="landfall-section"><div class="section-label">Landfalls (' + features.length + ')</div>';
           features.forEach(function(f) {
@@ -1089,7 +1089,7 @@
               '</div>';
           });
           html += '</div>';
-          lfDiv.innerHTML = html;
+          extrasDiv.innerHTML += html;
         }).catch(function(err) {
           console.error("Error loading landfalls:", err);
         });
