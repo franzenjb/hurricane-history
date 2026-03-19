@@ -892,7 +892,9 @@
       });
 
       var is3D = false;
-      var viewPadding = { left: 300, right: 400, top: 20, bottom: 240 };
+      var viewPadding2D = { left: 300, right: 400, top: 20, bottom: 200 };
+      var viewPadding3D = { left: 300, right: 400, top: 20, bottom: 20 };
+      var viewPadding = viewPadding2D;
 
       var view = new MapView({
         container: "viewDiv",
@@ -923,6 +925,7 @@
         view.container = null;
 
         if (!is3D) {
+          viewPadding = viewPadding3D;
           view = new SceneView({
             container: "viewDiv",
             map: map,
@@ -941,6 +944,7 @@
           document.getElementById("viewToggle").textContent = "2D";
           document.getElementById("viewToggle").style.color = "#4fc3f7";
         } else {
+          viewPadding = viewPadding2D;
           view = new MapView({
             container: "viewDiv",
             map: map,
