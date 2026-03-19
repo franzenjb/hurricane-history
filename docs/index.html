@@ -259,6 +259,57 @@
     .month-bar-fill {
       height: 100%; background: #4fc3f7; border-radius: 2px; transition: width 0.4s;
     }
+    /* Tools panel tabs */
+    .tools-tabs {
+      display: flex; border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 0; overflow-x: auto;
+    }
+    .tools-tab {
+      padding: 10px 14px; font-size: 11px; font-weight: 700; color: #888;
+      text-transform: uppercase; letter-spacing: 0.3px; cursor: pointer;
+      border-bottom: 2px solid transparent; white-space: nowrap;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tools-tab:hover { color: #ccc; }
+    .tools-tab.active { color: #4fc3f7; border-bottom-color: #4fc3f7; }
+    .tools-content { padding: 14px 20px; }
+    .tools-content .record-item {
+      padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .tools-content .record-item:last-child { border-bottom: none; }
+    .tools-content .record-label { font-size: 10px; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.3px; }
+    .tools-content .record-value { font-size: 14px; font-weight: 700; color: #fff; margin-top: 2px; }
+    .tools-content .record-detail { font-size: 11px; color: #999; margin-top: 1px; }
+    .tools-content .record-clickable { cursor: pointer; border-radius: 4px; padding: 8px; margin: 0 -8px; }
+    .tools-content .record-clickable:hover { background: rgba(255,255,255,0.05); }
+
+    /* Season summary */
+    .season-input { display: flex; gap: 8px; margin-bottom: 12px; }
+    .season-input input {
+      flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; border-radius: 6px; padding: 6px 8px; font-size: 13px; outline: none;
+    }
+    .season-storm-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+      cursor: pointer;
+    }
+    .season-storm-row:hover { background: rgba(255,255,255,0.03); }
+    .season-storm-name { font-size: 12px; color: #e0e0e0; }
+    .season-storm-dates { font-size: 10px; color: #888; }
+
+    /* Landfall stats */
+    .lf-stat-bar {
+      display: flex; align-items: center; margin-bottom: 4px;
+    }
+    .lf-stat-label {
+      width: 80px; font-size: 10px; color: #ccc; text-align: right;
+      margin-right: 8px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .lf-stat-track { flex: 1; height: 14px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+    .lf-stat-fill { height: 100%; background: #FFD700; border-radius: 2px; transition: width 0.4s; }
+    .lf-stat-count { width: 30px; font-size: 10px; color: #888; text-align: left; margin-left: 4px; }
+
     /* Collapse controls during playback */
     #controlsCollapsible {
       max-height: 600px; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s;
@@ -282,10 +333,14 @@
     <div id="infoPanelContent"></div>
     <div id="stormExtras"></div>
     <div id="toolsPanel">
-      <div id="monthlyChart">
-        <div class="section-label" style="padding:14px 20px 0 20px;">Monthly Distribution</div>
-        <div id="monthBars" style="padding:8px 20px 14px 20px;"></div>
+      <div class="tools-tabs">
+        <div class="tools-tab active" data-tool="records">Records</div>
+        <div class="tools-tab" data-tool="season">Season</div>
+        <div class="tools-tab" data-tool="landfalls">Landfalls</div>
+        <div class="tools-tab" data-tool="monthly">Monthly</div>
+        <div class="tools-tab" data-tool="decades">Decades</div>
       </div>
+      <div id="toolContent"></div>
     </div>
   </div>
 
@@ -359,16 +414,6 @@
         </label>
       </div>
 
-      <div id="stats">
-        <div class="stat-row">
-          <span class="stat-label">Visible Storms</span>
-          <span class="stat-value" id="stormCount">—</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Track Segments</span>
-          <span class="stat-value" id="segCount">—</span>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -573,7 +618,7 @@
         url: SEGMENTS_URL,
         title: "Storm Track Segments",
         renderer: buildRenderer(),
-        definitionExpression: "peak_category_num >= 3 AND year >= 2000",
+        definitionExpression: "storm_id IN ('AL122005','AL142024','AL092017','AL182012')",
         popupTemplate: segmentPopupTemplate,
         outFields: ["*"]
       });
@@ -587,7 +632,7 @@
       var landfallLayer = new FeatureLayer({
         url: POINTS_URL,
         title: "Landfall Points",
-        definitionExpression: "is_landfall = 1 AND category_num >= 3 AND year >= 2000",
+        definitionExpression: "is_landfall = 1 AND storm_id IN ('AL122005','AL142024','AL092017','AL182012')",
         minScale: 18000000,
         renderer: {
           type: "unique-value",
@@ -645,29 +690,7 @@
       });
 
       // Update stats when layer view updates
-      function updateStats() {
-        view.whenLayerView(segmentsLayer).then(function(layerView) {
-          reactiveUtils.when(
-            function() { return !layerView.updating; },
-            function() {
-              layerView.queryFeatureCount().then(function(count) {
-                document.getElementById("segCount").textContent = count.toLocaleString();
-              });
-              var query = segmentsLayer.createQuery();
-              query.where = segmentsLayer.definitionExpression;
-              query.outStatistics = [{
-                statisticType: "count",
-                onStatisticField: "storm_id",
-                outStatisticFieldName: "storm_count"
-              }];
-              query.groupByFieldsForStatistics = ["storm_id"];
-              segmentsLayer.queryFeatures(query).then(function(result) {
-                document.getElementById("stormCount").textContent = result.features.length.toLocaleString();
-              });
-            }
-          );
-        });
-      }
+      function updateStats() { /* removed — stats display removed */ }
 
       // Filter controls
       function applyFilter() {
@@ -684,56 +707,16 @@
         updateStats();
       }
 
-      document.getElementById("catFilter").addEventListener("change", function() { applyFilter(); updateMonthlyChart(); });
-      document.getElementById("yearStart").addEventListener("change", function() { applyFilter(); updateMonthlyChart(); });
-      document.getElementById("yearEnd").addEventListener("change", function() { applyFilter(); updateMonthlyChart(); });
+      document.getElementById("catFilter").addEventListener("change", applyFilter);
+      document.getElementById("yearStart").addEventListener("change", applyFilter);
+      document.getElementById("yearEnd").addEventListener("change", applyFilter);
 
       // Landfall toggle
       document.getElementById("landfallToggle").addEventListener("change", function(e) {
         landfallLayer.visible = e.target.checked;
       });
 
-      // Monthly distribution chart
       var MONTH_ABBRS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-      function updateMonthlyChart() {
-        var minCat = parseInt(document.getElementById("catFilter").value);
-        var yearStart = parseInt(document.getElementById("yearStart").value);
-        var yearEnd = parseInt(document.getElementById("yearEnd").value);
-
-        var query = summaryTable.createQuery();
-        query.where = "category_num >= " + minCat + " AND year >= " + yearStart + " AND year <= " + yearEnd;
-        query.outFields = ["month"];
-        query.returnGeometry = false;
-
-        summaryTable.queryFeatures(query).then(function(result) {
-          var counts = {};
-          for (var i = 1; i <= 12; i++) counts[i] = 0;
-          result.features.forEach(function(f) {
-            var m = f.attributes.month;
-            if (m >= 1 && m <= 12) counts[m]++;
-          });
-
-          var maxCount = Math.max.apply(null, Object.values(counts)) || 1;
-          var barsHtml = "";
-          for (var m = 1; m <= 12; m++) {
-            var pct = Math.round((counts[m] / maxCount) * 100);
-            var isHurricaneSeason = (m >= 6 && m <= 11);
-            var barColor = isHurricaneSeason ? "#4fc3f7" : "rgba(255,255,255,0.15)";
-            barsHtml +=
-              '<div class="month-bar-row">' +
-                '<span class="month-bar-label">' + MONTH_ABBRS[m-1] + '</span>' +
-                '<div class="month-bar-track">' +
-                  '<div class="month-bar-fill" style="width:' + pct + '%;background:' + barColor + ';"></div>' +
-                '</div>' +
-                '<span class="month-bar-count">' + (counts[m] > 0 ? counts[m] : "") + '</span>' +
-              '</div>';
-          }
-          document.getElementById("monthBars").innerHTML = barsHtml;
-        }).catch(function(err) {
-          console.error("Monthly chart error:", err);
-        });
-      }
 
       // Animate Storm Path toggle — dims the base segments layer during playback-style viewing
       document.getElementById("animToggle").addEventListener("change", function(e) {
@@ -1364,6 +1347,251 @@
         });
       }
 
+      // ========== RIGHT PANEL TOOLS ==========
+      var toolContent = document.getElementById("toolContent");
+      var FEATURED_IDS = "'AL122005','AL142024','AL092017','AL182012'";
+
+      // Tab switching
+      document.querySelectorAll(".tools-tab").forEach(function(tab) {
+        tab.addEventListener("click", function() {
+          document.querySelectorAll(".tools-tab").forEach(function(t) { t.classList.remove("active"); });
+          tab.classList.add("active");
+          loadTool(tab.getAttribute("data-tool"));
+        });
+      });
+
+      function loadTool(name) {
+        toolContent.innerHTML = '<div class="tools-content" style="color:#888;font-size:12px;">Loading...</div>';
+        if (name === "records") loadRecords();
+        else if (name === "season") loadSeasonTool();
+        else if (name === "landfalls") loadLandfallStats();
+        else if (name === "monthly") loadMonthlyChart();
+        else if (name === "decades") loadDecadeTrends();
+      }
+
+      function loadRecords() {
+        var url = SUMMARY_URL + '/query?' + new URLSearchParams({
+          f: 'json', where: '1=1', outFields: 'storm_id,name,year,category,category_num,max_wind_kt,max_wind_mph,min_pressure_mb,duration_hours,landfalls,is_retired',
+          returnGeometry: 'false', orderByFields: 'max_wind_kt DESC', resultRecordCount: '2000'
+        });
+        fetch(url).then(function(r) { return r.json(); }).then(function(result) {
+          var storms = result.features.map(function(f) { return f.attributes; });
+          // Compute records
+          var strongest = storms[0]; // already sorted by wind DESC
+          var lowestPres = storms.filter(function(s) { return s.min_pressure_mb && s.min_pressure_mb > 0; })
+            .sort(function(a,b) { return a.min_pressure_mb - b.min_pressure_mb; })[0];
+          var longest = storms.slice().sort(function(a,b) { return b.duration_hours - a.duration_hours; })[0];
+          var mostLandfalls = storms.slice().sort(function(a,b) { return b.landfalls - a.landfalls; })[0];
+          var cat5s = storms.filter(function(s) { return s.category_num === 5; });
+          var retiredCount = storms.filter(function(s) { return s.is_retired === 1; }).length;
+
+          function recordHtml(label, name, year, detail, stormId) {
+            return '<div class="record-item record-clickable" data-sid="' + stormId + '">' +
+              '<div class="record-label">' + label + '</div>' +
+              '<div class="record-value">' + name + ' (' + year + ')</div>' +
+              '<div class="record-detail">' + detail + '</div>' +
+            '</div>';
+          }
+
+          var html = '<div class="tools-content">';
+          html += recordHtml('Strongest Wind', strongest.name, strongest.year,
+            strongest.max_wind_kt + ' kt / ' + strongest.max_wind_mph + ' mph', strongest.storm_id);
+          html += recordHtml('Lowest Pressure', lowestPres.name, lowestPres.year,
+            lowestPres.min_pressure_mb + ' mb', lowestPres.storm_id);
+          html += recordHtml('Longest Duration', longest.name, longest.year,
+            (longest.duration_hours / 24).toFixed(1) + ' days (' + longest.duration_hours + ' hrs)', longest.storm_id);
+          html += recordHtml('Most Landfalls', mostLandfalls.name, mostLandfalls.year,
+            mostLandfalls.landfalls + ' landfalls', mostLandfalls.storm_id);
+
+          html += '<div class="record-item"><div class="record-label">Category 5 Storms</div>' +
+            '<div class="record-value">' + cat5s.length + ' storms</div>' +
+            '<div class="record-detail">' + cat5s.slice(0,8).map(function(s) { return s.name + ' ' + s.year; }).join(', ') +
+            (cat5s.length > 8 ? '...' : '') + '</div></div>';
+
+          html += '<div class="record-item"><div class="record-label">Retired Names</div>' +
+            '<div class="record-value">' + retiredCount + ' storms</div>' +
+            '<div class="record-detail">Names so devastating they were permanently retired</div></div>';
+
+          html += '<div class="record-item"><div class="record-label">Total Storms (1851-2025)</div>' +
+            '<div class="record-value">' + storms.length.toLocaleString() + '</div></div>';
+
+          html += '</div>';
+          toolContent.innerHTML = html;
+
+          // Click to play
+          toolContent.querySelectorAll('.record-clickable').forEach(function(el) {
+            el.addEventListener('click', function() {
+              var sid = el.getAttribute('data-sid');
+              var s = storms.find(function(st) { return st.storm_id === sid; });
+              if (s) {
+                selectedStorm = { storm_id: s.storm_id, name: s.name, year: s.year, peak_category: s.category, peak_category_num: s.category_num };
+                playBtn.disabled = false;
+                playBtn.textContent = "Play " + s.name + " (" + s.year + ")";
+                searchInput.value = s.name;
+              }
+            });
+          });
+        });
+      }
+
+      function loadSeasonTool() {
+        var html = '<div class="tools-content">' +
+          '<div class="season-input"><input type="number" id="seasonYear" value="2024" min="1851" max="2025" />' +
+          '<button style="background:#4fc3f7;color:#1a1a2e;border:none;border-radius:6px;padding:6px 14px;font-weight:700;font-size:12px;cursor:pointer;">GO</button></div>' +
+          '<div id="seasonResults"></div></div>';
+        toolContent.innerHTML = html;
+
+        function querySeason(yr) {
+          var url = SUMMARY_URL + '/query?' + new URLSearchParams({
+            f: 'json', where: 'year = ' + yr,
+            outFields: 'storm_id,name,year,category,category_num,max_wind_kt,start_date,end_date,landfalls,is_retired',
+            returnGeometry: 'false', orderByFields: 'start_date ASC'
+          });
+          fetch(url).then(function(r) { return r.json(); }).then(function(result) {
+            var storms = result.features.map(function(f) { return f.attributes; });
+            var el = document.getElementById("seasonResults");
+            if (storms.length === 0) { el.innerHTML = '<div style="color:#888;font-size:12px;">No storms found for ' + yr + '</div>'; return; }
+
+            var hurricanes = storms.filter(function(s) { return s.category_num >= 1; }).length;
+            var majors = storms.filter(function(s) { return s.category_num >= 3; }).length;
+
+            var h = '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">' + yr + ' Atlantic Season</div>';
+            h += '<div style="font-size:11px;color:#888;margin-bottom:10px;">' + storms.length + ' storms · ' + hurricanes + ' hurricanes · ' + majors + ' major</div>';
+
+            storms.forEach(function(s) {
+              var catColor = CAT_COLORS_HEX[s.category_num] || "#78909c";
+              var retired = s.is_retired === 1 ? ' <span style="font-size:9px;color:#ef5350;">RETIRED</span>' : '';
+              h += '<div class="season-storm-row" data-sid="' + s.storm_id + '">' +
+                '<div><span class="season-storm-name">' + s.name + retired + '</span><br/>' +
+                '<span class="season-storm-dates">' + formatDate(s.start_date) + ' — ' + formatDate(s.end_date) + '</span></div>' +
+                '<span class="storm-cat" style="background:' + catColor + ';color:#fff;font-size:10px;padding:2px 8px;border-radius:8px;">' + s.category + '</span></div>';
+            });
+            el.innerHTML = h;
+
+            el.querySelectorAll('.season-storm-row').forEach(function(row) {
+              row.addEventListener('click', function() {
+                var sid = row.getAttribute('data-sid');
+                var s = storms.find(function(st) { return st.storm_id === sid; });
+                if (s) {
+                  selectedStorm = { storm_id: s.storm_id, name: s.name, year: s.year, peak_category: s.category, peak_category_num: s.category_num };
+                  playBtn.disabled = false;
+                  playBtn.textContent = "Play " + s.name + " (" + s.year + ")";
+                  searchInput.value = s.name;
+                }
+              });
+            });
+          });
+        }
+
+        document.getElementById("seasonYear").parentElement.querySelector("button").addEventListener("click", function() {
+          querySeason(parseInt(document.getElementById("seasonYear").value));
+        });
+        querySeason(2024);
+      }
+
+      function loadLandfallStats() {
+        var url = POINTS_URL + '/query?' + new URLSearchParams({
+          f: 'json', where: "is_landfall = 1 AND landfall_state <> ''",
+          outFields: 'landfall_state', returnGeometry: 'false', resultRecordCount: '2000'
+        });
+        fetch(url).then(function(r) { return r.json(); }).then(function(result) {
+          var counts = {};
+          result.features.forEach(function(f) {
+            var st = f.attributes.landfall_state;
+            if (st) counts[st] = (counts[st] || 0) + 1;
+          });
+          var sorted = Object.entries(counts).sort(function(a,b) { return b[1] - a[1]; });
+          var max = sorted[0] ? sorted[0][1] : 1;
+
+          var html = '<div class="tools-content">';
+          html += '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Landfall Locations</div>';
+          html += '<div style="font-size:11px;color:#888;margin-bottom:12px;">All-time landfall counts by state/country</div>';
+
+          sorted.slice(0, 20).forEach(function(entry) {
+            var pct = Math.round((entry[1] / max) * 100);
+            html += '<div class="lf-stat-bar">' +
+              '<span class="lf-stat-label">' + entry[0] + '</span>' +
+              '<div class="lf-stat-track"><div class="lf-stat-fill" style="width:' + pct + '%;"></div></div>' +
+              '<span class="lf-stat-count">' + entry[1] + '</span></div>';
+          });
+          html += '</div>';
+          toolContent.innerHTML = html;
+        });
+      }
+
+      function loadMonthlyChart() {
+        var minCat = parseInt(document.getElementById("catFilter").value);
+        var yearStart = parseInt(document.getElementById("yearStart").value);
+        var yearEnd = parseInt(document.getElementById("yearEnd").value);
+        var url = SUMMARY_URL + '/query?' + new URLSearchParams({
+          f: 'json', where: 'category_num >= ' + minCat + ' AND year >= ' + yearStart + ' AND year <= ' + yearEnd,
+          outFields: 'month', returnGeometry: 'false', resultRecordCount: '5000'
+        });
+        fetch(url).then(function(r) { return r.json(); }).then(function(result) {
+          var counts = {}; for (var i = 1; i <= 12; i++) counts[i] = 0;
+          result.features.forEach(function(f) { var m = f.attributes.month; if (m >= 1 && m <= 12) counts[m]++; });
+          var maxCount = Math.max.apply(null, Object.values(counts)) || 1;
+          var html = '<div class="tools-content">';
+          html += '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Monthly Distribution</div>';
+          html += '<div style="font-size:11px;color:#888;margin-bottom:12px;">Storm formation by month (current filter)</div>';
+          for (var m = 1; m <= 12; m++) {
+            var pct = Math.round((counts[m] / maxCount) * 100);
+            var isHurr = (m >= 6 && m <= 11);
+            var barColor = isHurr ? "#4fc3f7" : "rgba(255,255,255,0.15)";
+            html += '<div class="month-bar-row"><span class="month-bar-label">' + MONTH_ABBRS[m-1] + '</span>' +
+              '<div class="month-bar-track"><div class="month-bar-fill" style="width:' + pct + '%;background:' + barColor + ';"></div></div>' +
+              '<span class="month-bar-count">' + (counts[m] > 0 ? counts[m] : "") + '</span></div>';
+          }
+          html += '</div>';
+          toolContent.innerHTML = html;
+        });
+      }
+
+      function loadDecadeTrends() {
+        var url = SUMMARY_URL + '/query?' + new URLSearchParams({
+          f: 'json', where: '1=1', outFields: 'year,category_num', returnGeometry: 'false', resultRecordCount: '5000'
+        });
+        fetch(url).then(function(r) { return r.json(); }).then(function(result) {
+          var decades = {};
+          result.features.forEach(function(f) {
+            var a = f.attributes;
+            var dec = Math.floor(a.year / 10) * 10;
+            if (!decades[dec]) decades[dec] = { total: 0, hurricanes: 0, major: 0 };
+            decades[dec].total++;
+            if (a.category_num >= 1) decades[dec].hurricanes++;
+            if (a.category_num >= 3) decades[dec].major++;
+          });
+
+          var sorted = Object.keys(decades).sort();
+          var maxTotal = Math.max.apply(null, sorted.map(function(d) { return decades[d].total; }));
+
+          var html = '<div class="tools-content">';
+          html += '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Decade Trends</div>';
+          html += '<div style="font-size:11px;color:#888;margin-bottom:12px;">Storm counts by decade (all categories)</div>';
+
+          sorted.forEach(function(dec) {
+            var d = decades[dec];
+            var totalW = Math.round((d.total / maxTotal) * 100);
+            var hurrW = Math.round((d.hurricanes / maxTotal) * 100);
+            var majorW = Math.round((d.major / maxTotal) * 100);
+            html += '<div style="margin-bottom:6px;">' +
+              '<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px;">' +
+                '<span style="color:#ccc;font-weight:700;">' + dec + 's</span>' +
+                '<span style="color:#888;">' + d.total + ' storms · ' + d.hurricanes + ' hurr · ' + d.major + ' major</span>' +
+              '</div>' +
+              '<div style="display:flex;gap:2px;height:10px;">' +
+                '<div style="width:' + totalW + '%;background:#78909c;border-radius:2px;" title="All storms"></div>' +
+              '</div>' +
+            '</div>';
+          });
+
+          html += '<div style="margin-top:10px;display:flex;gap:12px;font-size:9px;color:#888;">' +
+            '<span><span style="display:inline-block;width:8px;height:8px;background:#78909c;border-radius:1px;margin-right:3px;"></span>All Storms</span></div>';
+          html += '</div>';
+          toolContent.innerHTML = html;
+        });
+      }
+
       // Show info panel with tools on load
       infoPanel.classList.add("open");
       document.getElementById("viewDiv").classList.add("with-panel");
@@ -1376,29 +1604,8 @@
       // Pre-populate featured storms
       loadFeaturedStorms();
 
-      view.when(function() {
-        console.log("View ready");
-        updateStats();
-        updateMonthlyChart();
-      }).catch(function(err) {
-        console.warn("View when error (non-fatal):", err);
-        updateMonthlyChart();
-      });
-
-      // Also trigger chart + stats once segments layer is visible
-      view.whenLayerView(segmentsLayer).then(function(layerView) {
-        reactiveUtils.when(
-          function() { return !layerView.updating; },
-          function() {
-            updateStats();
-            if (document.getElementById("monthBars").innerHTML === "") {
-              updateMonthlyChart();
-            }
-          }
-        );
-      }).catch(function(err) {
-        console.warn("Segments layer view error:", err);
-      });
+      // Load default tool (Records) on startup
+      loadTool("records");
     });
   </script>
 </body>
