@@ -292,6 +292,111 @@
     .lf-stat-fill { height: 100%; background: #FFD700; border-radius: 2px; transition: width 0.4s; }
     .lf-stat-count { width: 30px; font-size: 10px; color: #888; text-align: left; margin-left: 4px; }
 
+    /* Intelligence modal */
+    #intelBtn {
+      position: absolute; top: 16px; right: 16px; z-index: 12;
+      background: rgba(79,195,247,0.15); border: 1px solid rgba(79,195,247,0.4);
+      color: #4fc3f7; border-radius: 8px; padding: 8px 16px;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      backdrop-filter: blur(8px); transition: all 0.2s;
+    }
+    #intelBtn:hover { background: rgba(79,195,247,0.25); color: #fff; }
+    #intelOverlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+      z-index: 100; justify-content: center; align-items: center;
+    }
+    #intelOverlay.open { display: flex; }
+    #intelModal {
+      width: 80%; height: 80%; max-width: 1100px;
+      background: rgba(20, 20, 40, 0.98); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    #intelModal .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    #intelModal .modal-title { font-size: 18px; font-weight: 700; color: #fff; }
+    #intelModal .modal-close {
+      background: none; border: none; color: #888; font-size: 22px; cursor: pointer; line-height: 1;
+    }
+    #intelModal .modal-close:hover { color: #fff; }
+    #intelModal .modal-tabs {
+      display: flex; border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 0 24px;
+    }
+    #intelModal .modal-tab {
+      padding: 12px 18px; font-size: 12px; font-weight: 700; color: #888;
+      text-transform: uppercase; letter-spacing: 0.4px; cursor: pointer;
+      border-bottom: 2px solid transparent; transition: all 0.2s;
+    }
+    #intelModal .modal-tab:hover { color: #ccc; }
+    #intelModal .modal-tab.active { color: #4fc3f7; border-bottom-color: #4fc3f7; }
+    #intelModal .modal-body {
+      flex: 1; overflow-y: auto; padding: 24px;
+    }
+
+    /* Record cards */
+    .record-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px; padding: 16px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 16px; cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .record-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); }
+    .record-card .rc-icon {
+      width: 48px; height: 48px; border-radius: 10px; display: flex;
+      align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+    }
+    .record-card .rc-info { flex: 1; }
+    .record-card .rc-label { font-size: 10px; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.4px; }
+    .record-card .rc-value { font-size: 18px; font-weight: 700; color: #fff; margin-top: 2px; }
+    .record-card .rc-detail { font-size: 12px; color: #999; margin-top: 2px; }
+    .record-card .rc-stat {
+      text-align: right; flex-shrink: 0;
+    }
+    .record-card .rc-stat-num { font-size: 24px; font-weight: 700; line-height: 1; }
+    .record-card .rc-stat-unit { font-size: 10px; color: #888; text-transform: uppercase; }
+
+    /* Records grid for summary stats */
+    .records-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px;
+    }
+    .records-grid .rg-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px; padding: 14px; text-align: center;
+    }
+    .records-grid .rg-num { font-size: 28px; font-weight: 700; color: #fff; }
+    .records-grid .rg-label { font-size: 10px; color: #888; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.3px; }
+
+    /* Season table in modal */
+    .season-table { width: 100%; border-collapse: collapse; }
+    .season-table th {
+      text-align: left; font-size: 10px; color: #888; text-transform: uppercase;
+      padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.1); letter-spacing: 0.3px;
+    }
+    .season-table td {
+      padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 13px; color: #e0e0e0;
+    }
+    .season-table tr { cursor: pointer; transition: background 0.15s; }
+    .season-table tr:hover { background: rgba(255,255,255,0.04); }
+
+    /* Landfall bars in modal — wider */
+    .lf-modal-bar { display: flex; align-items: center; margin-bottom: 6px; }
+    .lf-modal-label { width: 120px; font-size: 12px; color: #ccc; text-align: right; margin-right: 12px; }
+    .lf-modal-track { flex: 1; height: 20px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+    .lf-modal-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+    .lf-modal-count { width: 40px; font-size: 12px; color: #999; margin-left: 8px; font-weight: 700; }
+
+    /* Decade chart bars in modal */
+    .decade-row { margin-bottom: 8px; }
+    .decade-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+    .decade-bars { display: flex; gap: 2px; height: 16px; }
+    .decade-bar { border-radius: 2px; transition: width 0.4s; }
+
     /* Map options (basemap switcher) */
     #mapOptions {
       position: absolute; bottom: 30px; left: 260px; z-index: 10;
@@ -318,21 +423,29 @@
 </head>
 <body>
   <div id="viewDiv"></div>
+  <button id="intelBtn">Intelligence</button>
+
+  <div id="intelOverlay">
+    <div id="intelModal">
+      <div class="modal-header">
+        <span class="modal-title">Hurricane Intelligence</span>
+        <button class="modal-close" id="intelClose">&times;</button>
+      </div>
+      <div class="modal-tabs">
+        <div class="modal-tab active" data-mtool="records">Records</div>
+        <div class="modal-tab" data-mtool="season">Season</div>
+        <div class="modal-tab" data-mtool="landfalls">Landfalls</div>
+        <div class="modal-tab" data-mtool="monthly">Monthly</div>
+        <div class="modal-tab" data-mtool="decades">Decades</div>
+      </div>
+      <div class="modal-body" id="modalContent"></div>
+    </div>
+  </div>
 
   <div id="infoPanel">
     <button id="infoPanelClose">&times;</button>
     <div id="infoPanelContent"></div>
     <div id="stormExtras"></div>
-    <div id="toolsPanel">
-      <div class="tools-tabs">
-        <div class="tools-tab active" data-tool="records">Records</div>
-        <div class="tools-tab" data-tool="season">Season</div>
-        <div class="tools-tab" data-tool="landfalls">Landfalls</div>
-        <div class="tools-tab" data-tool="monthly">Monthly</div>
-        <div class="tools-tab" data-tool="decades">Decades</div>
-      </div>
-      <div id="toolContent"></div>
-    </div>
   </div>
 
 
@@ -462,11 +575,12 @@
         if (typeof val === "number" || /^\d{10,13}$/.test(String(val))) {
           var d = new Date(typeof val === "number" ? val : parseInt(val));
           if (isNaN(d.getTime())) return String(val);
+          // Convert UTC to EST (UTC-5)
+          var est = new Date(d.getTime() - 5 * 60 * 60 * 1000);
           var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-          return months[d.getUTCMonth()] + " " + d.getUTCDate() + ", " + d.getUTCFullYear() +
-            " " + String(d.getUTCHours()).padStart(2,"0") + ":" + String(d.getUTCMinutes()).padStart(2,"0") + "Z";
+          return months[est.getUTCMonth()] + " " + est.getUTCDate() + ", " + est.getUTCFullYear() +
+            " " + String(est.getUTCHours()).padStart(2,"0") + ":" + String(est.getUTCMinutes()).padStart(2,"0") + " EST";
         }
-        // Already a readable string
         return String(val);
       }
 
@@ -1353,15 +1467,29 @@
       }
 
       // ========== RIGHT PANEL TOOLS ==========
-      var toolContent = document.getElementById("toolContent");
+      var toolContent = document.getElementById("modalContent");
       var FEATURED_IDS = "'AL122005','AL142024','AL092017','AL182012'";
 
-      // Tab switching
-      document.querySelectorAll(".tools-tab").forEach(function(tab) {
+      // Modal open/close
+      document.getElementById("intelBtn").addEventListener("click", function() {
+        document.getElementById("intelOverlay").classList.add("open");
+        loadTool("records");
+      });
+      document.getElementById("intelClose").addEventListener("click", function() {
+        document.getElementById("intelOverlay").classList.remove("open");
+      });
+      document.getElementById("intelOverlay").addEventListener("click", function(e) {
+        if (e.target === document.getElementById("intelOverlay")) {
+          document.getElementById("intelOverlay").classList.remove("open");
+        }
+      });
+
+      // Modal tab switching
+      document.querySelectorAll(".modal-tab").forEach(function(tab) {
         tab.addEventListener("click", function() {
-          document.querySelectorAll(".tools-tab").forEach(function(t) { t.classList.remove("active"); });
+          document.querySelectorAll(".modal-tab").forEach(function(t) { t.classList.remove("active"); });
           tab.classList.add("active");
-          loadTool(tab.getAttribute("data-tool"));
+          loadTool(tab.getAttribute("data-mtool"));
         });
       });
 
@@ -1381,50 +1509,65 @@
         });
         fetch(url).then(function(r) { return r.json(); }).then(function(result) {
           var storms = result.features.map(function(f) { return f.attributes; });
-          // Compute records
-          var strongest = storms[0]; // already sorted by wind DESC
+          var strongest = storms[0];
           var lowestPres = storms.filter(function(s) { return s.min_pressure_mb && s.min_pressure_mb > 0; })
             .sort(function(a,b) { return a.min_pressure_mb - b.min_pressure_mb; })[0];
           var longest = storms.slice().sort(function(a,b) { return b.duration_hours - a.duration_hours; })[0];
           var mostLandfalls = storms.slice().sort(function(a,b) { return b.landfalls - a.landfalls; })[0];
           var cat5s = storms.filter(function(s) { return s.category_num === 5; });
           var retiredCount = storms.filter(function(s) { return s.is_retired === 1; }).length;
+          var hurricaneCount = storms.filter(function(s) { return s.category_num >= 1; }).length;
+          var majorCount = storms.filter(function(s) { return s.category_num >= 3; }).length;
 
-          function recordHtml(label, name, year, detail, stormId) {
-            return '<div class="record-item record-clickable" data-sid="' + stormId + '">' +
-              '<div class="record-label">' + label + '</div>' +
-              '<div class="record-value">' + name + ' (' + year + ')</div>' +
-              '<div class="record-detail">' + detail + '</div>' +
-            '</div>';
+          function card(icon, bg, label, name, year, detail, stat, unit, sid) {
+            return '<div class="record-card" ' + (sid ? 'data-sid="' + sid + '"' : '') + '>' +
+              '<div class="rc-icon" style="background:' + bg + ';">' + icon + '</div>' +
+              '<div class="rc-info"><div class="rc-label">' + label + '</div>' +
+              '<div class="rc-value">' + name + (year ? ' (' + year + ')' : '') + '</div>' +
+              '<div class="rc-detail">' + detail + '</div></div>' +
+              '<div class="rc-stat"><div class="rc-stat-num" style="color:' + bg + ';">' + stat + '</div>' +
+              '<div class="rc-stat-unit">' + unit + '</div></div></div>';
           }
 
-          var html = '<div class="tools-content">';
-          html += recordHtml('Strongest Wind', strongest.name, strongest.year,
-            strongest.max_wind_kt + ' kt / ' + strongest.max_wind_mph + ' mph', strongest.storm_id);
-          html += recordHtml('Lowest Pressure', lowestPres.name, lowestPres.year,
-            lowestPres.min_pressure_mb + ' mb', lowestPres.storm_id);
-          html += recordHtml('Longest Duration', longest.name, longest.year,
-            (longest.duration_hours / 24).toFixed(1) + ' days (' + longest.duration_hours + ' hrs)', longest.storm_id);
-          html += recordHtml('Most Landfalls', mostLandfalls.name, mostLandfalls.year,
-            mostLandfalls.landfalls + ' landfalls', mostLandfalls.storm_id);
+          var html = '';
+          html += card('💨', '#ef5350', 'Strongest Wind', strongest.name, strongest.year,
+            strongest.category + ' · ' + strongest.max_wind_mph + ' mph',
+            strongest.max_wind_kt, 'knots', strongest.storm_id);
 
-          html += '<div class="record-item"><div class="record-label">Category 5 Storms</div>' +
-            '<div class="record-value">' + cat5s.length + ' storms</div>' +
-            '<div class="record-detail">' + cat5s.slice(0,8).map(function(s) { return s.name + ' ' + s.year; }).join(', ') +
-            (cat5s.length > 8 ? '...' : '') + '</div></div>';
+          html += card('🌀', '#7b1fa2', 'Lowest Pressure', lowestPres.name, lowestPres.year,
+            lowestPres.category,
+            lowestPres.min_pressure_mb, 'mb', lowestPres.storm_id);
 
-          html += '<div class="record-item"><div class="record-label">Retired Names</div>' +
-            '<div class="record-value">' + retiredCount + ' storms</div>' +
-            '<div class="record-detail">Names so devastating they were permanently retired</div></div>';
+          html += card('⏱', '#1565C0', 'Longest Duration', longest.name, longest.year,
+            longest.category + ' · ' + longest.duration_hours + ' hours',
+            (longest.duration_hours / 24).toFixed(0), 'days', longest.storm_id);
 
-          html += '<div class="record-item"><div class="record-label">Total Storms (1851-2025)</div>' +
-            '<div class="record-value">' + storms.length.toLocaleString() + '</div></div>';
+          html += card('🎯', '#FFD700', 'Most Landfalls', mostLandfalls.name, mostLandfalls.year,
+            mostLandfalls.category,
+            mostLandfalls.landfalls, 'hits', mostLandfalls.storm_id);
 
-          html += '</div>';
+          // Summary grid
+          html += '<div class="records-grid">' +
+            '<div class="rg-card"><div class="rg-num">' + storms.length.toLocaleString() + '</div><div class="rg-label">Total Storms</div></div>' +
+            '<div class="rg-card"><div class="rg-num">' + hurricaneCount.toLocaleString() + '</div><div class="rg-label">Hurricanes</div></div>' +
+            '<div class="rg-card"><div class="rg-num">' + majorCount + '</div><div class="rg-label">Major (Cat 3+)</div></div>' +
+            '<div class="rg-card"><div class="rg-num" style="color:#7f0000;">' + cat5s.length + '</div><div class="rg-label">Category 5</div></div>' +
+            '<div class="rg-card"><div class="rg-num" style="color:#ef5350;">' + retiredCount + '</div><div class="rg-label">Retired Names</div></div>' +
+            '<div class="rg-card"><div class="rg-num">174</div><div class="rg-label">Years of Data</div></div>' +
+          '</div>';
+
+          // Cat 5 list
+          html += '<div style="margin-top:16px;"><div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;margin-bottom:8px;">Category 5 Storms</div>';
+          html += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+          cat5s.forEach(function(s) {
+            html += '<span style="padding:4px 10px;background:rgba(127,0,0,0.2);border:1px solid rgba(127,0,0,0.4);border-radius:6px;font-size:11px;color:#ef9a9a;cursor:pointer;" data-sid="' + s.storm_id + '">' + s.name + ' ' + s.year + '</span>';
+          });
+          html += '</div></div>';
+
           toolContent.innerHTML = html;
 
           // Click to play
-          toolContent.querySelectorAll('.record-clickable').forEach(function(el) {
+          toolContent.querySelectorAll('[data-sid]').forEach(function(el) {
             el.addEventListener('click', function() {
               var sid = el.getAttribute('data-sid');
               var s = storms.find(function(st) { return st.storm_id === sid; });
@@ -1433,6 +1576,7 @@
                 playBtn.disabled = false;
                 playBtn.textContent = "Play " + s.name + " (" + s.year + ")";
                 searchInput.value = s.name;
+                document.getElementById("intelOverlay").classList.remove("open");
               }
             });
           });
@@ -1597,20 +1741,8 @@
         });
       }
 
-      // Show info panel with tools on load
-      infoPanel.classList.add("open");
-      document.getElementById("viewDiv").classList.add("with-panel");
-      infoPanelContent.innerHTML =
-        '<div style="padding:20px 20px 10px 20px;">' +
-          '<div style="font-size:18px;font-weight:700;color:#fff;">Hurricane Intelligence</div>' +
-          '<div style="font-size:12px;color:#888;margin-top:4px;">Select a storm from the left panel to explore its track, narrative, and landfall details.</div>' +
-        '</div>';
-
       // Pre-populate featured storms
       loadFeaturedStorms();
-
-      // Load default tool (Records) on startup
-      loadTool("records");
 
     });
   </script>
