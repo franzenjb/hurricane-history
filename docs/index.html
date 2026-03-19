@@ -496,8 +496,24 @@
       <div class="control-group">
         <label>Year Range</label>
         <div style="display:flex;gap:8px;">
-          <input type="number" id="yearStart" value="2000" min="1851" max="2025" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;" />
-          <input type="number" id="yearEnd" value="2025" min="1851" max="2025" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;" />
+          <select id="yearStart" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;">
+            <option value="2020">2020</option><option value="2010">2010</option>
+            <option value="2000" selected>2000</option><option value="1990">1990</option>
+            <option value="1980">1980</option><option value="1970">1970</option>
+            <option value="1960">1960</option><option value="1950">1950</option>
+            <option value="1940">1940</option><option value="1930">1930</option>
+            <option value="1920">1920</option><option value="1900">1900</option>
+            <option value="1851">1851</option>
+          </select>
+          <select id="yearEnd" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;">
+            <option value="2025" selected>2025</option><option value="2020">2020</option>
+            <option value="2010">2010</option><option value="2000">2000</option>
+            <option value="1990">1990</option><option value="1980">1980</option>
+            <option value="1970">1970</option><option value="1960">1960</option>
+            <option value="1950">1950</option><option value="1940">1940</option>
+            <option value="1930">1930</option><option value="1920">1920</option>
+            <option value="1900">1900</option>
+          </select>
         </div>
       </div>
 
@@ -1749,7 +1765,9 @@
 
       function loadSeasonTool() {
         var html = '<div class="tools-content">' +
-          '<div class="season-input"><input type="number" id="seasonYear" value="2024" min="1851" max="2025" />' +
+          '<div class="season-input"><select id="seasonYear" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:14px;">';
+        for (var sy = 2025; sy >= 1851; sy--) html += '<option value="' + sy + '"' + (sy === 2024 ? ' selected' : '') + '>' + sy + '</option>';
+        html += '</select>' +
           '<button style="background:#4fc3f7;color:#1a1a2e;border:none;border-radius:6px;padding:6px 14px;font-weight:700;font-size:12px;cursor:pointer;">GO</button></div>' +
           '<div id="seasonResults"></div></div>';
         toolContent.innerHTML = html;
@@ -2180,9 +2198,13 @@
 
         // Year range
         html += '<div style="flex:1;min-width:100px;"><label style="display:block;font-size:12px;color:#888;text-transform:uppercase;font-weight:600;margin-bottom:5px;">From Year</label>' +
-          '<input type="number" id="finderYearFrom" value="1851" min="1851" max="2025" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:8px 10px;font-size:14px;outline:none;" /></div>';
+          '<select id="finderYearFrom" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:8px 10px;font-size:14px;outline:none;">';
+        for (var yy = 2025; yy >= 1851; yy--) html += '<option value="' + yy + '"' + (yy === 1851 ? ' selected' : '') + '>' + yy + '</option>';
+        html += '</select></div>';
         html += '<div style="flex:1;min-width:100px;"><label style="display:block;font-size:12px;color:#888;text-transform:uppercase;font-weight:600;margin-bottom:5px;">To Year</label>' +
-          '<input type="number" id="finderYearTo" value="2025" min="1851" max="2025" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:8px 10px;font-size:14px;outline:none;" /></div>';
+          '<select id="finderYearTo" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:8px 10px;font-size:14px;outline:none;">';
+        for (var yy2 = 2025; yy2 >= 1851; yy2--) html += '<option value="' + yy2 + '"' + (yy2 === 2025 ? ' selected' : '') + '>' + yy2 + '</option>';
+        html += '</select></div>';
 
         // Search button
         html += '<div style="display:flex;align-items:end;"><button id="finderSearchBtn" style="background:#4fc3f7;color:#1a1a2e;border:none;border-radius:6px;padding:9px 24px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap;">SEARCH</button></div>';
