@@ -989,6 +989,7 @@
 
       // Load narrative, retired status, landfall cards, and storm stats
       function loadStormExtras(stormId, stormName, stormYear) {
+        console.log("Loading extras for:", stormId);
         // 1. Query summary table for narrative + retired + stats
         var sq = summaryTable.createQuery();
         sq.where = "storm_id = '" + stormId.replace(/'/g, "''") + "'";
@@ -1299,7 +1300,13 @@
 
       view.when(function() {
         updateStats();
-        updateMonthlyChart();
+        // Ensure summaryTable is loaded before querying
+        summaryTable.load().then(function() {
+          console.log("Summary table loaded, fields:", summaryTable.fields.map(function(f) { return f.name; }));
+          updateMonthlyChart();
+        }).catch(function(err) {
+          console.error("Summary table load error:", err);
+        });
       });
     });
   </script>
