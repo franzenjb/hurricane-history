@@ -828,8 +828,8 @@
             container: "viewDiv",
             map: map,
             camera: {
-              position: { longitude: center.longitude, latitude: center.latitude - 5, z: 8000000 },
-              tilt: 35
+              position: { longitude: center.longitude, latitude: center.latitude, z: 8000000 },
+              tilt: 0
             },
             padding: viewPadding,
             popup: null,
@@ -1377,7 +1377,7 @@
           if (endPt && idx % 2 === 0) {
             var cam = view.camera.clone();
             cam.position.longitude = endPt[0];
-            cam.position.latitude = endPt[1] - 5;
+            cam.position.latitude = endPt[1];
             view.goTo({ target: cam }, { duration: 1000, easing: "ease-in-out" }).catch(function() {});
           }
         }
