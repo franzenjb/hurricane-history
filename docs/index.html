@@ -927,8 +927,9 @@
             container: "viewDiv",
             map: map,
             camera: {
-              position: { longitude: center.longitude, latitude: center.latitude, z: 8000000 },
-              tilt: 0
+              position: { longitude: center.longitude, latitude: center.latitude - 15, z: 9000000 },
+              tilt: 25,
+              heading: 0
             },
             padding: viewPadding,
             environment: {
