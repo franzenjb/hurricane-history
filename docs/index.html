@@ -662,7 +662,7 @@
         map: map,
         center: [-75, 27],
         zoom: 4,
-        padding: { left: 290, right: 390 },
+        padding: { left: 300, right: 400, top: 20, bottom: 20 },
         constraints: { minZoom: 3 },
         popup: null
       });
@@ -1116,7 +1116,7 @@
             }
           });
           if (extent) {
-            view.goTo({ target: extent.expand(1.05) }, { duration: 1200 }).catch(function() {});
+            view.goTo({ target: extent }, { duration: 1200 }).catch(function() {});
           }
 
           // Show info panel with first segment
@@ -1277,7 +1277,7 @@
               }
             });
             if (extent) {
-              view.goTo({ target: extent.expand(1.05) }, { duration: 1000 }).catch(function() {});
+              view.goTo({ target: extent }, { duration: 1000 }).catch(function() {});
             }
           });
         });
