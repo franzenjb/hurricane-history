@@ -771,11 +771,11 @@
               var lfCatNum = la.category_num != null ? String(la.category_num) : "-1";
               var lfColor = CAT_COLORS_HEX[lfCatNum] || "#78909c";
               div.innerHTML =
-                '<div style="margin-bottom:6px;"><span style="padding:3px 10px;border-radius:8px;background:' + lfColor + ';color:#fff;font-size:11px;font-weight:700;">' + (la.category || "Unknown") + '</span>' +
-                (la.landfall_state ? ' <span style="font-size:13px;font-weight:600;color:#333;">' + la.landfall_state + '</span>' : '') + '</div>' +
-                '<div style="font-size:13px;color:#333;margin-bottom:4px;"><strong>Date:</strong> ' + formatDateTime(la.datetime) + '</div>' +
-                '<div style="font-size:13px;color:#333;margin-bottom:4px;"><strong>Wind:</strong> ' + (la.wind_kt || "—") + ' kt / ' + (la.wind_mph || "—") + ' mph</div>' +
-                '<div style="font-size:13px;color:#333;"><strong>Pressure:</strong> ' + ((la.pressure_mb && la.pressure_mb > 0) ? la.pressure_mb + ' mb' : 'N/A') + '</div>';
+                '<div style="margin-bottom:6px;"><span style="padding:3px 10px;border-radius:8px;background:' + lfColor + ';color:#fff;font-size:12px;font-weight:700;">' + (la.category || "Unknown") + '</span>' +
+                (la.landfall_state ? ' <span style="font-size:14px;font-weight:600;color:#e0e0e0;">' + la.landfall_state + '</span>' : '') + '</div>' +
+                '<div style="font-size:13px;color:#e0e0e0;margin-bottom:4px;"><strong>Date:</strong> ' + formatDateTime(la.datetime) + '</div>' +
+                '<div style="font-size:13px;color:#e0e0e0;margin-bottom:4px;"><strong>Wind:</strong> ' + (la.wind_kt || "—") + ' kt / ' + (la.wind_mph || "—") + ' mph</div>' +
+                '<div style="font-size:13px;color:#e0e0e0;"><strong>Pressure:</strong> ' + ((la.pressure_mb && la.pressure_mb > 0) ? la.pressure_mb + ' mb' : 'N/A') + '</div>';
               return div;
             }
           }]
