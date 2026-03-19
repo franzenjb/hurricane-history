@@ -519,7 +519,7 @@
             var cat = a.category || "Unknown";
             var peakCat = a.peak_category || "Unknown";
             var isLandfall = a.is_landfall === 1;
-            var statuses = { HU: "Hurricane", TS: "Tropical Storm", TD: "Tropical Depression", EX: "Extratropical", SS: "Subtrop. Storm", SD: "Subtrop. Dep." };
+            var statuses = { HU: "Hurricane", TS: "Trop. Storm", TD: "Trop. Depression", EX: "Extratropical", SS: "Subtrop. Storm", SD: "Subtrop. Dep." };
             var statusLabel = statuses[a.status] || a.status || "";
 
             var div = document.createElement("div");
@@ -891,7 +891,7 @@
         var cat = a.category || "Unknown";
         var peakCat = a.peak_category || "Unknown";
         var isLandfall = a.is_landfall === 1;
-        var statuses = { HU: "Hurricane", TS: "Tropical Storm", TD: "Tropical Depression", EX: "Extratropical", SS: "Subtrop. Storm", SD: "Subtrop. Dep." };
+        var statuses = { HU: "Hurricane", TS: "Trop. Storm", TD: "Trop. Depression", EX: "Extratropical", SS: "Subtrop. Storm", SD: "Subtrop. Dep." };
         var statusLabel = statuses[a.status] || a.status || "";
         var dtFormatted = formatDateTime(a.datetime);
 
