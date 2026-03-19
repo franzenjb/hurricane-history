@@ -619,7 +619,8 @@
 
       var map = new Map({
         basemap: "dark-gray-vector",
-        layers: [segmentsLayer, landfallLayer, animationLayer]
+        layers: [segmentsLayer, landfallLayer, animationLayer],
+        tables: [summaryTable]
       });
 
       var view = new MapView({
@@ -892,7 +893,7 @@
       function closeInfoPanel() {
         infoPanel.classList.remove("open");
         document.getElementById("viewDiv").classList.remove("with-panel");
-        view.resize();
+        try { view.container.style.width = ""; } catch(e) {}
       }
 
       // Track which storm_id extras are loaded to avoid redundant queries
@@ -977,7 +978,7 @@
 
         infoPanel.classList.add("open");
         document.getElementById("viewDiv").classList.add("with-panel");
-        setTimeout(function() { view.resize(); }, 350);
+        setTimeout(function() { try { view.container.style.width = ""; } catch(e) {} }, 350);
 
         // Load narrative + landfall details (only if storm changed)
         if (a.storm_id && a.storm_id !== lastLoadedExtrasId) {
