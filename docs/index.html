@@ -785,7 +785,7 @@
 
       var map = new Map({
         basemap: "dark-gray-vector",
-        layers: [segmentsLayer, landfallLayer, animationLayer]
+        layers: [segmentsLayer, animationLayer, landfallLayer]
       });
 
       var is3D = false;
@@ -798,7 +798,10 @@
         zoom: 4,
         padding: viewPadding,
         constraints: { minZoom: 3 },
-        popup: null
+        popup: {
+          dockEnabled: true,
+          dockOptions: { buttonEnabled: false, breakpoint: false, position: "bottom-center" }
+        }
       });
 
       // Home button
@@ -825,7 +828,6 @@
               tilt: 0
             },
             padding: viewPadding,
-            popup: null,
             environment: {
               atmosphereEnabled: true,
               starsEnabled: true,
@@ -842,7 +844,6 @@
             zoom: zoom || 4,
             padding: viewPadding,
             constraints: { minZoom: 3 },
-            popup: null
           });
           document.getElementById("viewToggle").textContent = "3D";
           document.getElementById("viewToggle").style.color = "#ccc";
