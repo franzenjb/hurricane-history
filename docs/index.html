@@ -163,11 +163,11 @@
       padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.06);
     }
     .narrative-section .section-label {
-      font-size: 10px; font-weight: 700; color: #4fc3f7; text-transform: uppercase;
-      letter-spacing: 0.5px; margin-bottom: 8px;
+      font-size: 12px; font-weight: 700; color: #4fc3f7; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 10px;
     }
     .narrative-text {
-      font-size: 13px; line-height: 1.6; color: #ccc;
+      font-size: 14px; line-height: 1.6; color: #ddd;
     }
     .retired-badge {
       display: inline-block; padding: 3px 10px; border-radius: 10px;
@@ -181,8 +181,8 @@
       padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.06);
     }
     .landfall-section .section-label {
-      font-size: 10px; font-weight: 700; color: #FFD700; text-transform: uppercase;
-      letter-spacing: 0.5px; margin-bottom: 8px;
+      font-size: 12px; font-weight: 700; color: #FFD700; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 10px;
     }
     .landfall-card {
       background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
@@ -194,13 +194,13 @@
       display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;
     }
     .landfall-card .lf-location {
-      font-size: 13px; font-weight: 700; color: #e0e0e0;
+      font-size: 14px; font-weight: 700; color: #fff;
     }
     .landfall-card .lf-cat {
       font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 8px; color: #fff;
     }
     .landfall-card .lf-details {
-      font-size: 11px; color: #999; display: flex; gap: 12px; flex-wrap: wrap;
+      font-size: 13px; color: #bbb; display: flex; gap: 12px; flex-wrap: wrap;
     }
     .landfall-card .lf-details span { white-space: nowrap; }
 
@@ -209,16 +209,16 @@
       padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.06);
     }
     .storm-stats-section .section-label {
-      font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase;
-      letter-spacing: 0.5px; margin-bottom: 8px;
+      font-size: 12px; font-weight: 700; color: #4fc3f7; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 10px;
     }
     .storm-stat-row {
-      display: flex; justify-content: space-between; padding: 5px 0;
+      display: flex; justify-content: space-between; padding: 7px 0;
       border-bottom: 1px solid rgba(255,255,255,0.04);
     }
     .storm-stat-row:last-child { border-bottom: none; }
-    .storm-stat-label { font-size: 11px; color: #888; }
-    .storm-stat-val { font-size: 12px; font-weight: 700; color: #e0e0e0; }
+    .storm-stat-label { font-size: 13px; color: #999; }
+    .storm-stat-val { font-size: 14px; font-weight: 700; color: #fff; }
 
     /* Monthly chart */
     #monthlyChart {
@@ -329,11 +329,11 @@
       padding: 0 24px;
     }
     #intelModal .modal-tab {
-      padding: 14px 22px; font-size: 14px; font-weight: 700; color: #888;
+      padding: 14px 22px; font-size: 14px; font-weight: 700; color: #aaa;
       text-transform: uppercase; letter-spacing: 0.4px; cursor: pointer;
       border-bottom: 2px solid transparent; transition: all 0.2s;
     }
-    #intelModal .modal-tab:hover { color: #ccc; }
+    #intelModal .modal-tab:hover { color: #fff; }
     #intelModal .modal-tab.active { color: #4fc3f7; border-bottom-color: #4fc3f7; }
     #intelModal .modal-body {
       flex: 1; overflow-y: auto; padding: 28px 32px; font-size: 14px;
@@ -424,7 +424,7 @@
 </head>
 <body>
   <div id="viewDiv"></div>
-  <button id="intelBtn">Intelligence</button>
+  <button id="intelBtn">Explore</button>
 
   <div id="intelOverlay">
     <div id="intelModal">
@@ -433,13 +433,13 @@
         <button class="modal-close" id="intelClose">&times;</button>
       </div>
       <div class="modal-tabs">
-        <div class="modal-tab active" data-mtool="records">Records</div>
+        <div class="modal-tab active" data-mtool="finder">Finder</div>
+        <div class="modal-tab" data-mtool="compare">Compare</div>
+        <div class="modal-tab" data-mtool="records">Records</div>
         <div class="modal-tab" data-mtool="season">Season</div>
         <div class="modal-tab" data-mtool="landfalls">Landfalls</div>
         <div class="modal-tab" data-mtool="monthly">Monthly</div>
         <div class="modal-tab" data-mtool="decades">Decades</div>
-        <div class="modal-tab" data-mtool="finder">Finder</div>
-        <div class="modal-tab" data-mtool="compare">Compare</div>
       </div>
       <div class="modal-body" id="modalContent"></div>
     </div>
@@ -524,6 +524,8 @@
     </select>
   </div>
 
+  <a id="contactBtn" href="mailto:jbf@jbf.com?subject=Hurricane%20Intelligence%20App&body=Hi%20Jeff%2C%0A%0AI%20was%20exploring%20the%20Hurricane%20Intelligence%20app%20and%20wanted%20to%20reach%20out.%0A%0A" style="position:absolute;bottom:30px;right:16px;z-index:10;background:rgba(20,20,40,0.92);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px 14px;font-size:11px;color:#ccc;text-decoration:none;cursor:pointer;">Contact</a>
+
   <div id="legend">
     <div class="legend-item"><div class="legend-line" style="background:#78909c;"></div><span class="legend-label">Tropical Depression</span></div>
     <div class="legend-item"><div class="legend-line" style="background:#1565C0;height:3px;"></div><span class="legend-label">Tropical Storm</span></div>
@@ -555,6 +557,11 @@
       const CAT_COLORS_HEX = {
         "-1": "#78909c", "0": "#1565C0", "1": "#00695c",
         "2": "#e65100", "3": "#d84315", "4": "#b71c1c", "5": "#7f0000"
+      };
+      // Lighter versions for text on dark backgrounds (WCAG AA contrast)
+      const CAT_COLORS_TEXT = {
+        "-1": "#b0bec5", "0": "#42a5f5", "1": "#4db6ac",
+        "2": "#ff9800", "3": "#ff7043", "4": "#ef5350", "5": "#ef9a9a"
       };
       const CAT_COLORS_RGB = {
         "-1": [120, 144, 156], "0": [21, 101, 192], "1": [0, 105, 92],
@@ -729,7 +736,7 @@
         title: "Storm Track Segments",
         renderer: buildRenderer(),
         definitionExpression: "storm_id IN ('AL122005','AL092017','AL182012')",
-        popupTemplate: segmentPopupTemplate,
+        popupEnabled: false,
         outFields: ["*"]
       });
 
@@ -1102,7 +1109,7 @@
           '<div style="display:flex;justify-content:space-between;padding:14px 20px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);">' +
             '<div style="text-align:center;flex:1;">' +
               '<div style="font-size:10px;color:#888;text-transform:uppercase;font-weight:600;">Wind</div>' +
-              '<div style="font-size:18px;font-weight:700;color:' + headerBg + ';">' + windMph + ' mph</div>' +
+              '<div style="font-size:18px;font-weight:700;color:' + (CAT_COLORS_TEXT[catNum] || headerBg) + ';">' + windMph + ' mph</div>' +
             '</div>' +
             '<div style="text-align:center;flex:1;border-left:1px solid rgba(255,255,255,0.1);border-right:1px solid rgba(255,255,255,0.1);">' +
               '<div style="font-size:10px;color:#888;text-transform:uppercase;font-weight:600;">Pressure</div>' +
@@ -1124,9 +1131,9 @@
             '</div>' +
           '</div>' +
           '<div style="padding:4px 20px 14px 20px;display:flex;gap:8px;">' +
-            '<div style="flex:1;padding:10px;background:rgba(255,255,255,0.05);border-radius:6px;border-left:3px solid ' + (CAT_COLORS_HEX[a.peak_category_num] || '#777') + ';">' +
+            '<div style="flex:1;padding:10px;background:rgba(255,255,255,0.05);border-radius:6px;border-left:3px solid ' + (CAT_COLORS_TEXT[a.peak_category_num] || '#aaa') + ';">' +
               '<div style="font-size:10px;color:#888;text-transform:uppercase;font-weight:700;">Storm Peak</div>' +
-              '<div style="font-size:16px;font-weight:700;color:' + (CAT_COLORS_HEX[a.peak_category_num] || '#777') + ';">' + peakCat + '</div>' +
+              '<div style="font-size:16px;font-weight:700;color:' + (CAT_COLORS_TEXT[a.peak_category_num] || '#aaa') + ';">' + peakCat + '</div>' +
             '</div>' +
             '<div style="flex:1;padding:10px;background:rgba(255,255,255,0.05);border-radius:6px;border-left:3px solid #455a64;">' +
               '<div style="font-size:10px;color:#888;text-transform:uppercase;font-weight:700;">Observation</div>' +
@@ -1624,7 +1631,7 @@
       // Modal open/close
       document.getElementById("intelBtn").addEventListener("click", function() {
         document.getElementById("intelOverlay").classList.add("open");
-        loadTool("records");
+        loadTool("finder");
       });
       document.getElementById("intelClose").addEventListener("click", function() {
         document.getElementById("intelOverlay").classList.remove("open");
@@ -1683,19 +1690,19 @@
           }
 
           var html = '';
-          html += card('💨', '#ef5350', 'Strongest Wind', strongest.name, strongest.year,
+          html += card('W', '#ff7043', 'Strongest Wind', strongest.name, strongest.year,
             strongest.category + ' · ' + strongest.max_wind_mph + ' mph',
             strongest.max_wind_kt, 'knots', strongest.storm_id);
 
-          html += card('🌀', '#7b1fa2', 'Lowest Pressure', lowestPres.name, lowestPres.year,
+          html += card('P', '#ce93d8', 'Lowest Pressure', lowestPres.name, lowestPres.year,
             lowestPres.category,
             lowestPres.min_pressure_mb, 'mb', lowestPres.storm_id);
 
-          html += card('⏱', '#1565C0', 'Longest Duration', longest.name, longest.year,
+          html += card('D', '#42a5f5', 'Longest Duration', longest.name, longest.year,
             longest.category + ' · ' + longest.duration_hours + ' hours',
             (longest.duration_hours / 24).toFixed(0), 'days', longest.storm_id);
 
-          html += card('🎯', '#FFD700', 'Most Landfalls', mostLandfalls.name, mostLandfalls.year,
+          html += card('L', '#FFD700', 'Most Landfalls', mostLandfalls.name, mostLandfalls.year,
             mostLandfalls.category,
             mostLandfalls.landfalls, 'hits', mostLandfalls.storm_id);
 
