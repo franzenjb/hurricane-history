@@ -1,0 +1,124 @@
+// Atlantic Hurricane Track Segment Popup
+// Paste as: Arcade Expression Content Element in AGOL Map Viewer
+
+// === EXTRACT ===
+var nm = DefaultValue($feature.name, "UNNAMED")
+var yr = $feature.year
+var dt = DefaultValue($feature.datetime, "")
+var status = DefaultValue($feature.status, "")
+var catNum = DefaultValue($feature.category_num, -1)
+var cat = DefaultValue($feature.category, "Unknown")
+var windKt = DefaultValue($feature.wind_kt, 0)
+var windMph = DefaultValue($feature.wind_mph, 0)
+var presMb = DefaultValue($feature.pressure_mb, 0)
+var isLandfall = DefaultValue($feature.is_landfall, 0)
+var peakCatNum = DefaultValue($feature.peak_category_num, -1)
+var peakCat = DefaultValue($feature.peak_category, "Unknown")
+var segNum = DefaultValue($feature.segment_num, 0)
+var stormId = DefaultValue($feature.storm_id, "")
+
+// === COMPUTE ===
+var headerBg = IIF(catNum >= 5, "#7f0000",
+  IIF(catNum >= 4, "#b71c1c",
+  IIF(catNum >= 3, "#d84315",
+  IIF(catNum >= 2, "#e65100",
+  IIF(catNum >= 1, "#00695c",
+  IIF(catNum >= 0, "#1565C0", "#546e7a"))))))
+
+var windBarW = IIF(windKt > 0, Min(Round((windKt / 170) * 100, 0), 100), 0)
+
+var windClr = IIF(catNum >= 5, "#7f0000",
+  IIF(catNum >= 4, "#b71c1c",
+  IIF(catNum >= 3, "#d84315",
+  IIF(catNum >= 2, "#e65100",
+  IIF(catNum >= 1, "#00695c",
+  IIF(catNum >= 0, "#1565C0", "#546e7a"))))))
+
+var peakClr = IIF(peakCatNum >= 5, "#7f0000",
+  IIF(peakCatNum >= 4, "#b71c1c",
+  IIF(peakCatNum >= 3, "#d84315",
+  IIF(peakCatNum >= 2, "#e65100",
+  IIF(peakCatNum >= 1, "#00695c",
+  IIF(peakCatNum >= 0, "#1565C0", "#546e7a"))))))
+
+var statusLabel = IIF(status == "HU", "Hurricane",
+  IIF(status == "TS", "Tropical Storm",
+  IIF(status == "TD", "Tropical Dep.",
+  IIF(status == "EX", "Extratropical",
+  IIF(status == "SS", "Subtrop. Storm",
+  IIF(status == "SD", "Subtrop. Dep.", status))))))
+
+// === FORMAT ===
+var windKtF = Text(windKt, "#,###")
+var windMphF = Text(windMph, "#,###")
+var presF = IIF(presMb > 0 && presMb < 9999, Text(presMb, "#,###") + " mb", "N/A")
+
+// === RENDER ===
+return {
+  type: "text",
+  text:
+
+'<div style="font-family:Arial,Helvetica,sans-serif;max-width:340px;color:#1a1a1a;line-height:1.4;">' +
+
+'<div style="background:' + headerBg + ';padding:14px 16px;margin:-8px -8px 0 -8px;border-radius:4px 4px 0 0;">' +
+  '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+    '<div>' +
+      '<div style="font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.3px;">' + nm + '</div>' +
+      '<div style="font-size:14px;color:rgba(255,255,255,0.85);margin-top:2px;">' + Text(yr, "####") + ' Atlantic Season</div>' +
+    '</div>' +
+    '<div style="text-align:right;">' +
+      '<div style="font-size:28px;font-weight:700;color:#fff;line-height:1;">' + windKtF + '</div>' +
+      '<div style="font-size:11px;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:0.5px;">knots</div>' +
+    '</div>' +
+  '</div>' +
+  '<div style="margin-top:10px;display:flex;align-items:center;">' +
+    '<span style="display:inline-block;padding:4px 12px;border-radius:12px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);font-size:12px;font-weight:700;color:#fff;letter-spacing:0.5px;">' + Upper(cat) + '</span>' +
+    IIF(isLandfall == 1, '<span style="margin-left:8px;padding:4px 10px;border-radius:12px;background:#FFD700;font-size:11px;font-weight:700;color:#333;letter-spacing:0.5px;">LANDFALL</span>', '') +
+  '</div>' +
+'</div>' +
+
+'<div style="display:flex;justify-content:space-between;padding:12px 16px;background:#f0f0f0;border-bottom:1px solid #ccc;">' +
+  '<div style="text-align:center;flex:1;">' +
+    '<div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Wind</div>' +
+    '<div style="font-size:16px;font-weight:700;color:' + windClr + ';">' + windMphF + ' mph</div>' +
+  '</div>' +
+  '<div style="text-align:center;flex:1;border-left:1px solid #ccc;border-right:1px solid #ccc;">' +
+    '<div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Pressure</div>' +
+    '<div style="font-size:16px;font-weight:700;color:#1a1a1a;">' + presF + '</div>' +
+  '</div>' +
+  '<div style="text-align:center;flex:1;">' +
+    '<div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Status</div>' +
+    '<div style="font-size:13px;font-weight:700;color:#1a1a1a;">' + statusLabel + '</div>' +
+  '</div>' +
+'</div>' +
+
+'<div style="padding:12px 16px 8px 16px;">' +
+  '<div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Wind Intensity Scale</div>' +
+  '<div style="background:#ddd;border-radius:4px;height:18px;overflow:hidden;position:relative;">' +
+    '<div style="background:' + windClr + ';width:' + windBarW + '%;height:100%;border-radius:4px;min-width:' + IIF(windKt > 0, "24", "0") + 'px;"></div>' +
+    IIF(windKt > 0, '<span style="position:absolute;top:2px;left:6px;font-size:10px;font-weight:700;color:#fff;">' + windKtF + ' kt / ' + windMphF + ' mph</span>', '') +
+  '</div>' +
+  '<div style="display:flex;justify-content:space-between;margin-top:2px;font-size:9px;color:#888;">' +
+    '<span>TD</span><span style="color:#1565C0;">TS 34</span><span style="color:#00695c;">H1 64</span><span style="color:#e65100;">H2 83</span><span style="color:#d84315;">H3 96</span><span style="color:#b71c1c;">H4 113</span><span style="color:#7f0000;">H5 137+</span>' +
+  '</div>' +
+'</div>' +
+
+'<div style="padding:4px 16px 12px 16px;display:flex;justify-content:space-between;">' +
+  '<div style="width:48%;padding:10px;background:#eee;border-radius:4px;border-left:3px solid ' + peakClr + ';">' +
+    '<div style="font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:4px;">Storm Peak</div>' +
+    '<div style="font-size:16px;font-weight:700;color:' + peakClr + ';">' + peakCat + '</div>' +
+  '</div>' +
+  '<div style="width:48%;padding:10px;background:#eee;border-radius:4px;border-left:3px solid #37474f;">' +
+    '<div style="font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:4px;">Observation</div>' +
+    '<div style="font-size:13px;font-weight:700;color:#1a1a1a;">' + dt + '</div>' +
+    '<div style="font-size:11px;color:#444;margin-top:2px;">Segment ' + segNum + '</div>' +
+  '</div>' +
+'</div>' +
+
+'<div style="padding:6px 16px 10px 16px;border-top:1px solid #ccc;">' +
+  '<div style="font-size:10px;color:#666;">NOAA National Hurricane Center HURDAT2 &bull; ' + stormId + '</div>' +
+'</div>' +
+
+'</div>'
+
+}

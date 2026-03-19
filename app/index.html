@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atlantic Hurricane Tracks 1851–2025</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/dark/main.css" />
+  <script src="https://js.arcgis.com/4.31/"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #1a1a2e; color: #e0e0e0; }
+    #viewDiv { width: 100%; height: 100%; }
+
+    /* Control panel */
+    #controls {
+      position: absolute; top: 16px; left: 60px; z-index: 10;
+      background: rgba(20, 20, 40, 0.92); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+      padding: 16px 18px; width: 280px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    #controls h1 {
+      font-size: 15px; font-weight: 700; letter-spacing: -0.3px;
+      margin-bottom: 4px; color: #fff;
+    }
+    #controls .subtitle {
+      font-size: 11px; color: #888; margin-bottom: 14px;
+      letter-spacing: 0.3px; text-transform: uppercase;
+    }
+    .control-group { margin-bottom: 12px; }
+    .control-group label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: #aaa; text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 5px;
+    }
+    .control-group select, .control-group input[type="range"] {
+      width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; border-radius: 6px; padding: 6px 8px; font-size: 13px;
+      outline: none;
+    }
+    .control-group select:focus { border-color: rgba(255,255,255,0.3); }
+    .control-group input[type="range"] { padding: 0; height: 6px; -webkit-appearance: none; appearance: none; border: none; background: transparent; }
+    .control-group input[type="range"]::-webkit-slider-track { height: 4px; background: rgba(255,255,255,0.15); border-radius: 2px; }
+    .control-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #4fc3f7; border-radius: 50%; margin-top: -5px; cursor: pointer; }
+    .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: #777; margin-top: 3px; }
+    .stat-row {
+      display: flex; justify-content: space-between; padding: 8px 0;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .stat-label { font-size: 11px; color: #888; }
+    .stat-value { font-size: 13px; font-weight: 700; color: #fff; }
+    #stats { margin-top: 8px; }
+
+    /* Legend */
+    #legend {
+      position: absolute; bottom: 30px; left: 60px; z-index: 10;
+      background: rgba(20, 20, 40, 0.92); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+      padding: 12px 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    .legend-item { display: flex; align-items: center; margin: 3px 0; }
+    .legend-line { width: 28px; height: 3px; border-radius: 2px; margin-right: 8px; }
+    .legend-label { font-size: 11px; color: #ccc; }
+
+    /* Animation toggle */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .toggle-label { font-size: 12px; color: #ccc; }
+    .toggle { position: relative; width: 36px; height: 20px; cursor: pointer; }
+    .toggle input { display: none; }
+    .toggle-track { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.15); border-radius: 10px; transition: 0.2s; }
+    .toggle input:checked + .toggle-track { background: #4fc3f7; }
+    .toggle-knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: 0.2s; }
+    .toggle input:checked ~ .toggle-knob { left: 18px; }
+  </style>
+</head>
+<body>
+  <div id="viewDiv"></div>
+
+  <div id="controls">
+    <h1>Atlantic Hurricane Tracks</h1>
+    <div class="subtitle">NOAA HURDAT2 &bull; 1851–2025</div>
+
+    <div class="toggle-row">
+      <span class="toggle-label">Flow Animation</span>
+      <label class="toggle">
+        <input type="checkbox" id="animToggle" checked />
+        <span class="toggle-track"></span>
+        <span class="toggle-knob"></span>
+      </label>
+    </div>
+
+    <div class="control-group">
+      <label>Minimum Category</label>
+      <select id="catFilter">
+        <option value="-1">All Storms (TD+)</option>
+        <option value="0">Tropical Storm+</option>
+        <option value="1">Category 1+</option>
+        <option value="2">Category 2+</option>
+        <option value="3" selected>Category 3+ (Major)</option>
+        <option value="4">Category 4+</option>
+        <option value="5">Category 5 Only</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label>Year Range</label>
+      <div style="display:flex;gap:8px;">
+        <input type="number" id="yearStart" value="1851" min="1851" max="2025" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;" />
+        <input type="number" id="yearEnd" value="2025" min="1851" max="2025" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>Animation Speed</label>
+      <input type="range" id="speedSlider" min="0.5" max="5" step="0.5" value="2" />
+      <div class="range-labels"><span>Slow</span><span>Fast</span></div>
+    </div>
+
+    <div id="stats">
+      <div class="stat-row">
+        <span class="stat-label">Visible Storms</span>
+        <span class="stat-value" id="stormCount">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Track Segments</span>
+        <span class="stat-value" id="segCount">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="legend">
+    <div class="legend-item"><div class="legend-line" style="background:#78909c;"></div><span class="legend-label">Tropical Depression</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#1565C0;height:3px;"></div><span class="legend-label">Tropical Storm</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#00695c;height:4px;"></div><span class="legend-label">Category 1</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#e65100;height:4px;"></div><span class="legend-label">Category 2</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#d84315;height:5px;"></div><span class="legend-label">Category 3</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#b71c1c;height:5px;"></div><span class="legend-label">Category 4</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#7f0000;height:6px;"></div><span class="legend-label">Category 5</span></div>
+  </div>
+
+  <script>
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/renderers/UniqueValueRenderer",
+      "esri/symbols/CIMSymbol",
+      "esri/core/reactiveUtils"
+    ], function(Map, MapView, FeatureLayer, UniqueValueRenderer, CIMSymbol, reactiveUtils) {
+
+      const SEGMENTS_URL = "https://services7.arcgis.com/1J4A0YH8gSNAmQVQ/arcgis/rest/services/Atlantic_Hurricane_Track_Segments_1851_2025/FeatureServer/0";
+      const POINTS_URL = "https://services7.arcgis.com/1J4A0YH8gSNAmQVQ/arcgis/rest/services/Atlantic_Hurricane_Tracks_1851_2025/FeatureServer/0";
+
+      // Saffir-Simpson colors
+      const CAT_COLORS = {
+        "-1": [120, 144, 156], // TD
+        "0":  [21, 101, 192],  // TS
+        "1":  [0, 105, 92],    // Cat 1
+        "2":  [230, 81, 0],    // Cat 2
+        "3":  [216, 67, 21],   // Cat 3
+        "4":  [183, 28, 28],   // Cat 4
+        "5":  [127, 0, 0],     // Cat 5
+      };
+
+      const CAT_WIDTHS = { "-1": 0.75, "0": 1.0, "1": 1.5, "2": 2.0, "3": 2.75, "4": 3.5, "5": 4.5 };
+      const CAT_LABELS = { "-1": "Tropical Depression", "0": "Tropical Storm", "1": "Category 1", "2": "Category 2", "3": "Category 3 (Major)", "4": "Category 4 (Major)", "5": "Category 5 (Major)" };
+
+      let animationSpeed = 2;
+      let animationEnabled = true;
+
+      // Build CIM line symbol with animated dash flow
+      function buildFlowSymbol(catNum) {
+        const color = CAT_COLORS[catNum];
+        const width = CAT_WIDTHS[catNum];
+        const dashLen = 8 + Math.abs(parseInt(catNum)) * 1.5;
+        const gapLen = dashLen * 0.6;
+
+        return new CIMSymbol({
+          data: {
+            type: "CIMSymbolReference",
+            symbol: {
+              type: "CIMLineSymbol",
+              symbolLayers: [
+                // Glow/halo layer
+                {
+                  type: "CIMSolidStroke",
+                  enable: true,
+                  width: width + 2,
+                  color: [...color, 40],
+                  capStyle: "Round",
+                  joinStyle: "Round",
+                },
+                // Solid base line
+                {
+                  type: "CIMSolidStroke",
+                  enable: true,
+                  width: width,
+                  color: [...color, 180],
+                  capStyle: "Round",
+                  joinStyle: "Round",
+                },
+                // Animated bright dash overlay
+                {
+                  type: "CIMSolidStroke",
+                  enable: true,
+                  width: width * 0.6,
+                  color: [...color.map(c => Math.min(255, c + 100)), 255],
+                  capStyle: "Round",
+                  joinStyle: "Round",
+                  effects: [
+                    {
+                      type: "CIMGeometricEffectDashes",
+                      dashTemplate: [dashLen, gapLen],
+                      lineDashEnding: "NoConstraint",
+                      offsetAlongLine: 0, // This gets animated
+                    }
+                  ],
+                  primitiveName: "dashFlow",
+                },
+              ],
+              // Animation on the dash layer
+              animations: [
+                {
+                  type: "CIMSymbolAnimationOffset",
+                  primitiveName: "dashFlow",
+                  xOffset: dashLen + gapLen,
+                  yOffset: 0,
+                  animatedSymbolProperties: {
+                    type: "CIMAnimatedSymbolProperties",
+                    primitiveName: "dashFlow",
+                    playAnimation: true,
+                    randomizeStartTime: true,
+                    repeatType: "Loop",
+                    repeatDelay: 0,
+                    duration: animationSpeed,
+                  }
+                }
+              ],
+            }
+          }
+        });
+      }
+
+      // Build renderer
+      function buildRenderer() {
+        return new UniqueValueRenderer({
+          field: "category_num",
+          defaultSymbol: buildFlowSymbol("-1"),
+          defaultLabel: "Other",
+          uniqueValueInfos: Object.keys(CAT_COLORS).map(cat => ({
+            value: parseInt(cat),
+            label: CAT_LABELS[cat],
+            symbol: buildFlowSymbol(cat),
+          })),
+        });
+      }
+
+      // Popup template
+      const segmentPopupTemplate = {
+        title: "{name} ({year})",
+        content: [{
+          type: "custom",
+          creator: function(event) {
+            const g = event.graphic;
+            const a = g.attributes;
+            const catNum = a.category_num || -1;
+            const colors = { "-1": "#78909c", "0": "#1565C0", "1": "#00695c", "2": "#e65100", "3": "#d84315", "4": "#b71c1c", "5": "#7f0000" };
+            const headerBg = colors[catNum] || "#546e7a";
+            const windKt = a.wind_kt || 0;
+            const windMph = a.wind_mph || 0;
+            const pres = a.pressure_mb;
+            const presF = (pres && pres > 0 && pres < 9999) ? pres + " mb" : "N/A";
+            const windBarW = windKt > 0 ? Math.min(Math.round((windKt / 170) * 100), 100) : 0;
+            const cat = a.category || "Unknown";
+            const peakCat = a.peak_category || "Unknown";
+            const isLandfall = a.is_landfall === 1;
+            const statuses = { HU: "Hurricane", TS: "Tropical Storm", TD: "Tropical Depression", EX: "Extratropical", SS: "Subtrop. Storm", SD: "Subtrop. Dep." };
+            const statusLabel = statuses[a.status] || a.status || "";
+
+            const div = document.createElement("div");
+            div.style.cssText = "font-family:system-ui,sans-serif;max-width:340px;color:#1a1a1a;line-height:1.4;";
+            div.innerHTML = `
+              <div style="background:${headerBg};padding:14px 16px;margin:-12px -12px 0 -12px;border-radius:4px 4px 0 0;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                  <div>
+                    <div style="font-size:20px;font-weight:700;color:#fff;">${a.name || "UNNAMED"}</div>
+                    <div style="font-size:13px;color:rgba(255,255,255,0.85);margin-top:2px;">${a.year} Atlantic Season</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div style="font-size:26px;font-weight:700;color:#fff;line-height:1;">${windKt}</div>
+                    <div style="font-size:10px;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.5px;">knots</div>
+                  </div>
+                </div>
+                <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+                  <span style="padding:3px 10px;border-radius:10px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;">${cat}</span>
+                  ${isLandfall ? '<span style="padding:3px 10px;border-radius:10px;background:#FFD700;font-size:11px;font-weight:700;color:#333;">LANDFALL</span>' : ''}
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:10px 16px;background:#f5f5f5;border-bottom:1px solid #ddd;">
+                <div style="text-align:center;flex:1;">
+                  <div style="font-size:10px;color:#777;text-transform:uppercase;font-weight:600;">Wind</div>
+                  <div style="font-size:15px;font-weight:700;color:${headerBg};">${windMph} mph</div>
+                </div>
+                <div style="text-align:center;flex:1;border-left:1px solid #ddd;border-right:1px solid #ddd;">
+                  <div style="font-size:10px;color:#777;text-transform:uppercase;font-weight:600;">Pressure</div>
+                  <div style="font-size:15px;font-weight:700;color:#333;">${presF}</div>
+                </div>
+                <div style="text-align:center;flex:1;">
+                  <div style="font-size:10px;color:#777;text-transform:uppercase;font-weight:600;">Status</div>
+                  <div style="font-size:12px;font-weight:700;color:#333;">${statusLabel}</div>
+                </div>
+              </div>
+              <div style="padding:10px 16px;">
+                <div style="font-size:10px;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">Wind Intensity</div>
+                <div style="background:#ddd;border-radius:4px;height:16px;overflow:hidden;position:relative;">
+                  <div style="background:${headerBg};width:${windBarW}%;height:100%;border-radius:4px;min-width:${windKt > 0 ? 24 : 0}px;"></div>
+                  ${windKt > 0 ? `<span style="position:absolute;top:1px;left:6px;font-size:10px;font-weight:700;color:#fff;">${windKt} kt</span>` : ''}
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:2px;font-size:9px;color:#aaa;">
+                  <span>TD</span><span style="color:#1565C0">TS</span><span style="color:#00695c">H1</span><span style="color:#e65100">H2</span><span style="color:#d84315">H3</span><span style="color:#b71c1c">H4</span><span style="color:#7f0000">H5</span>
+                </div>
+              </div>
+              <div style="padding:4px 16px 10px 16px;display:flex;gap:8px;">
+                <div style="flex:1;padding:8px;background:#f0f0f0;border-radius:4px;border-left:3px solid ${colors[a.peak_category_num] || '#777'};">
+                  <div style="font-size:9px;color:#666;text-transform:uppercase;font-weight:700;">Storm Peak</div>
+                  <div style="font-size:14px;font-weight:700;color:${colors[a.peak_category_num] || '#777'};">${peakCat}</div>
+                </div>
+                <div style="flex:1;padding:8px;background:#f0f0f0;border-radius:4px;border-left:3px solid #455a64;">
+                  <div style="font-size:9px;color:#666;text-transform:uppercase;font-weight:700;">Observation</div>
+                  <div style="font-size:12px;font-weight:700;color:#333;">${a.datetime || ''}</div>
+                  <div style="font-size:10px;color:#666;">Segment ${a.segment_num || ''}</div>
+                </div>
+              </div>
+              <div style="padding:6px 16px 8px 16px;border-top:1px solid #ddd;">
+                <div style="font-size:9px;color:#999;">NOAA NHC HURDAT2 · ${a.storm_id || ''}</div>
+              </div>
+            `;
+            return div;
+          }
+        }],
+      };
+
+      // Create layers
+      const segmentsLayer = new FeatureLayer({
+        url: SEGMENTS_URL,
+        title: "Storm Track Segments",
+        renderer: buildRenderer(),
+        definitionExpression: "peak_category_num >= 3",
+        popupTemplate: segmentPopupTemplate,
+        outFields: ["*"],
+      });
+
+      const landfallLayer = new FeatureLayer({
+        url: POINTS_URL,
+        title: "Landfall Points",
+        definitionExpression: "is_landfall = 1 AND is_major = 1",
+        minScale: 18000000,
+        renderer: {
+          type: "unique-value",
+          field: "category_num",
+          defaultSymbol: { type: "simple-marker", style: "diamond", color: [150,150,150,180], size: 5, outline: { color: [255,255,255,200], width: 1 } },
+          uniqueValueInfos: Object.keys(CAT_COLORS).filter(k => parseInt(k) >= 1).map(cat => ({
+            value: parseInt(cat),
+            label: CAT_LABELS[cat],
+            symbol: {
+              type: "simple-marker",
+              style: "diamond",
+              color: [...CAT_COLORS[cat], 220],
+              size: 5 + parseInt(cat) * 2.5,
+              outline: { color: [255,255,255,220], width: 1.25 },
+            }
+          })),
+        },
+        popupTemplate: {
+          title: "Landfall: {name} ({year})",
+          content: [{
+            type: "fields",
+            fieldInfos: [
+              { fieldName: "category", label: "Category" },
+              { fieldName: "wind_kt", label: "Wind (kt)" },
+              { fieldName: "wind_mph", label: "Wind (mph)" },
+              { fieldName: "pressure_mb", label: "Pressure (mb)" },
+              { fieldName: "datetime", label: "Date/Time" },
+            ]
+          }]
+        },
+        outFields: ["*"],
+      });
+
+      const map = new Map({
+        basemap: "dark-gray-vector",
+        layers: [segmentsLayer, landfallLayer],
+      });
+
+      const view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-65, 25],
+        zoom: 4,
+        constraints: { minZoom: 3 },
+        popup: {
+          dockEnabled: true,
+          dockOptions: { buttonEnabled: false, position: "bottom-left" },
+          collapseEnabled: false,
+        },
+      });
+
+      // Update stats when layer view updates
+      function updateStats() {
+        view.whenLayerView(segmentsLayer).then(function(layerView) {
+          reactiveUtils.when(
+            () => !layerView.updating,
+            () => {
+              layerView.queryFeatureCount().then(count => {
+                document.getElementById("segCount").textContent = count.toLocaleString();
+              });
+              // Get unique storm count
+              const query = segmentsLayer.createQuery();
+              query.where = segmentsLayer.definitionExpression;
+              query.outStatistics = [{
+                statisticType: "count",
+                onStatisticField: "storm_id",
+                outStatisticFieldName: "storm_count"
+              }];
+              query.groupByFieldsForStatistics = ["storm_id"];
+              segmentsLayer.queryFeatures(query).then(result => {
+                document.getElementById("stormCount").textContent = result.features.length.toLocaleString();
+              });
+            }
+          );
+        });
+      }
+
+      // Filter controls
+      function applyFilter() {
+        const minCat = document.getElementById("catFilter").value;
+        const yearStart = document.getElementById("yearStart").value;
+        const yearEnd = document.getElementById("yearEnd").value;
+
+        let where = `peak_category_num >= ${minCat}`;
+        where += ` AND year >= ${yearStart} AND year <= ${yearEnd}`;
+
+        segmentsLayer.definitionExpression = where;
+        landfallLayer.definitionExpression = `is_landfall = 1 AND category_num >= ${minCat} AND year >= ${yearStart} AND year <= ${yearEnd}`;
+
+        updateStats();
+      }
+
+      document.getElementById("catFilter").addEventListener("change", applyFilter);
+      document.getElementById("yearStart").addEventListener("change", applyFilter);
+      document.getElementById("yearEnd").addEventListener("change", applyFilter);
+
+      // Animation toggle
+      document.getElementById("animToggle").addEventListener("change", function(e) {
+        animationEnabled = e.target.checked;
+        // Rebuild renderer with animation on/off
+        segmentsLayer.renderer = buildRenderer();
+      });
+
+      // Speed control
+      document.getElementById("speedSlider").addEventListener("input", function(e) {
+        animationSpeed = 6 - parseFloat(e.target.value); // Invert: high slider = fast = low duration
+        segmentsLayer.renderer = buildRenderer();
+      });
+
+      view.when(function() {
+        updateStats();
+      });
+    });
+  </script>
+</body>
+</html>

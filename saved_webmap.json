@@ -1,0 +1,2254 @@
+{
+  "operationalLayers": [
+    {
+      "id": "landfall_points",
+      "opacity": 0.95,
+      "title": "Landfall Points",
+      "url": "https://services7.arcgis.com/1J4A0YH8gSNAmQVQ/arcgis/rest/services/Atlantic_Hurricane_Tracks_1851_2025/FeatureServer/0",
+      "visibility": true,
+      "itemId": "a62e3d140b614ced8509168434a0d90e",
+      "layerType": "ArcGISFeatureLayer",
+      "layerDefinition": {
+        "minScale": 18000000,
+        "definitionExpression": "is_landfall = 1 AND is_major = 1",
+        "drawingInfo": {
+          "renderer": {
+            "type": "uniqueValue",
+            "field1": "category_num",
+            "defaultLabel": "Other",
+            "defaultSymbol": {
+              "type": "esriSMS",
+              "color": [
+                100,
+                100,
+                100,
+                180
+              ],
+              "angle": 0,
+              "xoffset": 0,
+              "yoffset": 0,
+              "size": 5,
+              "style": "esriSMSDiamond",
+              "outline": {
+                "type": "esriSLS",
+                "color": [
+                  255,
+                  255,
+                  255,
+                  200
+                ],
+                "width": 1,
+                "style": "esriSLSSolid"
+              }
+            },
+            "uniqueValueGroups": [
+              {
+                "classes": [
+                  {
+                    "label": "Category 1",
+                    "symbol": {
+                      "type": "esriSMS",
+                      "color": [
+                        0,
+                        105,
+                        92,
+                        220
+                      ],
+                      "angle": 0,
+                      "xoffset": 0,
+                      "yoffset": 0,
+                      "size": 7.5,
+                      "style": "esriSMSDiamond",
+                      "outline": {
+                        "type": "esriSLS",
+                        "color": [
+                          255,
+                          255,
+                          255,
+                          220
+                        ],
+                        "width": 1.25,
+                        "style": "esriSLSSolid"
+                      }
+                    },
+                    "values": [
+                      [
+                        "1"
+                      ]
+                    ]
+                  },
+                  {
+                    "label": "Category 2",
+                    "symbol": {
+                      "type": "esriSMS",
+                      "color": [
+                        230,
+                        81,
+                        0,
+                        220
+                      ],
+                      "angle": 0,
+                      "xoffset": 0,
+                      "yoffset": 0,
+                      "size": 10,
+                      "style": "esriSMSDiamond",
+                      "outline": {
+                        "type": "esriSLS",
+                        "color": [
+                          255,
+                          255,
+                          255,
+                          220
+                        ],
+                        "width": 1.25,
+                        "style": "esriSLSSolid"
+                      }
+                    },
+                    "values": [
+                      [
+                        "2"
+                      ]
+                    ]
+                  },
+                  {
+                    "label": "Category 3 (Major)",
+                    "symbol": {
+                      "type": "esriSMS",
+                      "color": [
+                        216,
+                        67,
+                        21,
+                        240
+                      ],
+                      "angle": 0,
+                      "xoffset": 0,
+                      "yoffset": 0,
+                      "size": 12.5,
+                      "style": "esriSMSDiamond",
+                      "outline": {
+                        "type": "esriSLS",
+                        "color": [
+                          255,
+                          255,
+                          255,
+                          220
+                        ],
+                        "width": 1.25,
+                        "style": "esriSLSSolid"
+                      }
+                    },
+                    "values": [
+                      [
+                        "3"
+                      ]
+                    ]
+                  },
+                  {
+                    "label": "Category 4 (Major)",
+                    "symbol": {
+                      "type": "esriSMS",
+                      "color": [
+                        183,
+                        28,
+                        28,
+                        245
+                      ],
+                      "angle": 0,
+                      "xoffset": 0,
+                      "yoffset": 0,
+                      "size": 15,
+                      "style": "esriSMSDiamond",
+                      "outline": {
+                        "type": "esriSLS",
+                        "color": [
+                          255,
+                          255,
+                          255,
+                          220
+                        ],
+                        "width": 1.25,
+                        "style": "esriSLSSolid"
+                      }
+                    },
+                    "values": [
+                      [
+                        "4"
+                      ]
+                    ]
+                  },
+                  {
+                    "label": "Category 5 (Major)",
+                    "symbol": {
+                      "type": "esriSMS",
+                      "color": [
+                        127,
+                        0,
+                        0,
+                        255
+                      ],
+                      "angle": 0,
+                      "xoffset": 0,
+                      "yoffset": 0,
+                      "size": 17.5,
+                      "style": "esriSMSDiamond",
+                      "outline": {
+                        "type": "esriSLS",
+                        "color": [
+                          255,
+                          255,
+                          255,
+                          220
+                        ],
+                        "width": 1.25,
+                        "style": "esriSLSSolid"
+                      }
+                    },
+                    "values": [
+                      [
+                        "5"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ],
+            "uniqueValueInfos": [
+              {
+                "label": "Category 1",
+                "symbol": {
+                  "type": "esriSMS",
+                  "color": [
+                    0,
+                    105,
+                    92,
+                    220
+                  ],
+                  "angle": 0,
+                  "xoffset": 0,
+                  "yoffset": 0,
+                  "size": 7.5,
+                  "style": "esriSMSDiamond",
+                  "outline": {
+                    "type": "esriSLS",
+                    "color": [
+                      255,
+                      255,
+                      255,
+                      220
+                    ],
+                    "width": 1.25,
+                    "style": "esriSLSSolid"
+                  }
+                },
+                "value": "1"
+              },
+              {
+                "label": "Category 2",
+                "symbol": {
+                  "type": "esriSMS",
+                  "color": [
+                    230,
+                    81,
+                    0,
+                    220
+                  ],
+                  "angle": 0,
+                  "xoffset": 0,
+                  "yoffset": 0,
+                  "size": 10,
+                  "style": "esriSMSDiamond",
+                  "outline": {
+                    "type": "esriSLS",
+                    "color": [
+                      255,
+                      255,
+                      255,
+                      220
+                    ],
+                    "width": 1.25,
+                    "style": "esriSLSSolid"
+                  }
+                },
+                "value": "2"
+              },
+              {
+                "label": "Category 3 (Major)",
+                "symbol": {
+                  "type": "esriSMS",
+                  "color": [
+                    216,
+                    67,
+                    21,
+                    240
+                  ],
+                  "angle": 0,
+                  "xoffset": 0,
+                  "yoffset": 0,
+                  "size": 12.5,
+                  "style": "esriSMSDiamond",
+                  "outline": {
+                    "type": "esriSLS",
+                    "color": [
+                      255,
+                      255,
+                      255,
+                      220
+                    ],
+                    "width": 1.25,
+                    "style": "esriSLSSolid"
+                  }
+                },
+                "value": "3"
+              },
+              {
+                "label": "Category 4 (Major)",
+                "symbol": {
+                  "type": "esriSMS",
+                  "color": [
+                    183,
+                    28,
+                    28,
+                    245
+                  ],
+                  "angle": 0,
+                  "xoffset": 0,
+                  "yoffset": 0,
+                  "size": 15,
+                  "style": "esriSMSDiamond",
+                  "outline": {
+                    "type": "esriSLS",
+                    "color": [
+                      255,
+                      255,
+                      255,
+                      220
+                    ],
+                    "width": 1.25,
+                    "style": "esriSLSSolid"
+                  }
+                },
+                "value": "4"
+              },
+              {
+                "label": "Category 5 (Major)",
+                "symbol": {
+                  "type": "esriSMS",
+                  "color": [
+                    127,
+                    0,
+                    0,
+                    255
+                  ],
+                  "angle": 0,
+                  "xoffset": 0,
+                  "yoffset": 0,
+                  "size": 17.5,
+                  "style": "esriSMSDiamond",
+                  "outline": {
+                    "type": "esriSLS",
+                    "color": [
+                      255,
+                      255,
+                      255,
+                      220
+                    ],
+                    "width": 1.25,
+                    "style": "esriSLSSolid"
+                  }
+                },
+                "value": "5"
+              }
+            ]
+          }
+        }
+      },
+      "popupInfo": {
+        "popupElements": [
+          {
+            "type": "expression"
+          }
+        ],
+        "expressionInfos": [
+          {
+            "name": "landfall_popup",
+            "title": "Landfall Details",
+            "expression": "\nvar nm = DefaultValue($feature.name, \"UNNAMED\")\nvar yr = $feature.year\nvar dt = DefaultValue($feature.datetime, \"\")\nvar catNum = DefaultValue($feature.category_num, -1)\nvar cat = DefaultValue($feature.category, \"Unknown\")\nvar windKt = DefaultValue($feature.wind_kt, 0)\nvar windMph = DefaultValue($feature.wind_mph, 0)\nvar presMb = DefaultValue($feature.pressure_mb, 0)\nvar headerBg = IIF(catNum >= 5, \"#7f0000\", IIF(catNum >= 4, \"#b71c1c\", IIF(catNum >= 3, \"#d84315\", IIF(catNum >= 2, \"#e65100\", IIF(catNum >= 1, \"#00695c\", \"#1565C0\")))))\nvar windClr = headerBg\nvar windKtF = Text(windKt, \"#,###\")\nvar windMphF = Text(windMph, \"#,###\")\nvar presF = IIF(presMb > 0 && presMb < 9999, Text(presMb, \"#,###\") + \" mb\", \"N/A\")\nvar windBarW = IIF(windKt > 0, Min(Round((windKt / 170) * 100, 0), 100), 0)\nreturn {\n  type: \"text\",\n  text:\n'<div style=\"font-family:Arial,Helvetica,sans-serif;max-width:320px;color:#1a1a1a;line-height:1.4;\">' +\n'<div style=\"background:' + headerBg + ';padding:14px 16px;margin:-8px -8px 0 -8px;border-radius:4px 4px 0 0;\">' +\n  '<div style=\"font-size:11px;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:1px;font-weight:700;\">Landfall</div>' +\n  '<div style=\"font-size:22px;font-weight:700;color:#fff;margin-top:2px;\">' + nm + '</div>' +\n  '<div style=\"margin-top:8px;display:flex;align-items:center;\">' +\n    '<span style=\"display:inline-block;padding:4px 12px;border-radius:12px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);font-size:12px;font-weight:700;color:#fff;\">' + Upper(cat) + '</span>' +\n    '<span style=\"margin-left:10px;font-size:13px;color:rgba(255,255,255,0.9);\">' + Text(yr, \"####\") + '</span>' +\n  '</div>' +\n'</div>' +\n'<div style=\"display:flex;justify-content:space-between;padding:12px 16px;background:#f0f0f0;border-bottom:1px solid #ccc;\">' +\n  '<div style=\"text-align:center;flex:1;\">' +\n    '<div style=\"font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;\">Wind</div>' +\n    '<div style=\"font-size:18px;font-weight:700;color:' + windClr + ';\">' + windKtF + ' kt</div>' +\n    '<div style=\"font-size:11px;color:#555;\">' + windMphF + ' mph</div>' +\n  '</div>' +\n  '<div style=\"text-align:center;flex:1;border-left:1px solid #ccc;\">' +\n    '<div style=\"font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;\">Pressure</div>' +\n    '<div style=\"font-size:18px;font-weight:700;color:#1a1a1a;\">' + presF + '</div>' +\n  '</div>' +\n'</div>' +\n'<div style=\"padding:12px 16px;\">' +\n  '<div style=\"font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;\">Landfall Intensity</div>' +\n  '<div style=\"background:#ddd;border-radius:4px;height:16px;overflow:hidden;position:relative;\">' +\n    '<div style=\"background:' + windClr + ';width:' + windBarW + '%;height:100%;border-radius:4px;min-width:24px;\"></div>' +\n    '<span style=\"position:absolute;top:1px;left:6px;font-size:10px;font-weight:700;color:#fff;\">' + windKtF + ' kt</span>' +\n  '</div>' +\n  '<div style=\"font-size:13px;color:#444;margin-top:8px;\">' + dt + '</div>' +\n'</div>' +\n'<div style=\"padding:6px 16px 10px 16px;border-top:1px solid #ccc;\">' +\n  '<div style=\"font-size:10px;color:#666;\">NOAA NHC HURDAT2</div>' +\n'</div>' +\n'</div>'\n}\n"
+          }
+        ],
+        "title": "Landfall: {name} ({year})"
+      }
+    },
+    {
+      "id": "track_segments",
+      "opacity": 0.85,
+      "title": "Storm Track Segments",
+      "url": "https://services7.arcgis.com/1J4A0YH8gSNAmQVQ/arcgis/rest/services/Atlantic_Hurricane_Track_Segments_1851_2025/FeatureServer/0",
+      "visibility": true,
+      "itemId": "a4fac5e27f5d4ba3befad81a7eb8a056",
+      "layerType": "ArcGISFeatureLayer",
+      "layerDefinition": {
+        "definitionExpression": "peak_category_num >= 3",
+        "drawingInfo": {
+          "renderer": {
+            "type": "uniqueValue",
+            "field1": "category_num",
+            "defaultLabel": "Other",
+            "defaultSymbol": {
+              "type": "CIMSymbolReference",
+              "symbol": {
+                "type": "CIMLineSymbol",
+                "symbolLayers": [
+                  {
+                    "type": "CIMSolidStroke",
+                    "enable": true,
+                    "width": 0.75,
+                    "color": [
+                      120,
+                      120,
+                      120,
+                      160
+                    ],
+                    "capStyle": "Round",
+                    "joinStyle": "Round"
+                  },
+                  {
+                    "type": "CIMVectorMarker",
+                    "enable": true,
+                    "size": 4,
+                    "markerPlacement": {
+                      "type": "CIMMarkerPlacementAlongLineSameSize",
+                      "endings": "WithMarkers",
+                      "placementTemplate": [
+                        33
+                      ],
+                      "angleToLine": true
+                    },
+                    "frame": {
+                      "xmin": -5,
+                      "ymin": -5,
+                      "xmax": 5,
+                      "ymax": 5
+                    },
+                    "markerGraphics": [
+                      {
+                        "type": "CIMMarkerGraphic",
+                        "geometry": {
+                          "rings": [
+                            [
+                              [
+                                -4,
+                                -3.5
+                              ],
+                              [
+                                -4,
+                                3.5
+                              ],
+                              [
+                                3,
+                                0
+                              ],
+                              [
+                                -4,
+                                -3.5
+                              ]
+                            ]
+                          ]
+                        },
+                        "symbol": {
+                          "type": "CIMPolygonSymbol",
+                          "symbolLayers": [
+                            {
+                              "type": "CIMSolidFill",
+                              "enable": true,
+                              "color": [
+                                180,
+                                180,
+                                180,
+                                200
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "primitiveName": "arrowMarker"
+                  }
+                ],
+                "animations": [
+                  {
+                    "type": "CIMSymbolAnimationOffset",
+                    "primitiveName": "arrowMarker",
+                    "xOffset": 33,
+                    "yOffset": 0,
+                    "animatedSymbolProperties": {
+                      "type": "CIMAnimatedSymbolProperties",
+                      "primitiveName": "arrowMarker",
+                      "playAnimation": true,
+                      "randomizeStartTime": true,
+                      "repeatType": "Loop",
+                      "repeatDelay": 0,
+                      "duration": 2
+                    }
+                  }
+                ]
+              }
+            },
+            "uniqueValueGroups": [
+              {
+                "classes": [
+                  {
+                    "label": "Tropical Depression",
+                    "symbol": {
+                      "type": "CIMSymbolReference",
+                      "symbol": {
+                        "type": "CIMLineSymbol",
+                        "symbolLayers": [
+                          {
+                            "type": "CIMSolidStroke",
+                            "enable": true,
+                            "width": 0.75,
+                            "color": [
+                              120,
+                              120,
+                              120,
+                              160
+                            ],
+                            "capStyle": "Round",
+                            "joinStyle": "Round"
+                          },
+                          {
+                            "type": "CIMVectorMarker",
+                            "enable": true,
+                            "size": 4,
+                            "markerPlacement": {
+                              "type": "CIMMarkerPlacementAlongLineSameSize",
+                              "endings": "WithMarkers",
+                              "placementTemplate": [
+                                33
+                              ],
+                              "angleToLine": true
+                            },
+                            "frame": {
+                              "xmin": -5,
+                              "ymin": -5,
+                              "xmax": 5,
+                              "ymax": 5
+                            },
+                            "markerGraphics": [
+                              {
+                                "type": "CIMMarkerGraphic",
+                                "geometry": {
+                                  "rings": [
+                                    [
+                                      [
+                                        -4,
+                                        -3.5
+                                      ],
+                                      [
+                                        -4,
+                                        3.5
+                                      ],
+                                      [
+                                        3,
+                                        0
+                                      ],
+                                      [
+                                        -4,
+                                        -3.5
+                                      ]
+                                    ]
+                                  ]
+                                },
+                                "symbol": {
+                                  "type": "CIMPolygonSymbol",
+                                  "symbolLayers": [
+                                    {
+                                      "type": "CIMSolidFill",
+                                      "enable": true,
+                                      "color": [
+                                        180,
+                                        180,
+                                        180,
+                                        200
+                                      ]
+                                    }
+                                  ]
+                                }
+                              }
+                            ],
+                            "primitiveName": "arrowMarker"
+                          }
+                        ],
+                        "animations": [
+                          {
+                            "type": "CIMSymbolAnimationOffset",
+                            "primitiveName": "arrowMarker",
+                            "xOffset": 33,
+                            "yOffset": 0,
+                            "animatedSymbolProperties": {
+                              "type": "CIMAnimatedSymbolProperties",
+                              "primitiveName": "arrowMarker",
+                              "playAnimation": true,
+                              "randomizeStartTime": true,
+                              "repeatType": "Loop",
+                              "repeatDelay": 0,
+                              "duration": 2
+                            },
+                            "offsetX": 12,
+                            "offsetY": 1.5
+                          }
+                        ]
+                      }
+                    },
+                    "values": [
+                      [
+                        "-1"
+                      ]
+                    ]
+                  },
+                  {
+                    "label": "Tropical Storm",
+                    "symbol": {
+                      "type": "CIMSymbolReference",
+                      "symbol": {
+                        "type": "CIMLineSymbol",
+                        "symbolLayers": [
+                          {
+                            "type": "CIMSolidStroke",
+                            "enable": true,
+                            "width": 1,
+                            "color": [
+                              21,
+                              101,
+                              192,
+                              200
+                            ],
+                            "capStyle": "Round",
+                            "joinStyle": "Round"
+                          },
+                          {
+                            "type": "CIMVectorMarker",
+                            "enable": true,
+                            "size": 4,
+                            "markerPlacement": {
+                              "type": "CIMMarkerPlacementAlongLineSameSize",
+                              "endings": "WithMarkers",
+                              "placementTemplate": [
+                                30
+                              ],
+                              "angleToLine": true
+                            },
+                            "frame": {
+                              "xmin": -5,
+                              "ymin": -5,
+                              "xmax": 5,
+                              "ymax": 5
+                            },
+                            "markerGraphics": [
+                              {
+                                "type": "CIMMarkerGraphic",
+                                "geometry": {
+                                  "rings": [
+                                    [
+                                      [
+                                        -4,
+                                        -3.5
+                                      ],
+                                      [
+                                        -4,
+                                        3.5
+                                      ],
+                                      [
+                                        3,
+                                        0
+                                      ],
+                                      [
+                                        -4,
+                                        -3.5
+                                      ]
+                                    ]
+                                  ]
+                                },
+                                "symbol": {
+                                  "type": "CIMPolygonSymbol",
+                                  "symbolLayers": [
+                                    {
+                                      "type": "CIMSolidFill",
+                                      "enable": true,
+                                      "color": [
+                                        100,
+                                        160,
+                                        230,
+                                        230
+                                      ]
+                                    }
+                                  ]
+                                }
+                              }
+                            ],
+                            "primitiveName": "arrowMarker"
+                          }
+                        ],
+                        "animations": [
+                          {
+                            "type": "CIMSymbolAnimationOffset",
+                            "primitiveName": "arrowMarker",
+                            "xOffset": 30,
+                            "yOffset": 0,
+                            "animatedSymbolProperties": {
+                              "type": "CIMAnimatedSymbolProperties",
+                              "primitiveName": "arrowMarker",
+                              "playAnimation": true,
+                              "randomizeStartTime": true,
+                              "repeatType": "Loop",
+                              "repeatDelay": 0,
+                              "duration": 2
+                            },
+                            "offsetX": 12,
+                            "offsetY": 1.5
+                          }
+                        ]
+                      }
+                    },
+                    "values": [
+                      [
+                        "0"
+                      ]
+                    ]
+                  },
+                  {
+                    "label": "Category 1",
+                    "symbol": {
+                      "type": "CIMSymbolReference",
+                      "symbol": {
+                        "type": "CIMLineSymbol",
+                        "symbolLayers": [
+                          {
+                            "type": "CIMSolidStroke",
+                            "enable": true,
+                            "width": 1.5,
+                            "color": [
+                              0,
+                              105,
+                              92,
+                              220
+                            ],
+                            "capStyle": "Round",
+                            "joinStyle": "Round"
+                          },
+                          {
+                            "type": "CIMVectorMarker",
+                            "enable": true,
+                            "size": 4,
+                            "markerPlacement": {
+                              "type": "CIMMarkerPlacementAlongLineSameSize",
+                              "endings": "WithMarkers",
+                              "placementTemplate": [
+                                27
+                              ],
+                              "angleToLine": true
+                            },
+                            "frame": {
+                              "xmin": -5,
+                              "ymin": -5,
+                              "xmax": 5,
+                              "ymax": 5
+                            },
+                            "markerGraphics": [
+                              {
+                                "type": "CIMMarkerGraphic",
+                                "geometry": {
+                                  "rings": [
+                                    [
+                                      [
+                                        -4,
+                                        -3.5
+                                      ],
+                                      [
+                                        -4,
+                                        3.5
+                                      ],
+                                      [
+                                        3,
+                                        0
+                                      ],
+                                      [
+                                        -4,
+                                        -3.5
+                                      ]
+                                    ]
+                                  ]
+                                },
+                                "symbol": {
+                                  "type": "CIMPolygonSymbol",
+                                  "symbolLayers": [
+                                    {
+                                      "type": "CIMSolidFill",
+                                      "enable": true,
+                                      "color": [
+                                        0,
+                                        170,
+                                        150,
+                                        240
+                                      ]
+                                    }
+                                  ]
+                                }
+                              }
+                            ],
+                            "primitiveName": "arrowMarker"
+                          }
+                        ],
+                        "animations": [
+                          {
+                            "type": "CIMSymbolAnimationOffset",
+                            "primitiveName": "arrowMarker",
+                            "xOffset": 27,
+                            "yOffset": 0,
+                            "animatedSymbolProperties": {
+                              "type": "CIMAnimatedSymbolProperties",
+                              "primitiveName": "arrowMarker",
+                              "playAnimation": true,
+                              "randomizeStartTime": true,
+                              "repeatType": "Loop",
+                              "repeatDelay": 0,
+                              "duration": 2
+                            },
+                            "offsetX": 12,
+                            "offsetY": 1.5
+                          }
+                        ]
+                      }
+                    },
+                    "values": [
+                      [
+                        "1"
+                      ]
+                    ]
+                  },
+                  {
+                    "label": "Category 2",
+                    "symbol": {
+                      "type": "CIMSymbolReference",
+                      "symbol": {
+                        "type": "CIMLineSymbol",
+                        "symbolLayers": [
+                          {
+                            "type": "CIMSolidStroke",
+                            "enable": true,
+                            "width": 2,
+                            "color": [
+                              230,
+                              81,
+                              0,
+                              220
+                            ],
+                            "capStyle": "Round",
+                            "joinStyle": "Round"
+                          },
+                          {
+                            "type": "CIMVectorMarker",
+                            "enable": true,
+                            "size": 5,
+                            "markerPlacement": {
+                              "type": "CIMMarkerPlacementAlongLineSameSize",
+                              "endings": "WithMarkers",
+                              "placementTemplate": [
+                                24
+                              ],
+                              "angleToLine": true
+                            },
+                            "frame": {
+                              "xmin": -5,
+                              "ymin": -5,
+                              "xmax": 5,
+                              "ymax": 5
+                            },
+                            "markerGraphics": [
+                              {
+                                "type": "CIMMarkerGraphic",
+                                "geometry": {
+                                  "rings": [
+                                    [
+                                      [
+                                        -4,
+                                        -3.5
+                                      ],
+                                      [
+                                        -4,
+                                        3.5
+                                      ],
+                                      [
+                                        3,
+                                        0
+                                      ],
+                                      [
+                                        -4,
+                                        -3.5
+                                      ]
+                                    ]
+                                  ]
+                                },
+                                "symbol": {
+                                  "type": "CIMPolygonSymbol",
+                                  "symbolLayers": [
+                                    {
+                                      "type": "CIMSolidFill",
+                                      "enable": true,
+                                      "color": [
+                                        255,
+                                        140,
+                                        40,
+                                        240
+                                      ]
+                                    }
+                                  ]
+                                }
+                              }
+                            ],
+                            "primitiveName": "arrowMarker"
+                          }
+                        ],
+                        "animations": [
+                          {
+                            "type": "CIMSymbolAnimationOffset",
+                            "primitiveName": "arrowMarker",
+                            "xOffset": 24,
+                            "yOffset": 0,
+                            "animatedSymbolProperties": {
+                              "type": "CIMAnimatedSymbolProperties",
+                              "primitiveName": "arrowMarker",
+                              "playAnimation": true,
+                              "randomizeStartTime": true,
+                              "repeatType": "Loop",
+                              "repeatDelay": 0,
+                              "duration": 2
+                            },
+                            "offsetX": 12,
+                            "offsetY": 1.5
+                          }
+                        ]
+                      }
+                    },
+                    "values": [
+                      [
+                        "2"
+                      ]
+                    ]
+                  },
+                  {
+                    "label": "Category 3 (Major)",
+                    "symbol": {
+                      "type": "CIMSymbolReference",
+                      "symbol": {
+                        "type": "CIMLineSymbol",
+                        "symbolLayers": [
+                          {
+                            "type": "CIMSolidStroke",
+                            "enable": true,
+                            "width": 2.75,
+                            "color": [
+                              216,
+                              67,
+                              21,
+                              240
+                            ],
+                            "capStyle": "Round",
+                            "joinStyle": "Round"
+                          },
+                          {
+                            "type": "CIMVectorMarker",
+                            "enable": true,
+                            "size": 6.875,
+                            "markerPlacement": {
+                              "type": "CIMMarkerPlacementAlongLineSameSize",
+                              "endings": "WithMarkers",
+                              "placementTemplate": [
+                                21
+                              ],
+                              "angleToLine": true
+                            },
+                            "frame": {
+                              "xmin": -5,
+                              "ymin": -5,
+                              "xmax": 5,
+                              "ymax": 5
+                            },
+                            "markerGraphics": [
+                              {
+                                "type": "CIMMarkerGraphic",
+                                "geometry": {
+                                  "rings": [
+                                    [
+                                      [
+                                        -4,
+                                        -3.5
+                                      ],
+                                      [
+                                        -4,
+                                        3.5
+                                      ],
+                                      [
+                                        3,
+                                        0
+                                      ],
+                                      [
+                                        -4,
+                                        -3.5
+                                      ]
+                                    ]
+                                  ]
+                                },
+                                "symbol": {
+                                  "type": "CIMPolygonSymbol",
+                                  "symbolLayers": [
+                                    {
+                                      "type": "CIMSolidFill",
+                                      "enable": true,
+                                      "color": [
+                                        240,
+                                        110,
+                                        60,
+                                        250
+                                      ]
+                                    }
+                                  ]
+                                }
+                              }
+                            ],
+                            "primitiveName": "arrowMarker"
+                          }
+                        ],
+                        "animations": [
+                          {
+                            "type": "CIMSymbolAnimationOffset",
+                            "primitiveName": "arrowMarker",
+                            "xOffset": 21,
+                            "yOffset": 0,
+                            "animatedSymbolProperties": {
+                              "type": "CIMAnimatedSymbolProperties",
+                              "primitiveName": "arrowMarker",
+                              "playAnimation": true,
+                              "randomizeStartTime": true,
+                              "repeatType": "Loop",
+                              "repeatDelay": 0,
+                              "duration": 2
+                            },
+                            "offsetX": 12,
+                            "offsetY": 1.5
+                          }
+                        ]
+                      }
+                    },
+                    "values": [
+                      [
+                        "3"
+                      ]
+                    ]
+                  },
+                  {
+                    "label": "Category 4 (Major)",
+                    "symbol": {
+                      "type": "CIMSymbolReference",
+                      "symbol": {
+                        "type": "CIMLineSymbol",
+                        "symbolLayers": [
+                          {
+                            "type": "CIMSolidStroke",
+                            "enable": true,
+                            "width": 3.5,
+                            "color": [
+                              183,
+                              28,
+                              28,
+                              245
+                            ],
+                            "capStyle": "Round",
+                            "joinStyle": "Round"
+                          },
+                          {
+                            "type": "CIMVectorMarker",
+                            "enable": true,
+                            "size": 8.75,
+                            "markerPlacement": {
+                              "type": "CIMMarkerPlacementAlongLineSameSize",
+                              "endings": "WithMarkers",
+                              "placementTemplate": [
+                                18
+                              ],
+                              "angleToLine": true
+                            },
+                            "frame": {
+                              "xmin": -5,
+                              "ymin": -5,
+                              "xmax": 5,
+                              "ymax": 5
+                            },
+                            "markerGraphics": [
+                              {
+                                "type": "CIMMarkerGraphic",
+                                "geometry": {
+                                  "rings": [
+                                    [
+                                      [
+                                        -4,
+                                        -3.5
+                                      ],
+                                      [
+                                        -4,
+                                        3.5
+                                      ],
+                                      [
+                                        3,
+                                        0
+                                      ],
+                                      [
+                                        -4,
+                                        -3.5
+                                      ]
+                                    ]
+                                  ]
+                                },
+                                "symbol": {
+                                  "type": "CIMPolygonSymbol",
+                                  "symbolLayers": [
+                                    {
+                                      "type": "CIMSolidFill",
+                                      "enable": true,
+                                      "color": [
+                                        220,
+                                        60,
+                                        60,
+                                        250
+                                      ]
+                                    }
+                                  ]
+                                }
+                              }
+                            ],
+                            "primitiveName": "arrowMarker"
+                          }
+                        ],
+                        "animations": [
+                          {
+                            "type": "CIMSymbolAnimationOffset",
+                            "primitiveName": "arrowMarker",
+                            "xOffset": 18,
+                            "yOffset": 0,
+                            "animatedSymbolProperties": {
+                              "type": "CIMAnimatedSymbolProperties",
+                              "primitiveName": "arrowMarker",
+                              "playAnimation": true,
+                              "randomizeStartTime": true,
+                              "repeatType": "Loop",
+                              "repeatDelay": 0,
+                              "duration": 2
+                            },
+                            "offsetX": 12,
+                            "offsetY": 1.5
+                          }
+                        ]
+                      }
+                    },
+                    "values": [
+                      [
+                        "4"
+                      ]
+                    ]
+                  },
+                  {
+                    "label": "Category 5 (Major)",
+                    "symbol": {
+                      "type": "CIMSymbolReference",
+                      "symbol": {
+                        "type": "CIMLineSymbol",
+                        "symbolLayers": [
+                          {
+                            "type": "CIMSolidStroke",
+                            "enable": true,
+                            "width": 4.5,
+                            "color": [
+                              127,
+                              0,
+                              0,
+                              255
+                            ],
+                            "capStyle": "Round",
+                            "joinStyle": "Round"
+                          },
+                          {
+                            "type": "CIMVectorMarker",
+                            "enable": true,
+                            "size": 11.25,
+                            "markerPlacement": {
+                              "type": "CIMMarkerPlacementAlongLineSameSize",
+                              "endings": "WithMarkers",
+                              "placementTemplate": [
+                                15
+                              ],
+                              "angleToLine": true
+                            },
+                            "frame": {
+                              "xmin": -5,
+                              "ymin": -5,
+                              "xmax": 5,
+                              "ymax": 5
+                            },
+                            "markerGraphics": [
+                              {
+                                "type": "CIMMarkerGraphic",
+                                "geometry": {
+                                  "rings": [
+                                    [
+                                      [
+                                        -4,
+                                        -3.5
+                                      ],
+                                      [
+                                        -4,
+                                        3.5
+                                      ],
+                                      [
+                                        3,
+                                        0
+                                      ],
+                                      [
+                                        -4,
+                                        -3.5
+                                      ]
+                                    ]
+                                  ]
+                                },
+                                "symbol": {
+                                  "type": "CIMPolygonSymbol",
+                                  "symbolLayers": [
+                                    {
+                                      "type": "CIMSolidFill",
+                                      "enable": true,
+                                      "color": [
+                                        180,
+                                        30,
+                                        30,
+                                        255
+                                      ]
+                                    }
+                                  ]
+                                }
+                              }
+                            ],
+                            "primitiveName": "arrowMarker"
+                          }
+                        ],
+                        "animations": [
+                          {
+                            "type": "CIMSymbolAnimationOffset",
+                            "primitiveName": "arrowMarker",
+                            "xOffset": 15,
+                            "yOffset": 0,
+                            "animatedSymbolProperties": {
+                              "type": "CIMAnimatedSymbolProperties",
+                              "primitiveName": "arrowMarker",
+                              "playAnimation": true,
+                              "randomizeStartTime": true,
+                              "repeatType": "Loop",
+                              "repeatDelay": 0,
+                              "duration": 2
+                            },
+                            "offsetX": 12,
+                            "offsetY": 1.5
+                          }
+                        ]
+                      }
+                    },
+                    "values": [
+                      [
+                        "5"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ],
+            "uniqueValueInfos": [
+              {
+                "label": "Tropical Depression",
+                "symbol": {
+                  "type": "CIMSymbolReference",
+                  "symbol": {
+                    "type": "CIMLineSymbol",
+                    "symbolLayers": [
+                      {
+                        "type": "CIMSolidStroke",
+                        "enable": true,
+                        "width": 0.75,
+                        "color": [
+                          120,
+                          120,
+                          120,
+                          160
+                        ],
+                        "capStyle": "Round",
+                        "joinStyle": "Round"
+                      },
+                      {
+                        "type": "CIMVectorMarker",
+                        "enable": true,
+                        "size": 4,
+                        "markerPlacement": {
+                          "type": "CIMMarkerPlacementAlongLineSameSize",
+                          "endings": "WithMarkers",
+                          "placementTemplate": [
+                            33
+                          ],
+                          "angleToLine": true
+                        },
+                        "frame": {
+                          "xmin": -5,
+                          "ymin": -5,
+                          "xmax": 5,
+                          "ymax": 5
+                        },
+                        "markerGraphics": [
+                          {
+                            "type": "CIMMarkerGraphic",
+                            "geometry": {
+                              "rings": [
+                                [
+                                  [
+                                    -4,
+                                    -3.5
+                                  ],
+                                  [
+                                    -4,
+                                    3.5
+                                  ],
+                                  [
+                                    3,
+                                    0
+                                  ],
+                                  [
+                                    -4,
+                                    -3.5
+                                  ]
+                                ]
+                              ]
+                            },
+                            "symbol": {
+                              "type": "CIMPolygonSymbol",
+                              "symbolLayers": [
+                                {
+                                  "type": "CIMSolidFill",
+                                  "enable": true,
+                                  "color": [
+                                    180,
+                                    180,
+                                    180,
+                                    200
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "primitiveName": "arrowMarker"
+                      }
+                    ],
+                    "animations": [
+                      {
+                        "type": "CIMSymbolAnimationOffset",
+                        "primitiveName": "arrowMarker",
+                        "xOffset": 33,
+                        "yOffset": 0,
+                        "animatedSymbolProperties": {
+                          "type": "CIMAnimatedSymbolProperties",
+                          "primitiveName": "arrowMarker",
+                          "playAnimation": true,
+                          "randomizeStartTime": true,
+                          "repeatType": "Loop",
+                          "repeatDelay": 0,
+                          "duration": 2
+                        },
+                        "offsetX": 12,
+                        "offsetY": 1.5
+                      }
+                    ]
+                  }
+                },
+                "value": "-1"
+              },
+              {
+                "label": "Tropical Storm",
+                "symbol": {
+                  "type": "CIMSymbolReference",
+                  "symbol": {
+                    "type": "CIMLineSymbol",
+                    "symbolLayers": [
+                      {
+                        "type": "CIMSolidStroke",
+                        "enable": true,
+                        "width": 1,
+                        "color": [
+                          21,
+                          101,
+                          192,
+                          200
+                        ],
+                        "capStyle": "Round",
+                        "joinStyle": "Round"
+                      },
+                      {
+                        "type": "CIMVectorMarker",
+                        "enable": true,
+                        "size": 4,
+                        "markerPlacement": {
+                          "type": "CIMMarkerPlacementAlongLineSameSize",
+                          "endings": "WithMarkers",
+                          "placementTemplate": [
+                            30
+                          ],
+                          "angleToLine": true
+                        },
+                        "frame": {
+                          "xmin": -5,
+                          "ymin": -5,
+                          "xmax": 5,
+                          "ymax": 5
+                        },
+                        "markerGraphics": [
+                          {
+                            "type": "CIMMarkerGraphic",
+                            "geometry": {
+                              "rings": [
+                                [
+                                  [
+                                    -4,
+                                    -3.5
+                                  ],
+                                  [
+                                    -4,
+                                    3.5
+                                  ],
+                                  [
+                                    3,
+                                    0
+                                  ],
+                                  [
+                                    -4,
+                                    -3.5
+                                  ]
+                                ]
+                              ]
+                            },
+                            "symbol": {
+                              "type": "CIMPolygonSymbol",
+                              "symbolLayers": [
+                                {
+                                  "type": "CIMSolidFill",
+                                  "enable": true,
+                                  "color": [
+                                    100,
+                                    160,
+                                    230,
+                                    230
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "primitiveName": "arrowMarker"
+                      }
+                    ],
+                    "animations": [
+                      {
+                        "type": "CIMSymbolAnimationOffset",
+                        "primitiveName": "arrowMarker",
+                        "xOffset": 30,
+                        "yOffset": 0,
+                        "animatedSymbolProperties": {
+                          "type": "CIMAnimatedSymbolProperties",
+                          "primitiveName": "arrowMarker",
+                          "playAnimation": true,
+                          "randomizeStartTime": true,
+                          "repeatType": "Loop",
+                          "repeatDelay": 0,
+                          "duration": 2
+                        },
+                        "offsetX": 12,
+                        "offsetY": 1.5
+                      }
+                    ]
+                  }
+                },
+                "value": "0"
+              },
+              {
+                "label": "Category 1",
+                "symbol": {
+                  "type": "CIMSymbolReference",
+                  "symbol": {
+                    "type": "CIMLineSymbol",
+                    "symbolLayers": [
+                      {
+                        "type": "CIMSolidStroke",
+                        "enable": true,
+                        "width": 1.5,
+                        "color": [
+                          0,
+                          105,
+                          92,
+                          220
+                        ],
+                        "capStyle": "Round",
+                        "joinStyle": "Round"
+                      },
+                      {
+                        "type": "CIMVectorMarker",
+                        "enable": true,
+                        "size": 4,
+                        "markerPlacement": {
+                          "type": "CIMMarkerPlacementAlongLineSameSize",
+                          "endings": "WithMarkers",
+                          "placementTemplate": [
+                            27
+                          ],
+                          "angleToLine": true
+                        },
+                        "frame": {
+                          "xmin": -5,
+                          "ymin": -5,
+                          "xmax": 5,
+                          "ymax": 5
+                        },
+                        "markerGraphics": [
+                          {
+                            "type": "CIMMarkerGraphic",
+                            "geometry": {
+                              "rings": [
+                                [
+                                  [
+                                    -4,
+                                    -3.5
+                                  ],
+                                  [
+                                    -4,
+                                    3.5
+                                  ],
+                                  [
+                                    3,
+                                    0
+                                  ],
+                                  [
+                                    -4,
+                                    -3.5
+                                  ]
+                                ]
+                              ]
+                            },
+                            "symbol": {
+                              "type": "CIMPolygonSymbol",
+                              "symbolLayers": [
+                                {
+                                  "type": "CIMSolidFill",
+                                  "enable": true,
+                                  "color": [
+                                    0,
+                                    170,
+                                    150,
+                                    240
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "primitiveName": "arrowMarker"
+                      }
+                    ],
+                    "animations": [
+                      {
+                        "type": "CIMSymbolAnimationOffset",
+                        "primitiveName": "arrowMarker",
+                        "xOffset": 27,
+                        "yOffset": 0,
+                        "animatedSymbolProperties": {
+                          "type": "CIMAnimatedSymbolProperties",
+                          "primitiveName": "arrowMarker",
+                          "playAnimation": true,
+                          "randomizeStartTime": true,
+                          "repeatType": "Loop",
+                          "repeatDelay": 0,
+                          "duration": 2
+                        },
+                        "offsetX": 12,
+                        "offsetY": 1.5
+                      }
+                    ]
+                  }
+                },
+                "value": "1"
+              },
+              {
+                "label": "Category 2",
+                "symbol": {
+                  "type": "CIMSymbolReference",
+                  "symbol": {
+                    "type": "CIMLineSymbol",
+                    "symbolLayers": [
+                      {
+                        "type": "CIMSolidStroke",
+                        "enable": true,
+                        "width": 2,
+                        "color": [
+                          230,
+                          81,
+                          0,
+                          220
+                        ],
+                        "capStyle": "Round",
+                        "joinStyle": "Round"
+                      },
+                      {
+                        "type": "CIMVectorMarker",
+                        "enable": true,
+                        "size": 5,
+                        "markerPlacement": {
+                          "type": "CIMMarkerPlacementAlongLineSameSize",
+                          "endings": "WithMarkers",
+                          "placementTemplate": [
+                            24
+                          ],
+                          "angleToLine": true
+                        },
+                        "frame": {
+                          "xmin": -5,
+                          "ymin": -5,
+                          "xmax": 5,
+                          "ymax": 5
+                        },
+                        "markerGraphics": [
+                          {
+                            "type": "CIMMarkerGraphic",
+                            "geometry": {
+                              "rings": [
+                                [
+                                  [
+                                    -4,
+                                    -3.5
+                                  ],
+                                  [
+                                    -4,
+                                    3.5
+                                  ],
+                                  [
+                                    3,
+                                    0
+                                  ],
+                                  [
+                                    -4,
+                                    -3.5
+                                  ]
+                                ]
+                              ]
+                            },
+                            "symbol": {
+                              "type": "CIMPolygonSymbol",
+                              "symbolLayers": [
+                                {
+                                  "type": "CIMSolidFill",
+                                  "enable": true,
+                                  "color": [
+                                    255,
+                                    140,
+                                    40,
+                                    240
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "primitiveName": "arrowMarker"
+                      }
+                    ],
+                    "animations": [
+                      {
+                        "type": "CIMSymbolAnimationOffset",
+                        "primitiveName": "arrowMarker",
+                        "xOffset": 24,
+                        "yOffset": 0,
+                        "animatedSymbolProperties": {
+                          "type": "CIMAnimatedSymbolProperties",
+                          "primitiveName": "arrowMarker",
+                          "playAnimation": true,
+                          "randomizeStartTime": true,
+                          "repeatType": "Loop",
+                          "repeatDelay": 0,
+                          "duration": 2
+                        },
+                        "offsetX": 12,
+                        "offsetY": 1.5
+                      }
+                    ]
+                  }
+                },
+                "value": "2"
+              },
+              {
+                "label": "Category 3 (Major)",
+                "symbol": {
+                  "type": "CIMSymbolReference",
+                  "symbol": {
+                    "type": "CIMLineSymbol",
+                    "symbolLayers": [
+                      {
+                        "type": "CIMSolidStroke",
+                        "enable": true,
+                        "width": 2.75,
+                        "color": [
+                          216,
+                          67,
+                          21,
+                          240
+                        ],
+                        "capStyle": "Round",
+                        "joinStyle": "Round"
+                      },
+                      {
+                        "type": "CIMVectorMarker",
+                        "enable": true,
+                        "size": 6.875,
+                        "markerPlacement": {
+                          "type": "CIMMarkerPlacementAlongLineSameSize",
+                          "endings": "WithMarkers",
+                          "placementTemplate": [
+                            21
+                          ],
+                          "angleToLine": true
+                        },
+                        "frame": {
+                          "xmin": -5,
+                          "ymin": -5,
+                          "xmax": 5,
+                          "ymax": 5
+                        },
+                        "markerGraphics": [
+                          {
+                            "type": "CIMMarkerGraphic",
+                            "geometry": {
+                              "rings": [
+                                [
+                                  [
+                                    -4,
+                                    -3.5
+                                  ],
+                                  [
+                                    -4,
+                                    3.5
+                                  ],
+                                  [
+                                    3,
+                                    0
+                                  ],
+                                  [
+                                    -4,
+                                    -3.5
+                                  ]
+                                ]
+                              ]
+                            },
+                            "symbol": {
+                              "type": "CIMPolygonSymbol",
+                              "symbolLayers": [
+                                {
+                                  "type": "CIMSolidFill",
+                                  "enable": true,
+                                  "color": [
+                                    240,
+                                    110,
+                                    60,
+                                    250
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "primitiveName": "arrowMarker"
+                      }
+                    ],
+                    "animations": [
+                      {
+                        "type": "CIMSymbolAnimationOffset",
+                        "primitiveName": "arrowMarker",
+                        "xOffset": 21,
+                        "yOffset": 0,
+                        "animatedSymbolProperties": {
+                          "type": "CIMAnimatedSymbolProperties",
+                          "primitiveName": "arrowMarker",
+                          "playAnimation": true,
+                          "randomizeStartTime": true,
+                          "repeatType": "Loop",
+                          "repeatDelay": 0,
+                          "duration": 2
+                        },
+                        "offsetX": 12,
+                        "offsetY": 1.5
+                      }
+                    ]
+                  }
+                },
+                "value": "3"
+              },
+              {
+                "label": "Category 4 (Major)",
+                "symbol": {
+                  "type": "CIMSymbolReference",
+                  "symbol": {
+                    "type": "CIMLineSymbol",
+                    "symbolLayers": [
+                      {
+                        "type": "CIMSolidStroke",
+                        "enable": true,
+                        "width": 3.5,
+                        "color": [
+                          183,
+                          28,
+                          28,
+                          245
+                        ],
+                        "capStyle": "Round",
+                        "joinStyle": "Round"
+                      },
+                      {
+                        "type": "CIMVectorMarker",
+                        "enable": true,
+                        "size": 8.75,
+                        "markerPlacement": {
+                          "type": "CIMMarkerPlacementAlongLineSameSize",
+                          "endings": "WithMarkers",
+                          "placementTemplate": [
+                            18
+                          ],
+                          "angleToLine": true
+                        },
+                        "frame": {
+                          "xmin": -5,
+                          "ymin": -5,
+                          "xmax": 5,
+                          "ymax": 5
+                        },
+                        "markerGraphics": [
+                          {
+                            "type": "CIMMarkerGraphic",
+                            "geometry": {
+                              "rings": [
+                                [
+                                  [
+                                    -4,
+                                    -3.5
+                                  ],
+                                  [
+                                    -4,
+                                    3.5
+                                  ],
+                                  [
+                                    3,
+                                    0
+                                  ],
+                                  [
+                                    -4,
+                                    -3.5
+                                  ]
+                                ]
+                              ]
+                            },
+                            "symbol": {
+                              "type": "CIMPolygonSymbol",
+                              "symbolLayers": [
+                                {
+                                  "type": "CIMSolidFill",
+                                  "enable": true,
+                                  "color": [
+                                    220,
+                                    60,
+                                    60,
+                                    250
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "primitiveName": "arrowMarker"
+                      }
+                    ],
+                    "animations": [
+                      {
+                        "type": "CIMSymbolAnimationOffset",
+                        "primitiveName": "arrowMarker",
+                        "xOffset": 18,
+                        "yOffset": 0,
+                        "animatedSymbolProperties": {
+                          "type": "CIMAnimatedSymbolProperties",
+                          "primitiveName": "arrowMarker",
+                          "playAnimation": true,
+                          "randomizeStartTime": true,
+                          "repeatType": "Loop",
+                          "repeatDelay": 0,
+                          "duration": 2
+                        },
+                        "offsetX": 12,
+                        "offsetY": 1.5
+                      }
+                    ]
+                  }
+                },
+                "value": "4"
+              },
+              {
+                "label": "Category 5 (Major)",
+                "symbol": {
+                  "type": "CIMSymbolReference",
+                  "symbol": {
+                    "type": "CIMLineSymbol",
+                    "symbolLayers": [
+                      {
+                        "type": "CIMSolidStroke",
+                        "enable": true,
+                        "width": 4.5,
+                        "color": [
+                          127,
+                          0,
+                          0,
+                          255
+                        ],
+                        "capStyle": "Round",
+                        "joinStyle": "Round"
+                      },
+                      {
+                        "type": "CIMVectorMarker",
+                        "enable": true,
+                        "size": 11.25,
+                        "markerPlacement": {
+                          "type": "CIMMarkerPlacementAlongLineSameSize",
+                          "endings": "WithMarkers",
+                          "placementTemplate": [
+                            15
+                          ],
+                          "angleToLine": true
+                        },
+                        "frame": {
+                          "xmin": -5,
+                          "ymin": -5,
+                          "xmax": 5,
+                          "ymax": 5
+                        },
+                        "markerGraphics": [
+                          {
+                            "type": "CIMMarkerGraphic",
+                            "geometry": {
+                              "rings": [
+                                [
+                                  [
+                                    -4,
+                                    -3.5
+                                  ],
+                                  [
+                                    -4,
+                                    3.5
+                                  ],
+                                  [
+                                    3,
+                                    0
+                                  ],
+                                  [
+                                    -4,
+                                    -3.5
+                                  ]
+                                ]
+                              ]
+                            },
+                            "symbol": {
+                              "type": "CIMPolygonSymbol",
+                              "symbolLayers": [
+                                {
+                                  "type": "CIMSolidFill",
+                                  "enable": true,
+                                  "color": [
+                                    180,
+                                    30,
+                                    30,
+                                    255
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ],
+                        "primitiveName": "arrowMarker"
+                      }
+                    ],
+                    "animations": [
+                      {
+                        "type": "CIMSymbolAnimationOffset",
+                        "primitiveName": "arrowMarker",
+                        "xOffset": 15,
+                        "yOffset": 0,
+                        "animatedSymbolProperties": {
+                          "type": "CIMAnimatedSymbolProperties",
+                          "primitiveName": "arrowMarker",
+                          "playAnimation": true,
+                          "randomizeStartTime": true,
+                          "repeatType": "Loop",
+                          "repeatDelay": 0,
+                          "duration": 2
+                        },
+                        "offsetX": 12,
+                        "offsetY": 1.5
+                      }
+                    ]
+                  }
+                },
+                "value": "5"
+              }
+            ]
+          }
+        }
+      },
+      "popupInfo": {
+        "popupElements": [
+          {
+            "type": "expression"
+          }
+        ],
+        "expressionInfos": [
+          {
+            "name": "segment_popup",
+            "title": "Storm Details",
+            "expression": "// Atlantic Hurricane Track Segment Popup\n// Paste as: Arcade Expression Content Element in AGOL Map Viewer\n\n// === EXTRACT ===\nvar nm = DefaultValue($feature.name, \"UNNAMED\")\nvar yr = $feature.year\nvar dt = DefaultValue($feature.datetime, \"\")\nvar status = DefaultValue($feature.status, \"\")\nvar catNum = DefaultValue($feature.category_num, -1)\nvar cat = DefaultValue($feature.category, \"Unknown\")\nvar windKt = DefaultValue($feature.wind_kt, 0)\nvar windMph = DefaultValue($feature.wind_mph, 0)\nvar presMb = DefaultValue($feature.pressure_mb, 0)\nvar isLandfall = DefaultValue($feature.is_landfall, 0)\nvar peakCatNum = DefaultValue($feature.peak_category_num, -1)\nvar peakCat = DefaultValue($feature.peak_category, \"Unknown\")\nvar segNum = DefaultValue($feature.segment_num, 0)\nvar stormId = DefaultValue($feature.storm_id, \"\")\n\n// === COMPUTE ===\nvar headerBg = IIF(catNum >= 5, \"#7f0000\",\n  IIF(catNum >= 4, \"#b71c1c\",\n  IIF(catNum >= 3, \"#d84315\",\n  IIF(catNum >= 2, \"#e65100\",\n  IIF(catNum >= 1, \"#00695c\",\n  IIF(catNum >= 0, \"#1565C0\", \"#546e7a\"))))))\n\nvar windBarW = IIF(windKt > 0, Min(Round((windKt / 170) * 100, 0), 100), 0)\n\nvar windClr = IIF(catNum >= 5, \"#7f0000\",\n  IIF(catNum >= 4, \"#b71c1c\",\n  IIF(catNum >= 3, \"#d84315\",\n  IIF(catNum >= 2, \"#e65100\",\n  IIF(catNum >= 1, \"#00695c\",\n  IIF(catNum >= 0, \"#1565C0\", \"#546e7a\"))))))\n\nvar peakClr = IIF(peakCatNum >= 5, \"#7f0000\",\n  IIF(peakCatNum >= 4, \"#b71c1c\",\n  IIF(peakCatNum >= 3, \"#d84315\",\n  IIF(peakCatNum >= 2, \"#e65100\",\n  IIF(peakCatNum >= 1, \"#00695c\",\n  IIF(peakCatNum >= 0, \"#1565C0\", \"#546e7a\"))))))\n\nvar statusLabel = IIF(status == \"HU\", \"Hurricane\",\n  IIF(status == \"TS\", \"Tropical Storm\",\n  IIF(status == \"TD\", \"Tropical Dep.\",\n  IIF(status == \"EX\", \"Extratropical\",\n  IIF(status == \"SS\", \"Subtrop. Storm\",\n  IIF(status == \"SD\", \"Subtrop. Dep.\", status))))))\n\n// === FORMAT ===\nvar windKtF = Text(windKt, \"#,###\")\nvar windMphF = Text(windMph, \"#,###\")\nvar presF = IIF(presMb > 0 && presMb < 9999, Text(presMb, \"#,###\") + \" mb\", \"N/A\")\n\n// === RENDER ===\nreturn {\n  type: \"text\",\n  text:\n\n'<div style=\"font-family:Arial,Helvetica,sans-serif;max-width:340px;color:#1a1a1a;line-height:1.4;\">' +\n\n'<div style=\"background:' + headerBg + ';padding:14px 16px;margin:-8px -8px 0 -8px;border-radius:4px 4px 0 0;\">' +\n  '<div style=\"display:flex;justify-content:space-between;align-items:flex-start;\">' +\n    '<div>' +\n      '<div style=\"font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.3px;\">' + nm + '</div>' +\n      '<div style=\"font-size:14px;color:rgba(255,255,255,0.85);margin-top:2px;\">' + Text(yr, \"####\") + ' Atlantic Season</div>' +\n    '</div>' +\n    '<div style=\"text-align:right;\">' +\n      '<div style=\"font-size:28px;font-weight:700;color:#fff;line-height:1;\">' + windKtF + '</div>' +\n      '<div style=\"font-size:11px;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:0.5px;\">knots</div>' +\n    '</div>' +\n  '</div>' +\n  '<div style=\"margin-top:10px;display:flex;align-items:center;\">' +\n    '<span style=\"display:inline-block;padding:4px 12px;border-radius:12px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);font-size:12px;font-weight:700;color:#fff;letter-spacing:0.5px;\">' + Upper(cat) + '</span>' +\n    IIF(isLandfall == 1, '<span style=\"margin-left:8px;padding:4px 10px;border-radius:12px;background:#FFD700;font-size:11px;font-weight:700;color:#333;letter-spacing:0.5px;\">LANDFALL</span>', '') +\n  '</div>' +\n'</div>' +\n\n'<div style=\"display:flex;justify-content:space-between;padding:12px 16px;background:#f0f0f0;border-bottom:1px solid #ccc;\">' +\n  '<div style=\"text-align:center;flex:1;\">' +\n    '<div style=\"font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;\">Wind</div>' +\n    '<div style=\"font-size:16px;font-weight:700;color:' + windClr + ';\">' + windMphF + ' mph</div>' +\n  '</div>' +\n  '<div style=\"text-align:center;flex:1;border-left:1px solid #ccc;border-right:1px solid #ccc;\">' +\n    '<div style=\"font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;\">Pressure</div>' +\n    '<div style=\"font-size:16px;font-weight:700;color:#1a1a1a;\">' + presF + '</div>' +\n  '</div>' +\n  '<div style=\"text-align:center;flex:1;\">' +\n    '<div style=\"font-size:10px;color:#555;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;\">Status</div>' +\n    '<div style=\"font-size:13px;font-weight:700;color:#1a1a1a;\">' + statusLabel + '</div>' +\n  '</div>' +\n'</div>' +\n\n'<div style=\"padding:12px 16px 8px 16px;\">' +\n  '<div style=\"font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;\">Wind Intensity Scale</div>' +\n  '<div style=\"background:#ddd;border-radius:4px;height:18px;overflow:hidden;position:relative;\">' +\n    '<div style=\"background:' + windClr + ';width:' + windBarW + '%;height:100%;border-radius:4px;min-width:' + IIF(windKt > 0, \"24\", \"0\") + 'px;\"></div>' +\n    IIF(windKt > 0, '<span style=\"position:absolute;top:2px;left:6px;font-size:10px;font-weight:700;color:#fff;\">' + windKtF + ' kt / ' + windMphF + ' mph</span>', '') +\n  '</div>' +\n  '<div style=\"display:flex;justify-content:space-between;margin-top:2px;font-size:9px;color:#888;\">' +\n    '<span>TD</span><span style=\"color:#1565C0;\">TS 34</span><span style=\"color:#00695c;\">H1 64</span><span style=\"color:#e65100;\">H2 83</span><span style=\"color:#d84315;\">H3 96</span><span style=\"color:#b71c1c;\">H4 113</span><span style=\"color:#7f0000;\">H5 137+</span>' +\n  '</div>' +\n'</div>' +\n\n'<div style=\"padding:4px 16px 12px 16px;display:flex;justify-content:space-between;\">' +\n  '<div style=\"width:48%;padding:10px;background:#eee;border-radius:4px;border-left:3px solid ' + peakClr + ';\">' +\n    '<div style=\"font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:4px;\">Storm Peak</div>' +\n    '<div style=\"font-size:16px;font-weight:700;color:' + peakClr + ';\">' + peakCat + '</div>' +\n  '</div>' +\n  '<div style=\"width:48%;padding:10px;background:#eee;border-radius:4px;border-left:3px solid #37474f;\">' +\n    '<div style=\"font-size:10px;color:#444;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:4px;\">Observation</div>' +\n    '<div style=\"font-size:13px;font-weight:700;color:#1a1a1a;\">' + dt + '</div>' +\n    '<div style=\"font-size:11px;color:#444;margin-top:2px;\">Segment ' + segNum + '</div>' +\n  '</div>' +\n'</div>' +\n\n'<div style=\"padding:6px 16px 10px 16px;border-top:1px solid #ccc;\">' +\n  '<div style=\"font-size:10px;color:#666;\">NOAA National Hurricane Center HURDAT2 &bull; ' + stormId + '</div>' +\n'</div>' +\n\n'</div>'\n\n}\n"
+          }
+        ],
+        "title": "{name} ({year})"
+      }
+    }
+  ],
+  "tables": [
+    {
+      "id": "storm_summary",
+      "title": "Storm Summary (1851-2025)",
+      "url": "https://services7.arcgis.com/1J4A0YH8gSNAmQVQ/arcgis/rest/services/Atlantic_Hurricanes_1851_2025/FeatureServer/0",
+      "itemId": "08a82646b8fc45d691fd9524b4b6d36c",
+      "layerDefinition": {
+        "fieldConfigurations": [
+          {
+            "alias": "Name",
+            "name": "name"
+          },
+          {
+            "alias": "Year",
+            "name": "year",
+            "fieldFormat": {
+              "type": "number",
+              "maximumFractionDigits": 0,
+              "useGrouping": "always"
+            }
+          },
+          {
+            "alias": "Month",
+            "name": "month_name"
+          },
+          {
+            "alias": "Peak Category",
+            "name": "category"
+          },
+          {
+            "alias": "Max Wind (kt)",
+            "name": "max_wind_kt",
+            "fieldFormat": {
+              "type": "number",
+              "maximumFractionDigits": 0,
+              "useGrouping": "always"
+            }
+          },
+          {
+            "alias": "Max Wind (mph)",
+            "name": "max_wind_mph",
+            "fieldFormat": {
+              "type": "number",
+              "maximumFractionDigits": 0,
+              "useGrouping": "always"
+            }
+          },
+          {
+            "alias": "Min Pressure (mb)",
+            "name": "min_pressure_mb",
+            "fieldFormat": {
+              "type": "number",
+              "maximumFractionDigits": 0,
+              "useGrouping": "always"
+            }
+          },
+          {
+            "alias": "Duration (hrs)",
+            "name": "duration_hours",
+            "fieldFormat": {
+              "type": "number",
+              "maximumFractionDigits": 0,
+              "useGrouping": "always"
+            }
+          },
+          {
+            "alias": "Landfalls",
+            "name": "landfalls",
+            "fieldFormat": {
+              "type": "number",
+              "maximumFractionDigits": 0,
+              "useGrouping": "always"
+            }
+          },
+          {
+            "alias": "Start Date",
+            "name": "start_date",
+            "fieldFormat": {
+              "type": "date-time",
+              "dateStyle": "short",
+              "hour12": "always",
+              "timeStyle": "short"
+            }
+          },
+          {
+            "alias": "End Date",
+            "name": "end_date",
+            "fieldFormat": {
+              "type": "date-time",
+              "dateStyle": "short",
+              "hour12": "always",
+              "timeStyle": "short"
+            }
+          }
+        ]
+      },
+      "popupInfo": {
+        "popupElements": [
+          {
+            "type": "fields"
+          }
+        ],
+        "fieldInfos": [
+          {
+            "fieldName": "name",
+            "isEditable": true,
+            "label": "Name",
+            "visible": true
+          },
+          {
+            "fieldName": "year",
+            "isEditable": true,
+            "label": "Year",
+            "visible": true
+          },
+          {
+            "fieldName": "month_name",
+            "isEditable": true,
+            "label": "Month",
+            "visible": true
+          },
+          {
+            "fieldName": "category",
+            "isEditable": true,
+            "label": "Peak Category",
+            "visible": true
+          },
+          {
+            "fieldName": "max_wind_kt",
+            "isEditable": true,
+            "label": "Max Wind (kt)",
+            "visible": true
+          },
+          {
+            "fieldName": "max_wind_mph",
+            "isEditable": true,
+            "label": "Max Wind (mph)",
+            "visible": true
+          },
+          {
+            "fieldName": "min_pressure_mb",
+            "isEditable": true,
+            "label": "Min Pressure (mb)",
+            "visible": true
+          },
+          {
+            "fieldName": "duration_hours",
+            "isEditable": true,
+            "label": "Duration (hrs)",
+            "visible": true
+          },
+          {
+            "fieldName": "landfalls",
+            "isEditable": true,
+            "label": "Landfalls",
+            "visible": true
+          },
+          {
+            "fieldName": "start_date",
+            "isEditable": true,
+            "label": "Start Date",
+            "visible": true
+          },
+          {
+            "fieldName": "end_date",
+            "isEditable": true,
+            "label": "End Date",
+            "visible": true
+          }
+        ],
+        "title": "{name} ({year})"
+      }
+    }
+  ],
+  "baseMap": {
+    "baseMapLayers": [
+      {
+        "id": "dark_gray_base",
+        "opacity": 1,
+        "title": "Dark Gray Canvas",
+        "url": "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer",
+        "visibility": true,
+        "layerType": "ArcGISTiledMapServiceLayer"
+      },
+      {
+        "id": "dark_gray_ref",
+        "opacity": 1,
+        "title": "Dark Gray Reference",
+        "url": "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Reference/MapServer",
+        "visibility": true,
+        "layerType": "ArcGISTiledMapServiceLayer",
+        "isReference": true
+      }
+    ],
+    "title": "Dark Gray Canvas"
+  },
+  "authoringApp": "ArcGISMapViewer",
+  "authoringAppVersion": "2026.1",
+  "initialState": {
+    "viewpoint": {
+      "targetGeometry": {
+        "spatialReference": {
+          "latestWkid": 3857,
+          "wkid": 102100
+        },
+        "xmin": -10610155.952239286,
+        "ymin": 96206.10531576257,
+        "xmax": -3272201.236864317,
+        "ymax": 5095799.251391242
+      }
+    }
+  },
+  "spatialReference": {
+    "latestWkid": 3857,
+    "wkid": 102100
+  },
+  "timeZone": "system",
+  "version": "2.36"
+}
