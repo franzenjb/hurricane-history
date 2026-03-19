@@ -294,9 +294,9 @@
 
     /* Intelligence modal */
     #intelBtn {
-      position: absolute; top: 16px; right: 16px; z-index: 12;
+      position: absolute; top: 16px; left: 50%; transform: translateX(-50%); z-index: 12;
       background: rgba(79,195,247,0.15); border: 1px solid rgba(79,195,247,0.4);
-      color: #4fc3f7; border-radius: 8px; padding: 8px 16px;
+      color: #4fc3f7; border-radius: 8px; padding: 8px 20px;
       font-size: 12px; font-weight: 700; cursor: pointer;
       text-transform: uppercase; letter-spacing: 0.5px;
       backdrop-filter: blur(8px); transition: all 0.2s;
@@ -517,6 +517,7 @@
   </div>
 
   <div id="mapOptions">
+    <button id="viewToggle" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#ccc;border-radius:4px;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer;margin-right:6px;">3D</button>
     <select id="basemapSelect" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:4px;padding:4px 6px;font-size:10px;outline:none;cursor:pointer;">
       <option value="dark-gray-vector" selected>Dark Gray</option>
       <option value="gray-vector">Light Gray</option>
@@ -542,13 +543,14 @@
     require([
       "esri/Map",
       "esri/views/MapView",
+      "esri/views/SceneView",
       "esri/layers/FeatureLayer",
       "esri/layers/GraphicsLayer",
       "esri/Graphic",
       "esri/renderers/UniqueValueRenderer",
       "esri/core/reactiveUtils",
       "esri/widgets/Home"
-    ], function(Map, MapView, FeatureLayer, GraphicsLayer, Graphic, UniqueValueRenderer, reactiveUtils, Home) {
+    ], function(Map, MapView, SceneView, FeatureLayer, GraphicsLayer, Graphic, UniqueValueRenderer, reactiveUtils, Home) {
 
       const SEGMENTS_URL = "https://services7.arcgis.com/1J4A0YH8gSNAmQVQ/arcgis/rest/services/Atlantic_Hurricane_Track_Segments_1851_2025/FeatureServer/0";
       const SUMMARY_URL = "https://services7.arcgis.com/1J4A0YH8gSNAmQVQ/arcgis/rest/services/Atlantic_Hurricanes_1851_2025/FeatureServer/0";
@@ -793,12 +795,15 @@
         layers: [segmentsLayer, landfallLayer, animationLayer]
       });
 
+      var is3D = false;
+      var viewPadding = { left: 300, right: 400, top: 20, bottom: 20 };
+
       var view = new MapView({
         container: "viewDiv",
         map: map,
         center: [-75, 27],
         zoom: 4,
-        padding: { left: 300, right: 400, top: 20, bottom: 20 },
+        padding: viewPadding,
         constraints: { minZoom: 3 },
         popup: null
       });
@@ -810,6 +815,53 @@
       // Basemap switcher
       document.getElementById("basemapSelect").addEventListener("change", function(e) {
         map.basemap = e.target.value;
+      });
+
+      // 3D/2D toggle
+      document.getElementById("viewToggle").addEventListener("click", function() {
+        var center = view.center;
+        var zoom = view.zoom;
+        view.container = null;
+
+        if (!is3D) {
+          view = new SceneView({
+            container: "viewDiv",
+            map: map,
+            camera: {
+              position: { longitude: center.longitude, latitude: center.latitude - 15, z: 8000000 },
+              tilt: 35
+            },
+            padding: viewPadding,
+            popup: null,
+            environment: {
+              atmosphereEnabled: true,
+              starsEnabled: true,
+              atmosphere: { quality: "high" }
+            }
+          });
+          document.getElementById("viewToggle").textContent = "2D";
+          document.getElementById("viewToggle").style.color = "#4fc3f7";
+        } else {
+          view = new MapView({
+            container: "viewDiv",
+            map: map,
+            center: [center.longitude, center.latitude],
+            zoom: zoom || 4,
+            padding: viewPadding,
+            constraints: { minZoom: 3 },
+            popup: null
+          });
+          document.getElementById("viewToggle").textContent = "3D";
+          document.getElementById("viewToggle").style.color = "#ccc";
+        }
+        is3D = !is3D;
+
+        // Re-add home widget
+        homeWidget = new Home({ view: view });
+        view.ui.add(homeWidget, "top-left");
+
+        // Re-bind click handler
+        bindClickHandler();
       });
 
       function updateStats() { /* removed */ }
@@ -1355,7 +1407,10 @@
       }
 
       // Click segment → highlight full path + show info panel
-      view.on("click", function(event) {
+      function bindClickHandler() {
+        view.on("click", handleMapClick);
+      }
+      function handleMapClick(event) {
         if (playbackActive) return;
         view.hitTest(event).then(function(response) {
           var hit = response.results.find(function(r) {
@@ -1425,7 +1480,8 @@
             }
           });
         });
-      });
+      }
+      bindClickHandler();
 
       // view.when may not resolve if a layer has issues — use whenLayerView as fallback
       // Load 4 featured storms into search results on startup
