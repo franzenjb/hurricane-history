@@ -735,7 +735,7 @@
         url: SEGMENTS_URL,
         title: "Storm Track Segments",
         renderer: buildRenderer(),
-        definitionExpression: "storm_id IN ('AL122005','AL142024','AL092017','AL182012')",
+        definitionExpression: "storm_id IN ('AL122005','AL092017','AL182012')",
         popupTemplate: segmentPopupTemplate,
         outFields: ["*"]
       });
@@ -749,7 +749,7 @@
       var landfallLayer = new FeatureLayer({
         url: POINTS_URL,
         title: "Landfall Points",
-        definitionExpression: "is_landfall = 1 AND storm_id IN ('AL122005','AL142024','AL092017','AL182012')",
+        definitionExpression: "is_landfall = 1 AND storm_id IN ('AL122005','AL092017','AL182012')",
         renderer: {
           type: "unique-value",
           field: "category_num",
@@ -1506,7 +1506,6 @@
       function loadFeaturedStorms() {
         var featured = [
           { storm_id: "AL122005", name: "KATRINA", year: 2005, category: "Cat 5", category_num: 5 },
-          { storm_id: "AL142024", name: "MILTON", year: 2024, category: "Cat 5", category_num: 5 },
           { storm_id: "AL092017", name: "HARVEY", year: 2017, category: "Cat 4", category_num: 4 },
           { storm_id: "AL182012", name: "SANDY", year: 2012, category: "Cat 3", category_num: 3 }
         ];
