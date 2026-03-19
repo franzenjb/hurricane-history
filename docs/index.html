@@ -322,7 +322,7 @@
     <div class="control-group">
       <label>Year Range</label>
       <div style="display:flex;gap:8px;">
-        <input type="number" id="yearStart" value="1851" min="1851" max="2025" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;" />
+        <input type="number" id="yearStart" value="2000" min="1851" max="2025" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;" />
         <input type="number" id="yearEnd" value="2025" min="1851" max="2025" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;" />
       </div>
     </div>
@@ -560,7 +560,7 @@
         url: SEGMENTS_URL,
         title: "Storm Track Segments",
         renderer: buildRenderer(),
-        definitionExpression: "peak_category_num >= 3",
+        definitionExpression: "peak_category_num >= 3 AND year >= 2000",
         popupTemplate: segmentPopupTemplate,
         outFields: ["*"]
       });
@@ -574,7 +574,7 @@
       var landfallLayer = new FeatureLayer({
         url: POINTS_URL,
         title: "Landfall Points",
-        definitionExpression: "is_landfall = 1 AND is_major = 1",
+        definitionExpression: "is_landfall = 1 AND category_num >= 3 AND year >= 2000",
         minScale: 18000000,
         renderer: {
           type: "unique-value",
@@ -780,6 +780,15 @@
               '<span>' + (a.name || "UNNAMED") + ' (' + a.year + ')</span>' +
               '<span class="storm-cat" style="background:' + catColor + ';color:#fff;">' + (a.category || "TD") + '</span>';
             item.addEventListener("click", function() {
+              // Clear any existing playback/highlight when selecting a new storm
+              if (playbackActive) {
+                stopPlayback();
+              } else {
+                animationLayer.removeAll();
+                segmentsLayer.visible = true;
+                segmentsLayer.opacity = document.getElementById("animToggle").checked ? 0.3 : 1.0;
+                lastLoadedExtrasId = null;
+              }
               var prev = searchResults.querySelector(".selected");
               if (prev) prev.classList.remove("selected");
               item.classList.add("selected");
@@ -989,6 +998,15 @@
       // Load narrative, retired status, landfall cards, and storm stats
       function loadStormExtras(stormId, stormName, stormYear) {
         console.log("Loading extras for:", stormId);
+        // Ensure summaryTable is loaded before querying
+        summaryTable.load().then(function() {
+          _doLoadExtras(stormId, stormName, stormYear);
+        }).catch(function(err) {
+          console.error("summaryTable load failed:", err);
+        });
+      }
+
+      function _doLoadExtras(stormId, stormName, stormYear) {
         // 1. Query summary table for narrative + retired + stats
         var sq = summaryTable.createQuery();
         sq.where = "storm_id = '" + stormId.replace(/'/g, "''") + "'";
