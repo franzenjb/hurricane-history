@@ -1313,12 +1313,12 @@
           });
           if (extent) {
             if (is3D && playbackFeatures[0].geometry && playbackFeatures[0].geometry.paths) {
-              // In 3D, start at the storm's origin point — camera will follow
+              // In 3D, rotate globe to storm origin
               var startPt = playbackFeatures[0].geometry.paths[0][0];
-              view.goTo({
-                target: { type: "point", longitude: startPt[0], latitude: startPt[1], spatialReference: { wkid: 4326 } },
-                zoom: 5
-              }, { duration: 1200 }).catch(function() {});
+              var cam = view.camera.clone();
+              cam.position.longitude = startPt[0];
+              cam.position.latitude = startPt[1] - 15;
+              view.goTo({ target: cam }, { duration: 1500 }).catch(function() {});
             } else {
               view.goTo({ target: extent }, { duration: 1200 }).catch(function() {});
             }
@@ -1370,17 +1370,15 @@
         // Update info panel with current segment
         showInfoPanel(f.attributes);
 
-        // Follow the storm path — pan camera to current segment endpoint
-        if (f.geometry && f.geometry.paths && f.geometry.paths[0]) {
+        // Globe follow — smoothly rotate to keep storm centered
+        if (is3D && f.geometry && f.geometry.paths && f.geometry.paths[0]) {
           var path = f.geometry.paths[0];
           var endPt = path[path.length - 1];
-          if (endPt && idx % 3 === 0) { // pan every 3rd segment for smooth motion
-            if (is3D) {
-              view.goTo({
-                target: { type: "point", longitude: endPt[0], latitude: endPt[1], spatialReference: { wkid: 4326 } },
-                zoom: view.zoom
-              }, { duration: 800, easing: "ease-in-out" }).catch(function() {});
-            }
+          if (endPt && idx % 2 === 0) {
+            var cam = view.camera.clone();
+            cam.position.longitude = endPt[0];
+            cam.position.latitude = endPt[1] - 15;
+            view.goTo({ target: cam }, { duration: 1000, easing: "ease-in-out" }).catch(function() {});
           }
         }
 
