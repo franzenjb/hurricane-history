@@ -534,7 +534,7 @@
       function searchStorms(term) {
         var query = summaryTable.createQuery();
         query.where = "UPPER(name) LIKE '%" + term.toUpperCase().replace(/'/g, "''") + "%'";
-        query.outFields = ["storm_id", "name", "year", "peak_category", "peak_category_num"];
+        query.outFields = ["storm_id", "name", "year", "category", "category_num"];
         query.orderByFields = ["year DESC"];
         query.returnGeometry = false;
         query.num = 30;
@@ -547,14 +547,13 @@
           }
           result.features.forEach(function(f) {
             var a = f.attributes;
-            var catColor = CAT_COLORS_HEX[a.peak_category_num] || "#78909c";
+            var catColor = CAT_COLORS_HEX[a.category_num] || "#78909c";
             var item = document.createElement("div");
             item.className = "search-result-item";
             item.innerHTML =
               '<span>' + (a.name || "UNNAMED") + ' (' + a.year + ')</span>' +
-              '<span class="storm-cat" style="background:' + catColor + ';color:#fff;">' + (a.peak_category || "TD") + '</span>';
+              '<span class="storm-cat" style="background:' + catColor + ';color:#fff;">' + (a.category || "TD") + '</span>';
             item.addEventListener("click", function() {
-              // Deselect previous
               var prev = searchResults.querySelector(".selected");
               if (prev) prev.classList.remove("selected");
               item.classList.add("selected");
@@ -562,8 +561,8 @@
                 storm_id: a.storm_id,
                 name: a.name || "UNNAMED",
                 year: a.year,
-                peak_category: a.peak_category || "TD",
-                peak_category_num: a.peak_category_num
+                peak_category: a.category || "TD",
+                peak_category_num: a.category_num
               };
               playBtn.disabled = false;
               playBtn.textContent = "Play " + selectedStorm.name + " (" + selectedStorm.year + ")";
@@ -716,6 +715,55 @@
         segmentsLayer.opacity = document.getElementById("animToggle").checked ? 0.3 : 1.0;
         landfallLayer.opacity = 1.0;
       }
+
+      // Highlight full storm path on click
+      view.on("click", function(event) {
+        if (playbackActive) return;
+        view.hitTest(event).then(function(response) {
+          var hit = response.results.find(function(r) {
+            return r.graphic && r.graphic.layer === segmentsLayer;
+          });
+          if (!hit) {
+            // Clicked empty space — clear highlight
+            animationLayer.removeAll();
+            segmentsLayer.opacity = document.getElementById("animToggle").checked ? 0.3 : 1.0;
+            return;
+          }
+          var stormId = hit.graphic.attributes.storm_id;
+          if (!stormId) return;
+
+          // Query all segments for this storm
+          var query = segmentsLayer.createQuery();
+          query.where = "storm_id = '" + stormId.replace(/'/g, "''") + "'";
+          query.outFields = ["*"];
+          query.orderByFields = ["segment_num ASC"];
+          query.returnGeometry = true;
+
+          segmentsLayer.queryFeatures(query).then(function(result) {
+            animationLayer.removeAll();
+            segmentsLayer.opacity = 0.2;
+
+            result.features.forEach(function(f) {
+              var catNum = f.attributes.category_num != null ? String(f.attributes.category_num) : "-1";
+              var color = CAT_COLORS_RGB[catNum] || CAT_COLORS_RGB["-1"];
+              var width = CAT_WIDTHS[catNum] || 0.75;
+
+              // Glow
+              animationLayer.add(new Graphic({
+                geometry: f.geometry,
+                symbol: { type: "simple-line", color: [...color, 60], width: width + 5, cap: "round", join: "round" }
+              }));
+              // Main bright line
+              animationLayer.add(new Graphic({
+                geometry: f.geometry,
+                symbol: { type: "simple-line", color: [...color, 255], width: width + 1, cap: "round", join: "round" },
+                attributes: f.attributes,
+                popupTemplate: segmentPopupTemplate
+              }));
+            });
+          });
+        });
+      });
 
       view.when(function() {
         updateStats();
