@@ -420,6 +420,85 @@
       width: 28px; font-size: 9px; color: #888; text-align: left; margin-left: 4px;
       flex-shrink: 0;
     }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      /* Control panel becomes bottom drawer */
+      #controls {
+        position: fixed; bottom: 0; left: 0; right: 0; top: auto;
+        width: 100%; max-height: 55vh; border-radius: 16px 16px 0 0;
+        padding: 12px 16px; z-index: 20;
+        overflow-y: auto; transition: transform 0.3s ease;
+      }
+      #controls h1 { font-size: 14px; }
+      #controls .subtitle { font-size: 10px; margin-bottom: 10px; }
+
+      /* Drawer handle */
+      #controls::before {
+        content: ''; display: block; width: 40px; height: 4px;
+        background: rgba(255,255,255,0.3); border-radius: 2px;
+        margin: 0 auto 10px auto;
+      }
+
+      /* Legend repositioned above drawer */
+      #legend {
+        position: fixed; bottom: auto; top: auto;
+        left: 8px; bottom: 56vh; z-index: 15;
+        padding: 8px 12px; border-radius: 8px;
+        display: none; /* hide on mobile to save space */
+      }
+
+      /* Map options */
+      #mapOptions {
+        position: fixed; bottom: auto; top: 8px; left: 8px;
+        padding: 4px 8px;
+      }
+
+      /* Intel overlay — full screen on mobile */
+      #intelOverlay { padding: 0; }
+      #intelModal {
+        width: 100%; height: 100%; max-height: 100vh;
+        border-radius: 0; margin: 0;
+      }
+      .modal-tabs { flex-wrap: wrap; gap: 0; }
+      .modal-tab { padding: 8px 10px; font-size: 10px; }
+
+      /* Info panel full width */
+      #infoPanel { width: 100%; }
+
+      /* Explore button */
+      #intelBtn {
+        bottom: auto; top: 8px; right: 8px;
+        padding: 8px 14px; font-size: 12px;
+      }
+
+      /* Record cards — ensure readable on small screens */
+      .record-card { padding: 10px 12px; }
+      .rc-icon { width: 36px; height: 36px; font-size: 14px; }
+      .rc-value { font-size: 14px; }
+      .rc-stat-num { font-size: 20px; }
+      .rc-stat-unit { font-size: 9px; }
+
+      /* Summary grid 2 columns on mobile */
+      .records-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+      /* Search results */
+      #searchResults { max-height: 100px; }
+
+      /* Playback controls compact */
+      #playBtn { padding: 10px; font-size: 14px; }
+      .transport-btn { width: 44px; height: 44px; font-size: 18px; }
+    }
+
+    /* Extra small (iPhone SE etc) */
+    @media (max-width: 375px) {
+      #controls { padding: 10px 12px; max-height: 50vh; }
+      #controls h1 { font-size: 13px; }
+      .rc-info { min-width: 0; }
+      .rc-value { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .rc-stat-num { font-size: 18px; }
+      .modal-tab { padding: 6px 8px; font-size: 9px; }
+    }
   </style>
 </head>
 <body>
@@ -1681,7 +1760,7 @@
       function loadRecords() {
         var url = SUMMARY_URL + '/query?' + new URLSearchParams({
           f: 'json', where: '1=1', outFields: 'storm_id,name,year,category,category_num,max_wind_kt,max_wind_mph,min_pressure_mb,duration_hours,landfalls,is_retired',
-          returnGeometry: 'false', orderByFields: 'max_wind_kt DESC', resultRecordCount: '2000'
+          returnGeometry: 'false', orderByFields: 'max_wind_kt DESC', resultRecordCount: '5000'
         });
         fetch(url).then(function(r) { return r.json(); }).then(function(result) {
           var storms = result.features.map(function(f) { return f.attributes; });
@@ -1705,22 +1784,87 @@
               '<div class="rc-stat-unit">' + unit + '</div></div></div>';
           }
 
+          function sectionHeader(title) {
+            return '<div style="font-size:10px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:1px;margin:18px 0 6px 0;">' + title + '</div>';
+          }
+
           var html = '';
+
+          // -- WIND & PRESSURE --
+          html += sectionHeader('Wind & Pressure');
           html += card('W', '#ff7043', 'Strongest Wind', strongest.name, strongest.year,
-            strongest.category + ' · ' + strongest.max_wind_mph + ' mph',
+            strongest.category + ' \u00b7 ' + strongest.max_wind_mph + ' mph',
             strongest.max_wind_kt, 'knots', strongest.storm_id);
 
           html += card('P', '#ce93d8', 'Lowest Pressure', lowestPres.name, lowestPres.year,
             lowestPres.category,
             lowestPres.min_pressure_mb, 'mb', lowestPres.storm_id);
 
-          html += card('D', '#42a5f5', 'Longest Duration', longest.name, longest.year,
-            longest.category + ' · ' + longest.duration_hours + ' hours',
-            (longest.duration_hours / 24).toFixed(0), 'days', longest.storm_id);
+          html += card('\u2193', '#e040fb', 'Fastest Pressure Drop', 'WILMA', 2005,
+            'Cat 5 \u00b7 97 mb in 24 hours',
+            '97', 'mb/day', 'AL252005');
 
+          // -- INTENSITY --
+          html += sectionHeader('Intensity');
+          html += card('\u26a1', '#ff5252', 'Fastest to Cat 5', 'MILTON', 2024,
+            'Cat 5 \u00b7 TD to 180 mph in 54 hrs',
+            '54', 'hours', 'AL142024');
+
+          html += card('\u23f1', '#ff8a65', 'Longest at Cat 5', 'IRMA', 2017,
+            'Cat 5 \u00b7 185 mph sustained',
+            '78', 'hours', 'AL112017');
+
+          html += card('E', '#4db6ac', 'Earliest Cat 5', 'BERYL', 2024,
+            'Cat 5 \u00b7 165 mph',
+            'Jul 2', '', 'AL022024');
+
+          html += card('N', '#7986cb', 'Latest Cat 5', 'UNNAMED', 1932,
+            'Cat 5 \u00b7 Cuba Hurricane',
+            'Nov 5', '', 'AL141932');
+
+          // -- SIZE --
+          html += sectionHeader('Size');
+          html += card('\u25ef', '#26c6da', 'Largest Diameter', 'SANDY', 2012,
+            'Cat 3 \u00b7 TS winds 485 mi from center',
+            '1,150', 'miles', 'AL182012');
+
+          html += card('\u00b7', '#80cbc4', 'Smallest Diameter', 'MARCO', 2008,
+            'TS \u00b7 Cloud shield just 85 mi across',
+            '12', 'miles', 'AL132008');
+
+          // -- MOVEMENT --
+          html += sectionHeader('Movement');
+          html += card('T', '#66bb6a', 'Longest Track', 'FAITH', 1966,
+            'Cat 3 \u00b7 Africa to Scandinavia',
+            '6,850', 'miles', 'AL061966');
+
+          html += card('S', '#ffa726', 'Fastest Forward Speed', 'UNNAMED', 1938,
+            'Cat 5 \u00b7 Long Island Express',
+            '~70', 'mph', 'AL061938');
+
+          html += card('\u21ba', '#ab47bc', 'Most Erratic Track', 'NADINE', 2012,
+            'Cat 1 \u00b7 3 loops near the Azores',
+            '3', 'loops', 'AL142012');
+
+          // -- IMPACT --
+          html += sectionHeader('Impact');
           html += card('L', '#FFD700', 'Most Landfalls', mostLandfalls.name, mostLandfalls.year,
             mostLandfalls.category,
             mostLandfalls.landfalls, 'hits', mostLandfalls.storm_id);
+
+          html += card('\u2708', '#4fc3f7', 'Most Countries Hit', 'IVAN', 2004,
+            'Cat 5 \u00b7 Cat 5 three separate times',
+            '10+', 'nations', 'AL092004');
+
+          html += card('$', '#a5d6a7', 'Costliest', 'KATRINA', 2005,
+            'Cat 5 \u00b7 Inflation-adjusted',
+            '$200', 'billion', 'AL122005');
+
+          // -- DURATION --
+          html += sectionHeader('Duration');
+          html += card('D', '#42a5f5', 'Longest Duration', longest.name, longest.year,
+            longest.category + ' \u00b7 ' + longest.duration_hours + ' hours',
+            (longest.duration_hours / 24).toFixed(0), 'days', longest.storm_id);
 
           // Summary grid
           html += '<div class="records-grid">' +
@@ -1746,13 +1890,29 @@
 
           toolContent.innerHTML = html;
 
+          // Hardcoded storm metadata for records not in top-2000 query
+          var hardcodedStorms = {
+            'AL252005': { storm_id: 'AL252005', name: 'WILMA', year: 2005, peak_category: 'Cat 5', peak_category_num: 5 },
+            'AL142024': { storm_id: 'AL142024', name: 'MILTON', year: 2024, peak_category: 'Cat 5', peak_category_num: 5 },
+            'AL112017': { storm_id: 'AL112017', name: 'IRMA', year: 2017, peak_category: 'Cat 5', peak_category_num: 5 },
+            'AL022024': { storm_id: 'AL022024', name: 'BERYL', year: 2024, peak_category: 'Cat 5', peak_category_num: 5 },
+            'AL141932': { storm_id: 'AL141932', name: 'UNNAMED', year: 1932, peak_category: 'Cat 5', peak_category_num: 5 },
+            'AL182012': { storm_id: 'AL182012', name: 'SANDY', year: 2012, peak_category: 'Cat 3', peak_category_num: 3 },
+            'AL132008': { storm_id: 'AL132008', name: 'MARCO', year: 2008, peak_category: 'TS', peak_category_num: 0 },
+            'AL061966': { storm_id: 'AL061966', name: 'FAITH', year: 1966, peak_category: 'Cat 3', peak_category_num: 3 },
+            'AL061938': { storm_id: 'AL061938', name: 'UNNAMED', year: 1938, peak_category: 'Cat 5', peak_category_num: 5 },
+            'AL142012': { storm_id: 'AL142012', name: 'NADINE', year: 2012, peak_category: 'Cat 1', peak_category_num: 1 },
+            'AL092004': { storm_id: 'AL092004', name: 'IVAN', year: 2004, peak_category: 'Cat 5', peak_category_num: 5 },
+            'AL122005': { storm_id: 'AL122005', name: 'KATRINA', year: 2005, peak_category: 'Cat 5', peak_category_num: 5 }
+          };
+
           // Click to play
           toolContent.querySelectorAll('[data-sid]').forEach(function(el) {
             el.addEventListener('click', function() {
               var sid = el.getAttribute('data-sid');
-              var s = storms.find(function(st) { return st.storm_id === sid; });
+              var s = storms.find(function(st) { return st.storm_id === sid; }) || hardcodedStorms[sid];
               if (s) {
-                selectedStorm = { storm_id: s.storm_id, name: s.name, year: s.year, peak_category: s.category, peak_category_num: s.category_num };
+                selectedStorm = { storm_id: s.storm_id, name: s.name, year: s.year, peak_category: s.peak_category || s.category, peak_category_num: s.peak_category_num || s.category_num };
                 playBtn.disabled = false;
                 playBtn.textContent = "Play " + s.name + " (" + s.year + ")";
                 searchInput.value = s.name;
@@ -1824,7 +1984,7 @@
       function loadLandfallStats() {
         var url = POINTS_URL + '/query?' + new URLSearchParams({
           f: 'json', where: "is_landfall = 1 AND landfall_state <> ''",
-          outFields: 'landfall_state', returnGeometry: 'false', resultRecordCount: '2000'
+          outFields: 'landfall_state', returnGeometry: 'false', resultRecordCount: '5000'
         });
         fetch(url).then(function(r) { return r.json(); }).then(function(result) {
           var counts = {};
@@ -1870,26 +2030,30 @@
           html += '<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">Monthly Distribution</div>';
           html += '<div style="font-size:12px;color:#888;margin-bottom:20px;">' + total + ' storms by formation month</div>';
 
-          // Only show months with activity (Jun-Nov typically), but include all
+          var MONTH_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+          var peakMonth = 1; var peakCount = 0;
+          for (var m2 = 1; m2 <= 12; m2++) { if (counts[m2] > peakCount) { peakCount = counts[m2]; peakMonth = m2; } }
+
           for (var m = 1; m <= 12; m++) {
             var pct = Math.round((counts[m] / maxCount) * 100);
             var isHurr = (m >= 6 && m <= 11);
-            var barColor = isHurr ? "#4fc3f7" : "rgba(255,255,255,0.2)";
+            var barColor = isHurr ? "#4fc3f7" : "rgba(255,255,255,0.15)";
             var countPct = total > 0 ? Math.round((counts[m] / total) * 100) : 0;
-            html += '<div style="display:flex;align-items:center;margin-bottom:8px;">' +
-              '<span style="width:90px;font-size:13px;color:' + (counts[m] > 0 ? '#e0e0e0' : '#555') + ';text-align:right;margin-right:12px;font-weight:' + (counts[m] > 0 ? '600' : '400') + ';">' + MONTH_FULL[m-1] + '</span>' +
-              '<div style="flex:1;height:28px;background:rgba(255,255,255,0.04);border-radius:4px;overflow:hidden;position:relative;">' +
-                '<div style="height:100%;width:' + pct + '%;background:' + barColor + ';border-radius:4px;transition:width 0.4s;"></div>' +
-                (counts[m] > 0 ? '<span style="position:absolute;top:5px;left:' + Math.max(pct + 1, 8) + '%;font-size:13px;font-weight:700;color:#fff;">' + counts[m] + ' <span style="font-weight:400;font-size:11px;color:#aaa;">(' + countPct + '%)</span></span>' : '') +
+            var isPeak = (m === peakMonth);
+            var cardBg = isPeak ? 'rgba(79,195,247,0.08)' : 'rgba(255,255,255,0.03)';
+            var cardBorder = isPeak ? 'rgba(79,195,247,0.25)' : 'rgba(255,255,255,0.06)';
+            var nameColor = counts[m] > 0 ? '#e0e0e0' : '#555';
+            var statColor = isPeak ? '#4fc3f7' : (counts[m] > 0 ? '#fff' : '#555');
+
+            html += '<div style="display:flex;align-items:center;padding:10px 14px;margin-bottom:6px;background:' + cardBg + ';border:1px solid ' + cardBorder + ';border-radius:8px;position:relative;overflow:hidden;">' +
+              '<div style="position:absolute;left:0;top:0;bottom:0;width:' + pct + '%;background:' + barColor + ';opacity:0.12;border-radius:8px;transition:width 0.4s;"></div>' +
+              '<span style="width:36px;font-size:11px;font-weight:700;color:' + (isHurr ? '#4fc3f7' : '#666') + ';text-transform:uppercase;flex-shrink:0;position:relative;">' + MONTH_SHORT[m-1] + '</span>' +
+              '<span style="flex:1;font-size:14px;font-weight:' + (counts[m] > 0 ? '600' : '400') + ';color:' + nameColor + ';position:relative;">' + MONTH_FULL[m-1] + (isPeak ? ' <span style="font-size:10px;font-weight:700;color:#4fc3f7;background:rgba(79,195,247,0.15);padding:2px 6px;border-radius:4px;margin-left:6px;">PEAK</span>' : '') + '</span>' +
+              '<div style="text-align:right;flex-shrink:0;position:relative;">' +
+                '<div style="font-size:18px;font-weight:800;color:' + statColor + ';">' + (counts[m] > 0 ? counts[m] : '-') + '</div>' +
+                (counts[m] > 0 ? '<div style="font-size:10px;color:#888;">' + countPct + '%</div>' : '') +
               '</div></div>';
           }
-
-          // Peak season callout
-          var peakMonth = 1; var peakCount = 0;
-          for (var m2 = 1; m2 <= 12; m2++) { if (counts[m2] > peakCount) { peakCount = counts[m2]; peakMonth = m2; } }
-          html += '<div style="margin-top:16px;padding:12px 16px;background:rgba(79,195,247,0.08);border:1px solid rgba(79,195,247,0.2);border-radius:8px;">' +
-            '<span style="font-size:12px;color:#4fc3f7;font-weight:700;">PEAK: ' + MONTH_FULL[peakMonth-1] + '</span>' +
-            '<span style="font-size:12px;color:#888;margin-left:8px;">' + peakCount + ' storms (' + Math.round((peakCount/total)*100) + '% of all activity)</span></div>';
 
           toolContent.innerHTML = html;
         });
