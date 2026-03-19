@@ -9,7 +9,24 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #1a1a2e; color: #e0e0e0; }
-    #viewDiv { width: 100%; height: 100%; }
+    #viewDiv { width: 100%; height: 100%; transition: width 0.3s; }
+    #viewDiv.with-panel { width: calc(100% - 380px); }
+
+    /* Feature info panel */
+    #infoPanel {
+      position: absolute; top: 0; right: 0; width: 380px; height: 100%; z-index: 10;
+      background: rgba(20, 20, 40, 0.97); backdrop-filter: blur(12px);
+      border-left: 1px solid rgba(255,255,255,0.1);
+      overflow-y: auto; display: none;
+    }
+    #infoPanel.open { display: block; }
+    #infoPanelClose {
+      position: absolute; top: 10px; right: 14px; z-index: 11;
+      background: none; border: none; color: #888; font-size: 20px; cursor: pointer;
+      line-height: 1;
+    }
+    #infoPanelClose:hover { color: #fff; }
+    #infoPanelContent { padding: 0; }
 
     /* Control panel */
     #controls {
@@ -148,6 +165,11 @@
 </head>
 <body>
   <div id="viewDiv"></div>
+
+  <div id="infoPanel">
+    <button id="infoPanelClose">&times;</button>
+    <div id="infoPanelContent"></div>
+  </div>
 
   <div id="playbackBanner">
     <div class="storm-name" id="bannerName"></div>
@@ -446,9 +468,7 @@
         zoom: 4,
         constraints: { minZoom: 3 },
         popup: {
-          dockEnabled: true,
-          dockOptions: { buttonEnabled: false, position: "bottom-left" },
-          collapseEnabled: false
+          autoOpenEnabled: false
         }
       });
 
@@ -585,25 +605,112 @@
         stopPlayback();
       });
 
+      // Feature info panel helpers
+      var infoPanel = document.getElementById("infoPanel");
+      var infoPanelContent = document.getElementById("infoPanelContent");
+      document.getElementById("infoPanelClose").addEventListener("click", closeInfoPanel);
+
+      function closeInfoPanel() {
+        infoPanel.classList.remove("open");
+        document.getElementById("viewDiv").classList.remove("with-panel");
+        view.resize();
+      }
+
+      function showInfoPanel(attrs) {
+        var a = attrs;
+        var catNum = a.category_num != null ? a.category_num : -1;
+        var headerBg = CAT_COLORS_HEX[catNum] || "#546e7a";
+        var windKt = a.wind_kt || 0;
+        var windMph = a.wind_mph || 0;
+        var pres = a.pressure_mb;
+        var presF = (pres && pres > 0 && pres < 9999) ? pres + " mb" : "N/A";
+        var windBarW = windKt > 0 ? Math.min(Math.round((windKt / 170) * 100), 100) : 0;
+        var cat = a.category || "Unknown";
+        var peakCat = a.peak_category || "Unknown";
+        var isLandfall = a.is_landfall === 1;
+        var statuses = { HU: "Hurricane", TS: "Tropical Storm", TD: "Tropical Depression", EX: "Extratropical", SS: "Subtrop. Storm", SD: "Subtrop. Dep." };
+        var statusLabel = statuses[a.status] || a.status || "";
+
+        infoPanelContent.innerHTML =
+          '<div style="background:' + headerBg + ';padding:20px 20px 16px 20px;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:flex-start;">' +
+              '<div>' +
+                '<div style="font-size:24px;font-weight:700;color:#fff;">' + (a.name || "UNNAMED") + '</div>' +
+                '<div style="font-size:14px;color:rgba(255,255,255,0.85);margin-top:3px;">' + a.year + ' Atlantic Season</div>' +
+              '</div>' +
+              '<div style="text-align:right;">' +
+                '<div style="font-size:32px;font-weight:700;color:#fff;line-height:1;">' + windKt + '</div>' +
+                '<div style="font-size:11px;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.5px;">knots</div>' +
+              '</div>' +
+            '</div>' +
+            '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;">' +
+              '<span style="padding:4px 12px;border-radius:10px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;">' + cat + '</span>' +
+              (isLandfall ? '<span style="padding:4px 12px;border-radius:10px;background:#FFD700;font-size:11px;font-weight:700;color:#333;">LANDFALL</span>' : '') +
+            '</div>' +
+          '</div>' +
+          '<div style="display:flex;justify-content:space-between;padding:14px 20px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);">' +
+            '<div style="text-align:center;flex:1;">' +
+              '<div style="font-size:10px;color:#888;text-transform:uppercase;font-weight:600;">Wind</div>' +
+              '<div style="font-size:18px;font-weight:700;color:' + headerBg + ';">' + windMph + ' mph</div>' +
+            '</div>' +
+            '<div style="text-align:center;flex:1;border-left:1px solid rgba(255,255,255,0.1);border-right:1px solid rgba(255,255,255,0.1);">' +
+              '<div style="font-size:10px;color:#888;text-transform:uppercase;font-weight:600;">Pressure</div>' +
+              '<div style="font-size:18px;font-weight:700;color:#e0e0e0;">' + presF + '</div>' +
+            '</div>' +
+            '<div style="text-align:center;flex:1;">' +
+              '<div style="font-size:10px;color:#888;text-transform:uppercase;font-weight:600;">Status</div>' +
+              '<div style="font-size:14px;font-weight:700;color:#e0e0e0;">' + statusLabel + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="padding:14px 20px;">' +
+            '<div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Wind Intensity</div>' +
+            '<div style="background:rgba(255,255,255,0.1);border-radius:4px;height:18px;overflow:hidden;position:relative;">' +
+              '<div style="background:' + headerBg + ';width:' + windBarW + '%;height:100%;border-radius:4px;min-width:' + (windKt > 0 ? 24 : 0) + 'px;"></div>' +
+              (windKt > 0 ? '<span style="position:absolute;top:2px;left:6px;font-size:10px;font-weight:700;color:#fff;">' + windKt + ' kt</span>' : '') +
+            '</div>' +
+            '<div style="display:flex;justify-content:space-between;margin-top:3px;font-size:9px;color:#666;">' +
+              '<span>TD</span><span style="color:#1565C0">TS</span><span style="color:#00695c">H1</span><span style="color:#e65100">H2</span><span style="color:#d84315">H3</span><span style="color:#b71c1c">H4</span><span style="color:#7f0000">H5</span>' +
+            '</div>' +
+          '</div>' +
+          '<div style="padding:4px 20px 14px 20px;display:flex;gap:8px;">' +
+            '<div style="flex:1;padding:10px;background:rgba(255,255,255,0.05);border-radius:6px;border-left:3px solid ' + (CAT_COLORS_HEX[a.peak_category_num] || '#777') + ';">' +
+              '<div style="font-size:10px;color:#888;text-transform:uppercase;font-weight:700;">Storm Peak</div>' +
+              '<div style="font-size:16px;font-weight:700;color:' + (CAT_COLORS_HEX[a.peak_category_num] || '#777') + ';">' + peakCat + '</div>' +
+            '</div>' +
+            '<div style="flex:1;padding:10px;background:rgba(255,255,255,0.05);border-radius:6px;border-left:3px solid #455a64;">' +
+              '<div style="font-size:10px;color:#888;text-transform:uppercase;font-weight:700;">Observation</div>' +
+              '<div style="font-size:13px;font-weight:700;color:#e0e0e0;">' + (a.datetime || '') + '</div>' +
+              '<div style="font-size:11px;color:#888;">Segment ' + (a.segment_num || '') + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div style="padding:8px 20px 12px 20px;border-top:1px solid rgba(255,255,255,0.06);">' +
+            '<div style="font-size:10px;color:#666;">NOAA NHC HURDAT2 · ' + (a.storm_id || '') + '</div>' +
+          '</div>';
+
+        infoPanel.classList.add("open");
+        document.getElementById("viewDiv").classList.add("with-panel");
+        setTimeout(function() { view.resize(); }, 350);
+      }
+
+      // Stored features for looping
+      var playbackFeatures = null;
+
       function playStorm(storm) {
         playbackActive = true;
         playBtn.disabled = true;
         stopBtn.style.display = "block";
 
-        // Show banner
         bannerName.textContent = storm.name;
         bannerDetail.textContent = storm.year + " Atlantic Season — Peak: " + storm.peak_category;
         bannerProgress.textContent = "Loading track segments...";
         playbackBanner.style.display = "block";
 
-        // Dim the base layers
-        segmentsLayer.opacity = 0.15;
-        landfallLayer.opacity = 0.15;
+        // HIDE other storms completely
+        segmentsLayer.visible = false;
+        landfallLayer.visible = false;
 
-        // Clear previous animation graphics
         animationLayer.removeAll();
 
-        // Query all segments for this storm
         var query = segmentsLayer.createQuery();
         query.where = "storm_id = '" + storm.storm_id.replace(/'/g, "''") + "'";
         query.outFields = ["*"];
@@ -611,86 +718,28 @@
         query.returnGeometry = true;
 
         segmentsLayer.queryFeatures(query).then(function(result) {
-          var features = result.features;
-          if (features.length === 0) {
+          playbackFeatures = result.features;
+          if (playbackFeatures.length === 0) {
             bannerProgress.textContent = "No track segments found";
             setTimeout(stopPlayback, 2000);
             return;
           }
 
-          // Zoom to storm extent
+          // Zoom closer to storm extent
           var extent = null;
-          features.forEach(function(f) {
+          playbackFeatures.forEach(function(f) {
             if (f.geometry && f.geometry.extent) {
-              if (!extent) {
-                extent = f.geometry.extent.clone();
-              } else {
-                extent = extent.union(f.geometry.extent);
-              }
+              extent = extent ? extent.union(f.geometry.extent) : f.geometry.extent.clone();
             }
           });
           if (extent) {
-            view.goTo({ target: extent.expand(1.5) }, { duration: 1500 });
+            view.goTo({ target: extent.expand(1.2) }, { duration: 1200 });
           }
 
-          // Progressive draw
-          var idx = 0;
-          function drawNext() {
-            if (!playbackActive || idx >= features.length) {
-              if (playbackActive) {
-                bannerProgress.textContent = "Complete — " + features.length + " segments";
-                // Keep displayed for a moment, then user can stop
-              }
-              return;
-            }
+          // Show info panel with first segment
+          showInfoPanel(playbackFeatures[0].attributes);
 
-            var f = features[idx];
-            var catNum = f.attributes.category_num != null ? String(f.attributes.category_num) : "-1";
-            var color = CAT_COLORS_RGB[catNum] || CAT_COLORS_RGB["-1"];
-            var width = CAT_WIDTHS[catNum] || 0.75;
-
-            // Glow line (wider, semi-transparent)
-            var glowGraphic = new Graphic({
-              geometry: f.geometry,
-              symbol: {
-                type: "simple-line",
-                color: [...color, 50],
-                width: width + 4,
-                cap: "round",
-                join: "round"
-              }
-            });
-
-            // Main line
-            var mainGraphic = new Graphic({
-              geometry: f.geometry,
-              symbol: {
-                type: "simple-line",
-                color: [...color, 220],
-                width: width,
-                cap: "round",
-                join: "round"
-              },
-              attributes: f.attributes,
-              popupTemplate: segmentPopupTemplate
-            });
-
-            animationLayer.addMany([glowGraphic, mainGraphic]);
-
-            // Update banner
-            var catLabel = CAT_LABELS[catNum] || "Unknown";
-            var windInfo = f.attributes.wind_kt ? f.attributes.wind_kt + " kt" : "";
-            bannerProgress.textContent = "Segment " + (idx + 1) + " of " + features.length + " — " + catLabel + (windInfo ? " (" + windInfo + ")" : "");
-
-            idx++;
-
-            // Delay based on speed slider: higher slider value = faster = shorter delay
-            // Slider range 0.5–5, map to delay 500ms–40ms
-            var delay = Math.max(40, 600 - (animationSpeed * 112));
-            playbackTimeout = setTimeout(drawNext, delay);
-          }
-
-          drawNext();
+          drawLoop(0);
         }).catch(function(err) {
           console.error("Error querying storm segments:", err);
           bannerProgress.textContent = "Error loading segments";
@@ -698,8 +747,48 @@
         });
       }
 
+      function drawLoop(idx) {
+        if (!playbackActive || !playbackFeatures) return;
+
+        // Loop: reset when reaching end
+        if (idx >= playbackFeatures.length) {
+          animationLayer.removeAll();
+          bannerProgress.textContent = "Looping...";
+          playbackTimeout = setTimeout(function() { drawLoop(0); }, 800);
+          return;
+        }
+
+        var f = playbackFeatures[idx];
+        var catNum = f.attributes.category_num != null ? String(f.attributes.category_num) : "-1";
+        var color = CAT_COLORS_RGB[catNum] || CAT_COLORS_RGB["-1"];
+        var width = CAT_WIDTHS[catNum] || 0.75;
+
+        // Glow
+        animationLayer.add(new Graphic({
+          geometry: f.geometry,
+          symbol: { type: "simple-line", color: [...color, 50], width: width + 5, cap: "round", join: "round" }
+        }));
+        // Main line
+        animationLayer.add(new Graphic({
+          geometry: f.geometry,
+          symbol: { type: "simple-line", color: [...color, 240], width: width + 0.5, cap: "round", join: "round" },
+          attributes: f.attributes
+        }));
+
+        // Update info panel with current segment
+        showInfoPanel(f.attributes);
+
+        var catLabel = CAT_LABELS[catNum] || "Unknown";
+        var windInfo = f.attributes.wind_kt ? f.attributes.wind_kt + " kt" : "";
+        bannerProgress.textContent = "Segment " + (idx + 1) + " of " + playbackFeatures.length + " — " + catLabel + (windInfo ? " (" + windInfo + ")" : "");
+
+        var delay = Math.max(40, 600 - (animationSpeed * 112));
+        playbackTimeout = setTimeout(function() { drawLoop(idx + 1); }, delay);
+      }
+
       function stopPlayback() {
         playbackActive = false;
+        playbackFeatures = null;
         if (playbackTimeout) {
           clearTimeout(playbackTimeout);
           playbackTimeout = null;
@@ -711,56 +800,83 @@
         if (selectedStorm) {
           playBtn.textContent = "Play " + selectedStorm.name + " (" + selectedStorm.year + ")";
         }
-        // Restore layer opacity
+        // Restore layers
+        segmentsLayer.visible = true;
+        landfallLayer.visible = true;
         segmentsLayer.opacity = document.getElementById("animToggle").checked ? 0.3 : 1.0;
         landfallLayer.opacity = 1.0;
+        closeInfoPanel();
       }
 
-      // Highlight full storm path on click
+      // Click segment → highlight full path + show info panel
       view.on("click", function(event) {
         if (playbackActive) return;
         view.hitTest(event).then(function(response) {
           var hit = response.results.find(function(r) {
-            return r.graphic && r.graphic.layer === segmentsLayer;
+            return r.graphic && (r.graphic.layer === segmentsLayer || r.graphic.layer === animationLayer);
           });
           if (!hit) {
-            // Clicked empty space — clear highlight
             animationLayer.removeAll();
+            segmentsLayer.visible = true;
             segmentsLayer.opacity = document.getElementById("animToggle").checked ? 0.3 : 1.0;
+            closeInfoPanel();
             return;
           }
-          var stormId = hit.graphic.attributes.storm_id;
-          if (!stormId) return;
+          var attrs = hit.graphic.attributes;
+          if (!attrs || !attrs.storm_id) return;
 
-          // Query all segments for this storm
+          // Show info panel for clicked segment
+          showInfoPanel(attrs);
+
+          // Auto-populate playback player
+          selectedStorm = {
+            storm_id: attrs.storm_id,
+            name: attrs.name || "UNNAMED",
+            year: attrs.year,
+            peak_category: attrs.peak_category || attrs.category || "TD",
+            peak_category_num: attrs.peak_category_num != null ? attrs.peak_category_num : attrs.category_num
+          };
+          playBtn.disabled = false;
+          playBtn.textContent = "Play " + selectedStorm.name + " (" + selectedStorm.year + ")";
+          searchInput.value = selectedStorm.name;
+
+          // Highlight full path
           var query = segmentsLayer.createQuery();
-          query.where = "storm_id = '" + stormId.replace(/'/g, "''") + "'";
+          query.where = "storm_id = '" + attrs.storm_id.replace(/'/g, "''") + "'";
           query.outFields = ["*"];
           query.orderByFields = ["segment_num ASC"];
           query.returnGeometry = true;
 
           segmentsLayer.queryFeatures(query).then(function(result) {
             animationLayer.removeAll();
-            segmentsLayer.opacity = 0.2;
+            segmentsLayer.visible = false;
 
             result.features.forEach(function(f) {
               var catNum = f.attributes.category_num != null ? String(f.attributes.category_num) : "-1";
               var color = CAT_COLORS_RGB[catNum] || CAT_COLORS_RGB["-1"];
               var width = CAT_WIDTHS[catNum] || 0.75;
 
-              // Glow
               animationLayer.add(new Graphic({
                 geometry: f.geometry,
                 symbol: { type: "simple-line", color: [...color, 60], width: width + 5, cap: "round", join: "round" }
               }));
-              // Main bright line
               animationLayer.add(new Graphic({
                 geometry: f.geometry,
                 symbol: { type: "simple-line", color: [...color, 255], width: width + 1, cap: "round", join: "round" },
-                attributes: f.attributes,
-                popupTemplate: segmentPopupTemplate
+                attributes: f.attributes
               }));
             });
+
+            // Zoom to this storm
+            var extent = null;
+            result.features.forEach(function(f) {
+              if (f.geometry && f.geometry.extent) {
+                extent = extent ? extent.union(f.geometry.extent) : f.geometry.extent.clone();
+              }
+            });
+            if (extent) {
+              view.goTo({ target: extent.expand(1.3) }, { duration: 1000 });
+            }
           });
         });
       });
