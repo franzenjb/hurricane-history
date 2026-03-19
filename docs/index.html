@@ -175,6 +175,94 @@
     #playbackBanner .segment-progress {
       font-size: 11px; color: #888; margin-top: 4px;
     }
+
+    /* Narrative section */
+    .narrative-section {
+      padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .narrative-section .section-label {
+      font-size: 10px; font-weight: 700; color: #4fc3f7; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .narrative-text {
+      font-size: 13px; line-height: 1.6; color: #ccc;
+    }
+    .retired-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 10px;
+      background: rgba(239,83,80,0.2); border: 1px solid rgba(239,83,80,0.4);
+      font-size: 10px; font-weight: 700; color: #ef5350; text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* Landfall cards */
+    .landfall-section {
+      padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .landfall-section .section-label {
+      font-size: 10px; font-weight: 700; color: #FFD700; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .landfall-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px; padding: 10px 12px; margin-bottom: 6px;
+      border-left: 3px solid #FFD700;
+    }
+    .landfall-card .lf-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;
+    }
+    .landfall-card .lf-location {
+      font-size: 13px; font-weight: 700; color: #e0e0e0;
+    }
+    .landfall-card .lf-cat {
+      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 8px; color: #fff;
+    }
+    .landfall-card .lf-details {
+      font-size: 11px; color: #999; display: flex; gap: 12px; flex-wrap: wrap;
+    }
+    .landfall-card .lf-details span { white-space: nowrap; }
+
+    /* Storm stats section */
+    .storm-stats-section {
+      padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .storm-stats-section .section-label {
+      font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .storm-stat-row {
+      display: flex; justify-content: space-between; padding: 5px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .storm-stat-row:last-child { border-bottom: none; }
+    .storm-stat-label { font-size: 11px; color: #888; }
+    .storm-stat-val { font-size: 12px; font-weight: 700; color: #e0e0e0; }
+
+    /* Monthly chart */
+    #monthlyChart {
+      border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px; margin-top: 8px;
+    }
+    #monthlyChart .section-label {
+      font-size: 10px; font-weight: 700; color: #4fc3f7; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .month-bar-row {
+      display: flex; align-items: center; margin-bottom: 3px;
+    }
+    .month-bar-label {
+      width: 28px; font-size: 9px; color: #888; text-align: right; margin-right: 6px;
+      flex-shrink: 0;
+    }
+    .month-bar-track {
+      flex: 1; height: 12px; background: rgba(255,255,255,0.06); border-radius: 2px;
+      overflow: hidden; position: relative;
+    }
+    .month-bar-fill {
+      height: 100%; background: #4fc3f7; border-radius: 2px; transition: width 0.4s;
+    }
+    .month-bar-count {
+      width: 28px; font-size: 9px; color: #888; text-align: left; margin-left: 4px;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -245,6 +333,15 @@
       <div class="range-labels"><span>Slow</span><span>Fast</span></div>
     </div>
 
+    <div class="toggle-row">
+      <span class="toggle-label">Show All Landfalls</span>
+      <label class="toggle">
+        <input type="checkbox" id="landfallToggle" checked />
+        <span class="toggle-track"></span>
+        <span class="toggle-knob"></span>
+      </label>
+    </div>
+
     <div id="stats">
       <div class="stat-row">
         <span class="stat-label">Visible Storms</span>
@@ -254,6 +351,11 @@
         <span class="stat-label">Track Segments</span>
         <span class="stat-value" id="segCount">—</span>
       </div>
+    </div>
+
+    <div id="monthlyChart">
+      <div class="section-label">Monthly Distribution</div>
+      <div id="monthBars"></div>
     </div>
   </div>
 
@@ -296,6 +398,37 @@
         "-1": "Tropical Depression", "0": "Tropical Storm", "1": "Category 1",
         "2": "Category 2", "3": "Category 3 (Major)", "4": "Category 4 (Major)", "5": "Category 5 (Major)"
       };
+
+      // Format datetime — handles epoch ms from AGOL or string dates
+      function formatDateTime(val) {
+        if (val == null || val === "") return "";
+        if (typeof val === "number" || /^\d{10,13}$/.test(String(val))) {
+          var d = new Date(typeof val === "number" ? val : parseInt(val));
+          if (isNaN(d.getTime())) return String(val);
+          var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+          return months[d.getUTCMonth()] + " " + d.getUTCDate() + ", " + d.getUTCFullYear() +
+            " " + String(d.getUTCHours()).padStart(2,"0") + ":" + String(d.getUTCMinutes()).padStart(2,"0") + "Z";
+        }
+        // Already a readable string
+        return String(val);
+      }
+
+      function formatDate(val) {
+        if (val == null || val === "") return "";
+        if (typeof val === "number" || /^\d{10,13}$/.test(String(val))) {
+          var d = new Date(typeof val === "number" ? val : parseInt(val));
+          if (isNaN(d.getTime())) return String(val);
+          var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+          return months[d.getUTCMonth()] + " " + d.getUTCDate() + ", " + d.getUTCFullYear();
+        }
+        // Parse YYYY-MM-DD string
+        if (/^\d{4}-\d{2}-\d{2}/.test(String(val))) {
+          var parts = String(val).split(/[-T ]/);
+          var months2 = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+          return months2[parseInt(parts[1])-1] + " " + parseInt(parts[2]) + ", " + parts[0];
+        }
+        return String(val);
+      }
 
       let animationSpeed = 2; // slider value
       let selectedStorm = null;
@@ -404,7 +537,7 @@
                 '</div>' +
                 '<div style="flex:1;padding:8px;background:#f0f0f0;border-radius:4px;border-left:3px solid #455a64;">' +
                   '<div style="font-size:9px;color:#666;text-transform:uppercase;font-weight:700;">Observation</div>' +
-                  '<div style="font-size:12px;font-weight:700;color:#333;">' + (a.datetime || '') + '</div>' +
+                  '<div style="font-size:12px;font-weight:700;color:#333;">' + formatDateTime(a.datetime) + '</div>' +
                   '<div style="font-size:10px;color:#666;">Segment ' + (a.segment_num || '') + '</div>' +
                 '</div>' +
               '</div>' +
@@ -464,14 +597,21 @@
         popupTemplate: {
           title: "Landfall: {name} ({year})",
           content: [{
-            type: "fields",
-            fieldInfos: [
-              { fieldName: "category", label: "Category" },
-              { fieldName: "wind_kt", label: "Wind (kt)" },
-              { fieldName: "wind_mph", label: "Wind (mph)" },
-              { fieldName: "pressure_mb", label: "Pressure (mb)" },
-              { fieldName: "datetime", label: "Date/Time" }
-            ]
+            type: "custom",
+            creator: function(event) {
+              var la = event.graphic.attributes;
+              var div = document.createElement("div");
+              div.style.cssText = "font-family:system-ui,sans-serif;padding:4px 0;";
+              var lfCatNum = la.category_num != null ? String(la.category_num) : "-1";
+              var lfColor = CAT_COLORS_HEX[lfCatNum] || "#78909c";
+              div.innerHTML =
+                '<div style="margin-bottom:6px;"><span style="padding:3px 10px;border-radius:8px;background:' + lfColor + ';color:#fff;font-size:11px;font-weight:700;">' + (la.category || "Unknown") + '</span>' +
+                (la.landfall_state ? ' <span style="font-size:13px;font-weight:600;color:#333;">' + la.landfall_state + '</span>' : '') + '</div>' +
+                '<div style="font-size:13px;color:#333;margin-bottom:4px;"><strong>Date:</strong> ' + formatDateTime(la.datetime) + '</div>' +
+                '<div style="font-size:13px;color:#333;margin-bottom:4px;"><strong>Wind:</strong> ' + (la.wind_kt || "—") + ' kt / ' + (la.wind_mph || "—") + ' mph</div>' +
+                '<div style="font-size:13px;color:#333;"><strong>Pressure:</strong> ' + ((la.pressure_mb && la.pressure_mb > 0) ? la.pressure_mb + ' mb' : 'N/A') + '</div>';
+              return div;
+            }
           }]
         },
         outFields: ["*"]
@@ -531,9 +671,56 @@
         updateStats();
       }
 
-      document.getElementById("catFilter").addEventListener("change", applyFilter);
-      document.getElementById("yearStart").addEventListener("change", applyFilter);
-      document.getElementById("yearEnd").addEventListener("change", applyFilter);
+      document.getElementById("catFilter").addEventListener("change", function() { applyFilter(); updateMonthlyChart(); });
+      document.getElementById("yearStart").addEventListener("change", function() { applyFilter(); updateMonthlyChart(); });
+      document.getElementById("yearEnd").addEventListener("change", function() { applyFilter(); updateMonthlyChart(); });
+
+      // Landfall toggle
+      document.getElementById("landfallToggle").addEventListener("change", function(e) {
+        landfallLayer.visible = e.target.checked;
+      });
+
+      // Monthly distribution chart
+      var MONTH_ABBRS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+      function updateMonthlyChart() {
+        var minCat = parseInt(document.getElementById("catFilter").value);
+        var yearStart = parseInt(document.getElementById("yearStart").value);
+        var yearEnd = parseInt(document.getElementById("yearEnd").value);
+
+        var query = summaryTable.createQuery();
+        query.where = "category_num >= " + minCat + " AND year >= " + yearStart + " AND year <= " + yearEnd;
+        query.outFields = ["month"];
+        query.returnGeometry = false;
+
+        summaryTable.queryFeatures(query).then(function(result) {
+          var counts = {};
+          for (var i = 1; i <= 12; i++) counts[i] = 0;
+          result.features.forEach(function(f) {
+            var m = f.attributes.month;
+            if (m >= 1 && m <= 12) counts[m]++;
+          });
+
+          var maxCount = Math.max.apply(null, Object.values(counts)) || 1;
+          var barsHtml = "";
+          for (var m = 1; m <= 12; m++) {
+            var pct = Math.round((counts[m] / maxCount) * 100);
+            var isHurricaneSeason = (m >= 6 && m <= 11);
+            var barColor = isHurricaneSeason ? "#4fc3f7" : "rgba(255,255,255,0.15)";
+            barsHtml +=
+              '<div class="month-bar-row">' +
+                '<span class="month-bar-label">' + MONTH_ABBRS[m-1] + '</span>' +
+                '<div class="month-bar-track">' +
+                  '<div class="month-bar-fill" style="width:' + pct + '%;background:' + barColor + ';"></div>' +
+                '</div>' +
+                '<span class="month-bar-count">' + (counts[m] > 0 ? counts[m] : "") + '</span>' +
+              '</div>';
+          }
+          document.getElementById("monthBars").innerHTML = barsHtml;
+        }).catch(function(err) {
+          console.error("Monthly chart error:", err);
+        });
+      }
 
       // Animate Storm Path toggle — dims the base segments layer during playback-style viewing
       document.getElementById("animToggle").addEventListener("change", function(e) {
@@ -708,6 +895,9 @@
         view.resize();
       }
 
+      // Track which storm_id extras are loaded to avoid redundant queries
+      var lastLoadedExtrasId = null;
+
       function showInfoPanel(attrs) {
         var a = attrs;
         var catNum = a.category_num != null ? a.category_num : -1;
@@ -722,6 +912,7 @@
         var isLandfall = a.is_landfall === 1;
         var statuses = { HU: "Hurricane", TS: "Tropical Storm", TD: "Tropical Depression", EX: "Extratropical", SS: "Subtrop. Storm", SD: "Subtrop. Dep." };
         var statusLabel = statuses[a.status] || a.status || "";
+        var dtFormatted = formatDateTime(a.datetime);
 
         infoPanelContent.innerHTML =
           '<div style="background:' + headerBg + ';padding:20px 20px 16px 20px;">' +
@@ -735,9 +926,10 @@
                 '<div style="font-size:11px;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.5px;">knots</div>' +
               '</div>' +
             '</div>' +
-            '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;">' +
+            '<div style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
               '<span style="padding:4px 12px;border-radius:10px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;">' + cat + '</span>' +
               (isLandfall ? '<span style="padding:4px 12px;border-radius:10px;background:#FFD700;font-size:11px;font-weight:700;color:#333;">LANDFALL</span>' : '') +
+              '<span id="retiredBadge" style="display:none;"></span>' +
             '</div>' +
           '</div>' +
           '<div style="display:flex;justify-content:space-between;padding:14px 20px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.08);">' +
@@ -771,10 +963,14 @@
             '</div>' +
             '<div style="flex:1;padding:10px;background:rgba(255,255,255,0.05);border-radius:6px;border-left:3px solid #455a64;">' +
               '<div style="font-size:10px;color:#888;text-transform:uppercase;font-weight:700;">Observation</div>' +
-              '<div style="font-size:13px;font-weight:700;color:#e0e0e0;">' + (a.datetime || '') + '</div>' +
+              '<div style="font-size:13px;font-weight:700;color:#e0e0e0;">' + dtFormatted + '</div>' +
               '<div style="font-size:11px;color:#888;">Segment ' + (a.segment_num || '') + '</div>' +
             '</div>' +
           '</div>' +
+          // Placeholder containers for async-loaded content
+          '<div id="stormStatsContainer"></div>' +
+          '<div id="narrativeContainer"></div>' +
+          '<div id="landfallContainer"></div>' +
           '<div style="padding:8px 20px 12px 20px;border-top:1px solid rgba(255,255,255,0.06);">' +
             '<div style="font-size:10px;color:#666;">NOAA NHC HURDAT2 · ' + (a.storm_id || '') + '</div>' +
           '</div>';
@@ -782,6 +978,109 @@
         infoPanel.classList.add("open");
         document.getElementById("viewDiv").classList.add("with-panel");
         setTimeout(function() { view.resize(); }, 350);
+
+        // Load narrative + landfall details (only if storm changed)
+        if (a.storm_id && a.storm_id !== lastLoadedExtrasId) {
+          lastLoadedExtrasId = a.storm_id;
+          loadStormExtras(a.storm_id, a.name, a.year);
+        }
+      }
+
+      // Load narrative, retired status, landfall cards, and storm stats
+      function loadStormExtras(stormId, stormName, stormYear) {
+        // 1. Query summary table for narrative + retired + stats
+        var sq = summaryTable.createQuery();
+        sq.where = "storm_id = '" + stormId.replace(/'/g, "''") + "'";
+        sq.outFields = ["*"];
+        sq.returnGeometry = false;
+
+        summaryTable.queryFeatures(sq).then(function(result) {
+          if (result.features.length === 0) return;
+          var sa = result.features[0].attributes;
+
+          // Retired badge
+          if (sa.is_retired === 1) {
+            var badge = document.getElementById("retiredBadge");
+            if (badge) {
+              badge.className = "retired-badge";
+              badge.textContent = "RETIRED NAME";
+              badge.style.display = "inline-block";
+            }
+          }
+
+          // Storm stats
+          var statsDiv = document.getElementById("stormStatsContainer");
+          if (statsDiv) {
+            var durationDays = sa.duration_hours ? (sa.duration_hours / 24).toFixed(1) : "—";
+            var startF = formatDate(sa.start_date);
+            var endF = formatDate(sa.end_date);
+            statsDiv.innerHTML =
+              '<div class="storm-stats-section">' +
+                '<div class="section-label">Storm Statistics</div>' +
+                '<div class="storm-stat-row"><span class="storm-stat-label">Active Period</span><span class="storm-stat-val">' + startF + ' — ' + endF + '</span></div>' +
+                '<div class="storm-stat-row"><span class="storm-stat-label">Duration</span><span class="storm-stat-val">' + durationDays + ' days</span></div>' +
+                '<div class="storm-stat-row"><span class="storm-stat-label">Peak Wind</span><span class="storm-stat-val">' + (sa.max_wind_kt || "—") + ' kt / ' + (sa.max_wind_mph || "—") + ' mph</span></div>' +
+                '<div class="storm-stat-row"><span class="storm-stat-label">Min Pressure</span><span class="storm-stat-val">' + (sa.min_pressure_mb || "N/A") + ' mb</span></div>' +
+                '<div class="storm-stat-row"><span class="storm-stat-label">Observations</span><span class="storm-stat-val">' + (sa.observations || "—") + '</span></div>' +
+                '<div class="storm-stat-row"><span class="storm-stat-label">Landfalls</span><span class="storm-stat-val">' + (sa.landfalls || 0) + '</span></div>' +
+              '</div>';
+          }
+
+          // Narrative
+          var narDiv = document.getElementById("narrativeContainer");
+          if (narDiv && sa.narrative) {
+            narDiv.innerHTML =
+              '<div class="narrative-section">' +
+                '<div class="section-label">Storm Narrative</div>' +
+                '<div class="narrative-text">' + sa.narrative + '</div>' +
+              '</div>';
+          }
+        }).catch(function(err) {
+          console.error("Error loading storm summary:", err);
+        });
+
+        // 2. Query track points for landfall details
+        var pointsQuery = new FeatureLayer({ url: POINTS_URL, outFields: ["*"] });
+        var lq = pointsQuery.createQuery();
+        lq.where = "storm_id = '" + stormId.replace(/'/g, "''") + "' AND is_landfall = 1";
+        lq.outFields = ["*"];
+        lq.orderByFields = ["datetime ASC"];
+        lq.returnGeometry = false;
+
+        pointsQuery.queryFeatures(lq).then(function(result) {
+          var lfDiv = document.getElementById("landfallContainer");
+          if (!lfDiv || result.features.length === 0) return;
+
+          var html = '<div class="landfall-section"><div class="section-label">Landfalls (' + result.features.length + ')</div>';
+          result.features.forEach(function(f) {
+            var la = f.attributes;
+            var lfCatNum = la.category_num != null ? String(la.category_num) : "-1";
+            var lfColor = CAT_COLORS_HEX[lfCatNum] || "#78909c";
+            var lfCat = la.category || "Unknown";
+            var lfWind = la.wind_kt ? la.wind_kt + " kt" : "";
+            var lfPres = (la.pressure_mb && la.pressure_mb > 0) ? la.pressure_mb + " mb" : "";
+            var lfDate = formatDateTime(la.datetime);
+            var lfState = la.landfall_state || "";
+            var lfLoc = lfState || (la.latitude.toFixed(1) + "°, " + la.longitude.toFixed(1) + "°");
+
+            html +=
+              '<div class="landfall-card">' +
+                '<div class="lf-header">' +
+                  '<span class="lf-location">' + lfLoc + '</span>' +
+                  '<span class="lf-cat" style="background:' + lfColor + ';">' + lfCat + '</span>' +
+                '</div>' +
+                '<div class="lf-details">' +
+                  '<span>' + lfDate + '</span>' +
+                  (lfWind ? '<span>' + lfWind + '</span>' : '') +
+                  (lfPres ? '<span>' + lfPres + '</span>' : '') +
+                '</div>' +
+              '</div>';
+          });
+          html += '</div>';
+          lfDiv.innerHTML = html;
+        }).catch(function(err) {
+          console.error("Error loading landfalls:", err);
+        });
       }
 
       // Stored features for looping
@@ -903,6 +1202,7 @@
         playbackPaused = false;
         playbackIdx = 0;
         playbackFeatures = null;
+        lastLoadedExtrasId = null;
         if (playbackTimeout) {
           clearTimeout(playbackTimeout);
           playbackTimeout = null;
@@ -998,6 +1298,7 @@
 
       view.when(function() {
         updateStats();
+        updateMonthlyChart();
       });
     });
   </script>
