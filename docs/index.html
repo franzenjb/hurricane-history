@@ -660,10 +660,8 @@
       var view = new MapView({
         container: "viewDiv",
         map: map,
-        extent: {
-          xmin: -100, ymin: 18, xmax: -60, ymax: 45,
-          spatialReference: { wkid: 4326 }
-        },
+        center: [-80, 28],
+        zoom: 5,
         constraints: { minZoom: 3 },
         popup: null
       });
