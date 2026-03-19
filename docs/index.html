@@ -996,17 +996,19 @@
       }
 
       // Load narrative, retired status, landfall cards, and storm stats
+      // Uses direct REST API fetch to avoid ArcGIS SDK WebGL dependency
       function loadStormExtras(stormId, stormName, stormYear) {
         console.log("Loading extras for:", stormId);
-        // 1. Query summary table for narrative + retired + stats
-        var sq = summaryTable.createQuery();
-        sq.where = "storm_id = '" + stormId.replace(/'/g, "''") + "'";
-        sq.outFields = ["*"];
-        sq.returnGeometry = false;
 
-        summaryTable.queryFeatures(sq).then(function(result) {
-          if (result.features.length === 0) return;
-          var sa = result.features[0].attributes;
+        // 1. Query summary table via REST API
+        var summaryParams = new URLSearchParams({
+          f: 'json', where: "storm_id = '" + stormId.replace(/'/g, "''") + "'",
+          outFields: '*', returnGeometry: 'false'
+        });
+        fetch(SUMMARY_URL + '/query?' + summaryParams).then(function(r) { return r.json(); }).then(function(result) {
+          var features = result.features || [];
+          if (features.length === 0) return;
+          var sa = features[0].attributes;
 
           // Retired badge
           if (sa.is_retired === 1) {
@@ -1047,24 +1049,22 @@
           }
         }).catch(function(err) {
           console.error("Error loading storm summary:", err);
-          var narDiv = document.getElementById("narrativeContainer");
-          if (narDiv) narDiv.innerHTML = '<div style="padding:10px 20px;font-size:11px;color:#ef5350;">Summary query error: ' + (err.message || err) + '</div>';
         });
 
-        // 2. Query track points for landfall details
-        var pointsQuery = new FeatureLayer({ url: POINTS_URL, outFields: ["*"] });
-        var lq = pointsQuery.createQuery();
-        lq.where = "storm_id = '" + stormId.replace(/'/g, "''") + "' AND is_landfall = 1";
-        lq.outFields = ["*"];
-        lq.orderByFields = ["datetime ASC"];
-        lq.returnGeometry = false;
-
-        pointsQuery.queryFeatures(lq).then(function(result) {
+        // 2. Query track points for landfall details via REST API
+        var lfParams = new URLSearchParams({
+          f: 'json',
+          where: "storm_id = '" + stormId.replace(/'/g, "''") + "' AND is_landfall = 1",
+          outFields: '*', returnGeometry: 'false',
+          orderByFields: 'datetime ASC'
+        });
+        fetch(POINTS_URL + '/query?' + lfParams).then(function(r) { return r.json(); }).then(function(result) {
           var lfDiv = document.getElementById("landfallContainer");
-          if (!lfDiv || result.features.length === 0) return;
+          var features = result.features || [];
+          if (!lfDiv || features.length === 0) return;
 
-          var html = '<div class="landfall-section"><div class="section-label">Landfalls (' + result.features.length + ')</div>';
-          result.features.forEach(function(f) {
+          var html = '<div class="landfall-section"><div class="section-label">Landfalls (' + features.length + ')</div>';
+          features.forEach(function(f) {
             var la = f.attributes;
             var lfCatNum = la.category_num != null ? String(la.category_num) : "-1";
             var lfColor = CAT_COLORS_HEX[lfCatNum] || "#78909c";
