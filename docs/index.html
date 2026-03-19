@@ -187,8 +187,9 @@
     .landfall-card {
       background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
       border-radius: 6px; padding: 10px 12px; margin-bottom: 6px;
-      border-left: 3px solid #FFD700;
+      border-left: 3px solid #FFD700; transition: background 0.15s;
     }
+    .landfall-card:hover { background: rgba(255,255,255,0.08); }
     .landfall-card .lf-header {
       display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;
     }
@@ -1284,7 +1285,7 @@
             var lfLoc = lfState || (la.latitude.toFixed(1) + "°, " + la.longitude.toFixed(1) + "°");
 
             html +=
-              '<div class="landfall-card">' +
+              '<div class="landfall-card" data-lat="' + la.latitude + '" data-lon="' + la.longitude + '" style="cursor:pointer;">' +
                 '<div class="lf-header">' +
                   '<span class="lf-location">' + lfLoc + '</span>' +
                   '<span class="lf-cat" style="background:' + lfColor + ';">' + lfCat + '</span>' +
@@ -1298,6 +1299,18 @@
           });
           html += '</div>';
           extrasDiv.innerHTML += html;
+
+          // Click landfall card → zoom to location
+          extrasDiv.querySelectorAll('.landfall-card[data-lat]').forEach(function(card) {
+            card.addEventListener('click', function() {
+              var lat = parseFloat(card.getAttribute('data-lat'));
+              var lon = parseFloat(card.getAttribute('data-lon'));
+              view.goTo({
+                target: { type: "point", longitude: lon, latitude: lat, spatialReference: { wkid: 4326 } },
+                zoom: 8
+              }, { duration: 1000 }).catch(function() {});
+            });
+          });
         }).catch(function(err) {
           console.error("Error loading landfalls:", err);
         });
