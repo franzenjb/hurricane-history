@@ -1703,6 +1703,7 @@
                   playBtn.disabled = false;
                   playBtn.textContent = "Play " + s.name + " (" + s.year + ")";
                   searchInput.value = s.name;
+                  document.getElementById("intelOverlay").classList.remove("open");
                 }
               });
             });
