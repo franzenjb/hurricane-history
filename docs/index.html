@@ -660,8 +660,10 @@
       var view = new MapView({
         container: "viewDiv",
         map: map,
-        center: [-78, 28],
-        zoom: 4,
+        extent: {
+          xmin: -100, ymin: 18, xmax: -60, ymax: 45,
+          spatialReference: { wkid: 4326 }
+        },
         constraints: { minZoom: 3 },
         popup: null
       });
@@ -1581,19 +1583,6 @@
       // Load default tool (Records) on startup
       loadTool("records");
 
-      // Auto-zoom to featured storms once loaded
-      view.whenLayerView(segmentsLayer).then(function(layerView) {
-        reactiveUtils.when(
-          function() { return !layerView.updating; },
-          function() {
-            segmentsLayer.queryExtent().then(function(result) {
-              if (result.extent) {
-                view.goTo({ target: result.extent.expand(1.3) }, { duration: 1500 });
-              }
-            });
-          }
-        );
-      }).catch(function() {});
     });
   </script>
 </body>
