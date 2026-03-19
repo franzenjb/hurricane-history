@@ -1191,13 +1191,65 @@
               '<div class="storm-stat-row"><span class="storm-stat-label">Landfalls</span><span class="storm-stat-val">' + (sa.landfalls || 0) + '</span></div>' +
             '</div>';
 
-          // Narrative
+          // Narrative — parse into Notable bullets + paragraphed prose
           if (sa.narrative) {
-            extrasHtml +=
-              '<div class="narrative-section">' +
-                '<div class="section-label">Storm Narrative</div>' +
-                '<div class="narrative-text">' + sa.narrative + '</div>' +
-              '</div>';
+            var rawNarr = sa.narrative;
+            var notableSection = '';
+            var proseSection = rawNarr;
+
+            // Split out Notable: section
+            var notableIdx = rawNarr.indexOf('Notable:');
+            if (notableIdx !== -1) {
+              proseSection = rawNarr.substring(0, notableIdx).trim();
+              var notableText = rawNarr.substring(notableIdx + 8).trim();
+              var bullets = notableText.split('|').map(function(b) { return b.trim(); }).filter(function(b) { return b.length > 0; });
+              if (bullets.length > 0) {
+                notableSection = '<div style="padding:14px 20px;border-top:1px solid rgba(255,255,255,0.06);">' +
+                  '<div style="font-size:10px;font-weight:700;color:#FFD700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Key Facts</div>';
+                bullets.forEach(function(b) {
+                  notableSection += '<div style="display:flex;gap:8px;margin-bottom:5px;font-size:12px;color:#ccc;line-height:1.5;">' +
+                    '<span style="color:#FFD700;flex-shrink:0;">&#9670;</span><span>' + b + '</span></div>';
+                });
+                notableSection += '</div>';
+              }
+            }
+
+            // Split prose into paragraphs at sentence boundaries (~every 2-3 sentences)
+            var sentences = proseSection.split(/(?<=[.!])\s+/);
+            var paragraphs = [];
+            var current = [];
+            sentences.forEach(function(s, i) {
+              current.push(s);
+              if (current.length >= 3 || i === sentences.length - 1) {
+                paragraphs.push(current.join(' '));
+                current = [];
+              }
+            });
+
+            // First sentence = summary (bold)
+            var summaryLine = '';
+            var bodyParas = paragraphs;
+            if (paragraphs.length > 0) {
+              var firstSentences = paragraphs[0].split(/(?<=[.!])\s+/);
+              if (firstSentences.length > 0) {
+                summaryLine = firstSentences[0];
+                var rest = firstSentences.slice(1).join(' ');
+                if (rest) bodyParas = [rest].concat(paragraphs.slice(1));
+                else bodyParas = paragraphs.slice(1);
+              }
+            }
+
+            // Notable first, then summary, then prose
+            extrasHtml += notableSection;
+            extrasHtml += '<div class="narrative-section">' +
+              '<div class="section-label">Storm Narrative</div>';
+            if (summaryLine) {
+              extrasHtml += '<div style="font-size:14px;font-weight:700;color:#e0e0e0;line-height:1.5;margin-bottom:10px;">' + summaryLine + '</div>';
+            }
+            bodyParas.forEach(function(p) {
+              if (p.trim()) extrasHtml += '<div style="font-size:13px;color:#ccc;line-height:1.6;margin-bottom:10px;">' + p + '</div>';
+            });
+            extrasHtml += '</div>';
           }
 
           // Set summary portion of extras
