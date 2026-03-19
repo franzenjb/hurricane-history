@@ -1805,41 +1805,39 @@
             if (a.category_num >= 3) decades[dec].major++;
           });
 
-          var sorted = Object.keys(decades).sort();
+          var sorted = Object.keys(decades).sort().reverse(); // newest first
           var maxTotal = Math.max.apply(null, sorted.map(function(d) { return decades[d].total; }));
 
-          var html = '<div class="tools-content">';
-          html += '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Decade Trends</div>';
-          html += '<div style="font-size:11px;color:#888;margin-bottom:12px;">Storm counts by decade (all categories)</div>';
+          var html = '';
+          html += '<div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">Decade Trends</div>';
+          html += '<div style="font-size:13px;color:#888;margin-bottom:16px;">Storm counts by decade — newest first</div>';
 
-          // Table layout for decades
-          html += '<table style="width:100%;border-collapse:collapse;">';
-          html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);">' +
-            '<th style="text-align:left;padding:6px 8px;font-size:10px;color:#888;font-weight:700;">DECADE</th>' +
-            '<th style="text-align:right;padding:6px 8px;font-size:10px;color:#4fc3f7;">STORMS</th>' +
-            '<th style="text-align:right;padding:6px 8px;font-size:10px;color:#e65100;">HURR</th>' +
-            '<th style="text-align:right;padding:6px 8px;font-size:10px;color:#b71c1c;">MAJOR</th>' +
-            '<th style="padding:6px 8px;width:40%;"></th></tr>';
+          // Legend
+          html += '<div style="display:flex;gap:20px;margin-bottom:14px;font-size:13px;">' +
+            '<span><span style="display:inline-block;width:12px;height:12px;background:rgba(79,195,247,0.4);border-radius:2px;margin-right:5px;vertical-align:middle;"></span><span style="color:#4fc3f7;">All Storms</span></span>' +
+            '<span><span style="display:inline-block;width:12px;height:12px;background:rgba(230,81,0,0.6);border-radius:2px;margin-right:5px;vertical-align:middle;"></span><span style="color:#e65100;">Hurricanes</span></span>' +
+            '<span><span style="display:inline-block;width:12px;height:12px;background:rgba(183,28,28,0.8);border-radius:2px;margin-right:5px;vertical-align:middle;"></span><span style="color:#b71c1c;">Major (3+)</span></span>' +
+          '</div>';
 
           sorted.forEach(function(dec) {
             var d = decades[dec];
             var totalW = Math.round((d.total / maxTotal) * 100);
             var hurrW = Math.round((d.hurricanes / maxTotal) * 100);
             var majorW = Math.round((d.major / maxTotal) * 100);
-            html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.03);">' +
-              '<td style="padding:5px 8px;font-size:12px;font-weight:700;color:#e0e0e0;">' + dec + 's</td>' +
-              '<td style="padding:5px 8px;font-size:12px;color:#4fc3f7;text-align:right;font-weight:600;">' + d.total + '</td>' +
-              '<td style="padding:5px 8px;font-size:12px;color:#e65100;text-align:right;font-weight:600;">' + d.hurricanes + '</td>' +
-              '<td style="padding:5px 8px;font-size:12px;color:#b71c1c;text-align:right;font-weight:600;">' + d.major + '</td>' +
-              '<td style="padding:5px 8px;">' +
-                '<div style="display:flex;gap:1px;height:16px;align-items:end;">' +
-                  '<div style="width:' + totalW + '%;height:100%;background:rgba(79,195,247,0.3);border-radius:2px;"></div>' +
-                  '<div style="width:' + hurrW + '%;height:75%;background:rgba(230,81,0,0.5);border-radius:2px;"></div>' +
-                  '<div style="width:' + majorW + '%;height:50%;background:rgba(183,28,28,0.7);border-radius:2px;"></div>' +
-                '</div>' +
-              '</td></tr>';
+            html += '<div style="margin-bottom:12px;">' +
+              '<div style="display:flex;align-items:baseline;margin-bottom:4px;">' +
+                '<span style="font-size:15px;font-weight:700;color:#e0e0e0;width:70px;">' + dec + 's</span>' +
+                '<span style="font-size:14px;color:#4fc3f7;font-weight:600;width:60px;text-align:right;">' + d.total + '</span>' +
+                '<span style="font-size:14px;color:#e65100;font-weight:600;width:60px;text-align:right;">' + d.hurricanes + '</span>' +
+                '<span style="font-size:14px;color:#b71c1c;font-weight:600;width:60px;text-align:right;">' + d.major + '</span>' +
+              '</div>' +
+              '<div style="display:flex;flex-direction:column;gap:3px;">' +
+                '<div style="height:10px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;"><div style="width:' + totalW + '%;height:100%;background:rgba(79,195,247,0.4);border-radius:3px;"></div></div>' +
+                '<div style="height:10px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;"><div style="width:' + hurrW + '%;height:100%;background:rgba(230,81,0,0.6);border-radius:3px;"></div></div>' +
+                '<div style="height:10px;background:rgba(255,255,255,0.04);border-radius:3px;overflow:hidden;"><div style="width:' + majorW + '%;height:100%;background:rgba(183,28,28,0.8);border-radius:3px;"></div></div>' +
+              '</div>' +
+            '</div>';
           });
-          html += '</table>';
           html += '</div>';
           toolContent.innerHTML = html;
         });
