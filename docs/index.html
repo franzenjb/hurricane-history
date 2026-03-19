@@ -157,24 +157,6 @@
     .transport-btn:disabled { opacity: 0.3; cursor: not-allowed; }
     .transport-btn:disabled:hover { background: rgba(255,255,255,0.06); color: #ccc; border-color: rgba(255,255,255,0.2); }
 
-    /* Playback banner */
-    #playbackBanner {
-      position: absolute; top: 16px; left: 50%; transform: translateX(-50%); z-index: 15;
-      background: rgba(20, 20, 40, 0.95); backdrop-filter: blur(12px);
-      border: 1px solid rgba(79,195,247,0.3); border-radius: 10px;
-      padding: 12px 24px; text-align: center;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5); display: none;
-    }
-    #playbackBanner .storm-name {
-      font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -0.5px;
-    }
-    #playbackBanner .storm-detail {
-      font-size: 12px; color: #4fc3f7; margin-top: 2px;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    #playbackBanner .segment-progress {
-      font-size: 11px; color: #888; margin-top: 4px;
-    }
 
     /* Narrative section */
     .narrative-section {
@@ -344,11 +326,6 @@
     </div>
   </div>
 
-  <div id="playbackBanner">
-    <div class="storm-name" id="bannerName"></div>
-    <div class="storm-detail" id="bannerDetail"></div>
-    <div class="segment-progress" id="bannerProgress"></div>
-  </div>
 
   <div id="controls">
     <h1>Atlantic Hurricane Tracks</h1>
@@ -734,10 +711,7 @@
       var searchResults = document.getElementById("searchResults");
       var playBtn = document.getElementById("playBtn");
       var stopBtn = document.getElementById("stopBtn");
-      var playbackBanner = document.getElementById("playbackBanner");
-      var bannerName = document.getElementById("bannerName");
-      var bannerDetail = document.getElementById("bannerDetail");
-      var bannerProgress = document.getElementById("bannerProgress");
+      // Banner removed — info panel shows storm details
 
       var searchDebounce = null;
 
@@ -1105,10 +1079,10 @@
         stepBackBtn.disabled = true;
         stepFwdBtn.disabled = true;
 
-        bannerName.textContent = storm.name;
-        bannerDetail.textContent = storm.year + " Atlantic Season — Peak: " + storm.peak_category;
-        bannerProgress.textContent = "Loading track segments...";
-        playbackBanner.style.display = "block";
+        void(0); // bannerName = storm.name;
+        void(0); // bannerDetail = storm.year + " Atlantic Season — Peak: " + storm.peak_category;
+        void(0); // bannerProgress = "Loading track segments...";
+        void(0); // playbackBanner = "block";
 
         // Collapse filter controls
         document.getElementById("controlsCollapsible").classList.add("collapsed");
@@ -1128,7 +1102,7 @@
         segmentsLayer.queryFeatures(query).then(function(result) {
           playbackFeatures = result.features;
           if (playbackFeatures.length === 0) {
-            bannerProgress.textContent = "No track segments found";
+            void(0); // bannerProgress = "No track segments found";
             setTimeout(stopPlayback, 2000);
             return;
           }
@@ -1150,7 +1124,7 @@
           drawLoop(0);
         }).catch(function(err) {
           console.error("Error querying storm segments:", err);
-          bannerProgress.textContent = "Error loading segments";
+          void(0); // bannerProgress = "Error loading segments";
           setTimeout(stopPlayback, 2000);
         });
       }
@@ -1163,7 +1137,7 @@
         if (idx >= playbackFeatures.length) {
           animationLayer.removeAll();
           playbackIdx = 0;
-          bannerProgress.textContent = "Looping...";
+          void(0); // bannerProgress = "Looping...";
           playbackTimeout = setTimeout(function() { drawLoop(0); }, 800);
           return;
         }
@@ -1192,7 +1166,7 @@
 
         var catLabel = CAT_LABELS[catNum] || "Unknown";
         var windInfo = f.attributes.wind_kt ? f.attributes.wind_kt + " kt" : "";
-        bannerProgress.textContent = "Segment " + (idx + 1) + " of " + playbackFeatures.length + " — " + catLabel + (windInfo ? " (" + windInfo + ")" : "");
+        void(0); // bannerProgress = "Segment " + (idx + 1) + " of " + playbackFeatures.length + " — " + catLabel + (windInfo ? " (" + windInfo + ")" : "");
 
         var delay = Math.max(40, 600 - (animationSpeed * 112));
         playbackTimeout = setTimeout(function() { drawLoop(idx + 1); }, delay);
@@ -1204,7 +1178,7 @@
         var catNum = f.attributes.category_num != null ? String(f.attributes.category_num) : "-1";
         var catLabel = CAT_LABELS[catNum] || "Unknown";
         var windInfo = f.attributes.wind_kt ? f.attributes.wind_kt + " kt" : "";
-        bannerProgress.textContent = "Segment " + (idx + 1) + " of " + playbackFeatures.length + " — " + catLabel + (windInfo ? " (" + windInfo + ")" : "") + "  PAUSED";
+        void(0); // bannerProgress = "Segment " + (idx + 1) + " of " + playbackFeatures.length + " — " + catLabel + (windInfo ? " (" + windInfo + ")" : "") + "  PAUSED";
       }
 
       function stopPlayback() {
@@ -1218,7 +1192,7 @@
           playbackTimeout = null;
         }
         animationLayer.removeAll();
-        playbackBanner.style.display = "none";
+        void(0); // playbackBanner = "none";
         stopBtn.style.display = "none";
         transportControls.classList.remove("visible");
         playBtn.disabled = !selectedStorm;
