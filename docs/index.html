@@ -259,6 +259,15 @@
     .month-bar-fill {
       height: 100%; background: #4fc3f7; border-radius: 2px; transition: width 0.4s;
     }
+    /* Collapse controls during playback */
+    #controlsCollapsible {
+      max-height: 600px; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s;
+      opacity: 1;
+    }
+    #controlsCollapsible.collapsed {
+      max-height: 0; opacity: 0; margin: 0; padding: 0;
+    }
+
     .month-bar-count {
       width: 28px; font-size: 9px; color: #888; text-align: left; margin-left: 4px;
       flex-shrink: 0;
@@ -272,6 +281,12 @@
     <button id="infoPanelClose">&times;</button>
     <div id="infoPanelContent"></div>
     <div id="stormExtras"></div>
+    <div id="toolsPanel">
+      <div id="monthlyChart">
+        <div class="section-label" style="padding:14px 20px 0 20px;">Monthly Distribution</div>
+        <div id="monthBars" style="padding:8px 20px 14px 20px;"></div>
+      </div>
+    </div>
   </div>
 
   <div id="playbackBanner">
@@ -298,65 +313,62 @@
       <button id="stopBtn">Stop Playback</button>
     </div>
 
-    <div class="toggle-row">
-      <span class="toggle-label">Animate Storm Path</span>
-      <label class="toggle">
-        <input type="checkbox" id="animToggle" />
-        <span class="toggle-track"></span>
-        <span class="toggle-knob"></span>
-      </label>
-    </div>
-
-    <div class="control-group">
-      <label>Minimum Category</label>
-      <select id="catFilter">
-        <option value="-1">All Storms (TD+)</option>
-        <option value="0">Tropical Storm+</option>
-        <option value="1">Category 1+</option>
-        <option value="2">Category 2+</option>
-        <option value="3" selected>Category 3+ (Major)</option>
-        <option value="4">Category 4+</option>
-        <option value="5">Category 5 Only</option>
-      </select>
-    </div>
-
-    <div class="control-group">
-      <label>Year Range</label>
-      <div style="display:flex;gap:8px;">
-        <input type="number" id="yearStart" value="2000" min="1851" max="2025" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;" />
-        <input type="number" id="yearEnd" value="2025" min="1851" max="2025" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;" />
+    <div id="controlsCollapsible">
+      <div class="toggle-row">
+        <span class="toggle-label">Animate Storm Path</span>
+        <label class="toggle">
+          <input type="checkbox" id="animToggle" />
+          <span class="toggle-track"></span>
+          <span class="toggle-knob"></span>
+        </label>
       </div>
-    </div>
 
-    <div class="control-group">
-      <label>Animation Speed</label>
-      <input type="range" id="speedSlider" min="0.5" max="5" step="0.5" value="2" />
-      <div class="range-labels"><span>Slow</span><span>Fast</span></div>
-    </div>
-
-    <div class="toggle-row">
-      <span class="toggle-label">Show All Landfalls</span>
-      <label class="toggle">
-        <input type="checkbox" id="landfallToggle" checked />
-        <span class="toggle-track"></span>
-        <span class="toggle-knob"></span>
-      </label>
-    </div>
-
-    <div id="stats">
-      <div class="stat-row">
-        <span class="stat-label">Visible Storms</span>
-        <span class="stat-value" id="stormCount">—</span>
+      <div class="control-group">
+        <label>Minimum Category</label>
+        <select id="catFilter">
+          <option value="-1">All Storms (TD+)</option>
+          <option value="0">Tropical Storm+</option>
+          <option value="1">Category 1+</option>
+          <option value="2">Category 2+</option>
+          <option value="3" selected>Category 3+ (Major)</option>
+          <option value="4">Category 4+</option>
+          <option value="5">Category 5 Only</option>
+        </select>
       </div>
-      <div class="stat-row">
-        <span class="stat-label">Track Segments</span>
-        <span class="stat-value" id="segCount">—</span>
-      </div>
-    </div>
 
-    <div id="monthlyChart">
-      <div class="section-label">Monthly Distribution</div>
-      <div id="monthBars"></div>
+      <div class="control-group">
+        <label>Year Range</label>
+        <div style="display:flex;gap:8px;">
+          <input type="number" id="yearStart" value="2000" min="1851" max="2025" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;" />
+          <input type="number" id="yearEnd" value="2025" min="1851" max="2025" style="width:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:6px 8px;font-size:13px;" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label>Animation Speed</label>
+        <input type="range" id="speedSlider" min="0.5" max="5" step="0.5" value="4" />
+        <div class="range-labels"><span>Slow</span><span>Fast</span></div>
+      </div>
+
+      <div class="toggle-row">
+        <span class="toggle-label">Show All Landfalls</span>
+        <label class="toggle">
+          <input type="checkbox" id="landfallToggle" checked />
+          <span class="toggle-track"></span>
+          <span class="toggle-knob"></span>
+        </label>
+      </div>
+
+      <div id="stats">
+        <div class="stat-row">
+          <span class="stat-label">Visible Storms</span>
+          <span class="stat-value" id="stormCount">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Track Segments</span>
+          <span class="stat-value" id="segCount">—</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -431,7 +443,7 @@
         return String(val);
       }
 
-      let animationSpeed = 2; // slider value
+      let animationSpeed = 4; // slider value (80%)
       let selectedStorm = null;
       let playbackActive = false;
       let playbackPaused = false;
@@ -750,7 +762,7 @@
         var val = searchInput.value.trim();
         if (searchDebounce) clearTimeout(searchDebounce);
         if (val.length < 2) {
-          searchResults.innerHTML = "";
+          loadFeaturedStorms();
           return;
         }
         searchDebounce = setTimeout(function() {
@@ -1115,6 +1127,9 @@
         bannerProgress.textContent = "Loading track segments...";
         playbackBanner.style.display = "block";
 
+        // Collapse filter controls
+        document.getElementById("controlsCollapsible").classList.add("collapsed");
+
         // HIDE other storms completely
         segmentsLayer.visible = false;
         landfallLayer.visible = false;
@@ -1227,6 +1242,8 @@
         if (selectedStorm) {
           playBtn.textContent = "Play " + selectedStorm.name + " (" + selectedStorm.year + ")";
         }
+        // Expand filter controls
+        document.getElementById("controlsCollapsible").classList.remove("collapsed");
         // Restore layers
         segmentsLayer.visible = true;
         landfallLayer.visible = true;
@@ -1309,13 +1326,62 @@
       });
 
       // view.when may not resolve if a layer has issues — use whenLayerView as fallback
+      // Load 4 featured storms into search results on startup
+      function loadFeaturedStorms() {
+        var featured = [
+          { storm_id: "AL122005", name: "KATRINA", year: 2005, category: "Cat 5", category_num: 5 },
+          { storm_id: "AL142024", name: "MILTON", year: 2024, category: "Cat 5", category_num: 5 },
+          { storm_id: "AL092017", name: "HARVEY", year: 2017, category: "Cat 4", category_num: 4 },
+          { storm_id: "AL182012", name: "SANDY", year: 2012, category: "Cat 3", category_num: 3 }
+        ];
+
+        searchResults.innerHTML = '<div style="padding:4px 10px 2px 10px;font-size:10px;color:#4fc3f7;text-transform:uppercase;letter-spacing:0.5px;">Featured Storms</div>';
+        featured.forEach(function(a) {
+          var catColor = CAT_COLORS_HEX[a.category_num] || "#78909c";
+          var item = document.createElement("div");
+          item.className = "search-result-item";
+          item.innerHTML =
+            '<span>' + a.name + ' (' + a.year + ')</span>' +
+            '<span class="storm-cat" style="background:' + catColor + ';color:#fff;">' + a.category + '</span>';
+          item.addEventListener("click", function() {
+            if (playbackActive) { stopPlayback(); } else {
+              animationLayer.removeAll();
+              segmentsLayer.visible = true;
+              segmentsLayer.opacity = document.getElementById("animToggle").checked ? 0.3 : 1.0;
+              lastLoadedExtrasId = null;
+            }
+            var prev = searchResults.querySelector(".selected");
+            if (prev) prev.classList.remove("selected");
+            item.classList.add("selected");
+            selectedStorm = {
+              storm_id: a.storm_id, name: a.name, year: a.year,
+              peak_category: a.category, peak_category_num: a.category_num
+            };
+            playBtn.disabled = false;
+            playBtn.textContent = "Play " + a.name + " (" + a.year + ")";
+          });
+          searchResults.appendChild(item);
+        });
+      }
+
+      // Show info panel with tools on load
+      infoPanel.classList.add("open");
+      document.getElementById("viewDiv").classList.add("with-panel");
+      infoPanelContent.innerHTML =
+        '<div style="padding:20px 20px 10px 20px;">' +
+          '<div style="font-size:18px;font-weight:700;color:#fff;">Hurricane Intelligence</div>' +
+          '<div style="font-size:12px;color:#888;margin-top:4px;">Select a storm from the left panel to explore its track, narrative, and landfall details.</div>' +
+        '</div>';
+
+      // Pre-populate featured storms
+      loadFeaturedStorms();
+
       view.when(function() {
         console.log("View ready");
         updateStats();
         updateMonthlyChart();
       }).catch(function(err) {
         console.warn("View when error (non-fatal):", err);
-        // Fallback: load monthly chart independently
         updateMonthlyChart();
       });
 
