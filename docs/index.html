@@ -1395,12 +1395,16 @@
         if (!playbackActive || !playbackFeatures) return;
         if (playbackPaused) return;
 
-        // Loop: reset when reaching end
+        // Stop at end — keep track visible
         if (idx >= playbackFeatures.length) {
-          animationLayer.removeAll();
-          playbackIdx = 0;
-          void(0); // bannerProgress = "Looping...";
-          playbackTimeout = setTimeout(function() { drawLoop(0); }, 800);
+          playbackActive = false;
+          playbackPaused = false;
+          if (playbackTimeout) { clearTimeout(playbackTimeout); playbackTimeout = null; }
+          playBtn.disabled = false;
+          if (selectedStorm) playBtn.textContent = "Play " + selectedStorm.name + " (" + selectedStorm.year + ")";
+          stopBtn.style.display = "none";
+          transportControls.classList.remove("visible");
+          document.getElementById("controlsCollapsible").classList.remove("collapsed");
           return;
         }
 
