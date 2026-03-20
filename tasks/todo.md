@@ -1,31 +1,47 @@
 # Hurricane Intelligence — Enhancement Plan
 
-## Current State
-- 2,004 storms, 55,605 track points, HURDAT2 raw data present
-- GitHub Pages app working with search, playback, info panel
-- Bug spotted: popup shows raw epoch timestamp (1728518400000) instead of date
+## Phase 1-3: COMPLETE (see git history)
 
-## Work Items
+---
 
-### Phase 1: Data Enrichment (Python scripts)
-- [ ] 1. **Narrative Generator** — Add `generate_narratives.py` that reads HURDAT2 + summary CSV, generates 150-200 word narratives per storm from the data itself (formation location, track description, peak intensity, landfall details, duration). Cat 3+ get richer narratives. Adds `narrative` and `is_retired` columns to summary CSV.
-- [ ] 2. **Retired Storm Names** — Hardcode the ~90 retired Atlantic names list. Flag in summary CSV.
-- [ ] 3. **Landfall State Enrichment** — Download US state + territory boundaries (Natural Earth or Census shapefiles). Point-in-polygon join landfall points to get state/country names. Add `landfall_state` field to tracks CSV.
+## Phase 4: Records, Monthly Restyle, Mobile
 
-### Phase 2: Frontend Enhancement (docs/index.html)
-- [ ] 4. **Narrative display** — When a storm is selected/clicked, show narrative text in the info panel below the current stats.
-- [ ] 5. **Landfall cards** — Query track points for `is_landfall=1` for the selected storm. Show each landfall as a card with date, location (state), wind, category, pressure.
-- [ ] 6. **Storm stats summary** — Total distance traveled, days active, peak wind with date in info panel.
-- [ ] 7. **Monthly distribution mini-chart** — Small bar chart in controls panel showing storm count by month for current filter.
-- [ ] 8. **Fix epoch timestamp bug** — The popup/info panel shows raw millisecond timestamps for `datetime` field. Format properly.
+### 4A: September Label Fix
+- [x] 1. Fix September bar label — when bar >75% width, position label inside bar with dark text instead of outside (where it overflows hidden)
 
-### Phase 3: Deploy
-- [ ] 9. Re-run Python scripts to regenerate CSVs
-- [ ] 10. Re-upload to AGOL (summary table + track points)
-- [ ] 11. Git commit + push to GitHub Pages
-- [ ] 12. Playwright verification
+### 4B: Records Expansion (4 → 16)
+- [ ] 2. Add 12 hardcoded record cards below the 4 live-computed ones
+  - Longest Track: Faith (1966), 6,850 mi, Cat 3
+  - Fastest Forward Speed: New England (1938), ~70 mph, Cat 5
+  - Fastest to Cat 5: Milton (2024), 54 hrs, Cat 5
+  - Largest Diameter: Sandy (2012), 1,150 mi, Cat 3
+  - Smallest Diameter: Marco (2008), 12 mi, TS
+  - Fastest Pressure Drop: Wilma (2005), 97 mb/24hr, Cat 5
+  - Costliest: Katrina (2005), $200B (adj), Cat 5
+  - Latest Cat 5: Cuba (1932), Nov 5, Cat 5
+  - Earliest Cat 5: Beryl (2024), Jul 2, Cat 5
+  - Most Erratic Track: Nadine (2012), 3 loops, Cat 1
+  - Longest at Cat 5: Irma (2017), 78 hrs, Cat 5
+  - Most Countries: Ivan (2004), 10+, Cat 5
+- [ ] 3. Each card uses same card() function — icon, color, label, name, year, detail, stat, unit
+- [ ] 4. Hardcoded cards include storm_id for click-to-play (look up IDs from AGOL data)
 
-## Execution Strategy
-- Items 1-3 run as parallel Python agents
-- Items 4-8 are the HTML update (single file, sequential)
-- Items 9-12 are deploy steps
+### 4C: Monthly Bars → Card-Style Rows
+- [ ] 5. Restyle monthly distribution — each month becomes a card (dark bg, rounded, border) matching record card style
+- [ ] 6. Bar fill sits behind text inside card
+- [ ] 7. Bold count + percentage as right-side stat (fixed position, always readable)
+- [ ] 8. Only show months with data (skip Jan-May, Dec if zero)
+
+### 4D: Mobile Responsive
+- [ ] 9. Add @media (max-width: 768px) CSS block
+- [ ] 10. Map goes full-screen, tools panel becomes bottom drawer
+- [ ] 11. Search bar overlays top of map
+- [ ] 12. Playback controls as compact bottom bar
+- [ ] 13. Intel panel (records, monthly, compare) opens as full-screen overlay
+- [ ] 14. Simplify/hide Compare tool on mobile (doesn't fit)
+- [ ] 15. Touch-friendly tap targets (min 44px)
+
+### 4E: Deploy + Verify
+- [ ] 16. Git commit + push to GitHub Pages
+- [ ] 17. Playwright verify desktop
+- [ ] 18. Playwright verify mobile viewport (375px)
